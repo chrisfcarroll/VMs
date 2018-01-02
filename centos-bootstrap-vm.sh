@@ -22,6 +22,7 @@ echo "getting updates and tools"
 	yum -y update
 	yum -y upgrade yum
  	yum install -y yum-utils
+ 	yum install -y yum-cron
  	yum -y install screen # screen will save your sanity. https://duckduckgo.com/?q=why+use+linux+screen+for+remote+session&t=opera&ia=web
 	yum -y install vim
 
@@ -32,7 +33,7 @@ echo "getting updates and tools"
 	# fail2ban: We've had 1000 automated attempts per hour at root login
 	yum -y install epel-release #prerequisite for fail2ban
 	yum -y install fail2ban  
-	cat > jail.local <<EOF
+	cat > jail.local <<"EOF"
 #
 [DEFAULT]
 bantime = 7200
@@ -40,36 +41,8 @@ bantime = 7200
 [sshd]
 enabled = true
 
-[nginx-http-auth]
-enabled = true
-
-# To use 'nginx-limit-req' jail you should have `ngx_http_limit_req_module`
-# and define `limit_req` and `limit_req_zone` as described in nginx documentation
-# http://nginx.org/en/docs/http/ngx_http_limit_req_module.html
-# or for example see in 'config/filter.d/nginx-limit-req.conf'
-[nginx-limit-req]
-
-[nginx-botsearch]
-enabled = true
-
-[php-url-fopen]
-enabled = true
-logpath = %(nginx_access_log)s
-
-[wordpress-hard]
-enabled = true
-filter = wordpress-hard
-logpath = /var/log/auth.log
-maxretry = 1
-port = http,https
-
-[wordpress-soft]
-enabled = true
-filter = wordpress-soft
-logpath = /var/log/auth.log
-maxretry = 3
-port = http,https
 EOF
+
   mv jail.local /etc/fail2ban/
   chown root:root /etc/fail2ban/jail.local
 	systemctl enable fail2ban

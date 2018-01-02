@@ -604,10 +604,11 @@
 	},
 	"expanded_folders":
 	[
-		"/B/Users/Chris/Source/VMs"
+		"/Users/chris/Source/Repos/VMs"
 	],
 	"file_history":
 	[
+		"/Users/chris/Source/Repos/VMs/centos-nginx-php-wp.sh",
 		"/Q/Business Technical.txt",
 		"/B/Users/Chris/Source/VMs/centos-bootstrap-vm.sh",
 		"/B/Users/Chris/Source/VMs/centos-nginx-php-wp.sh",
@@ -734,8 +735,7 @@
 		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-drop-database.ps1",
 		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-ensure-passwordless-login-certificate.ps1",
 		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-fetchall.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-gitall.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-migratedb.ps1"
+		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-gitall.ps1"
 	],
 	"find":
 	{

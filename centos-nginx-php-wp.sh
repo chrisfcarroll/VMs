@@ -124,3 +124,36 @@ EOF
 firewall-cmd --permanent --zone=public --add-service=http
 systemctl enable nginx
 systemctl start nginx
+
+echo >> /etc/fail2ban/jail.local <<"EOF"
+[nginx-http-auth]
+enabled = true
+
+# To use 'nginx-limit-req' jail you should have `ngx_http_limit_req_module`
+# and define `limit_req` and `limit_req_zone` as described in nginx documentation
+# http://nginx.org/en/docs/http/ngx_http_limit_req_module.html
+# or for example see in 'config/filter.d/nginx-limit-req.conf'
+[nginx-limit-req]
+
+[nginx-botsearch]
+enabled = true
+
+[php-url-fopen]
+enabled = true
+logpath = %(nginx_access_log)s
+
+[wordpress-hard]
+enabled = true
+filter = wordpress-hard
+logpath = /var/log/auth.log
+maxretry = 1
+port = http,https
+
+[wordpress-soft]
+enabled = true
+filter = wordpress-soft
+logpath = /var/log/auth.log
+maxretry = 3
+port = http,https
+EOF
+
