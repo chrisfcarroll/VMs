@@ -31,9 +31,13 @@ echo "Yum updates..."
 echo "Command line tools..."
  	yum -y install yum-utils yum-cron
  	yum -y install tmux vim zip unzip 
+	echo 'syntax on
+colorscheme blue
+' > ~/.vimrc
 
 echo "Firewall and fail2ban for sshd ..."
 	#firewall for just the ports we want. and because fail2ban on Centos assumes you are using firewalld
+	yum -y install firewalld
 	systemctl enable firewalld.service
 	systemctl start firewalld.service
 

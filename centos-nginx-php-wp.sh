@@ -7,55 +7,48 @@ echo "Installing nginx php wp"
 echo "=================================================="
 
 echo 'Mariadb for WordPress...'
-  if [ -f mariadbpassword ] ; then 
-    echo 'using mariadbpassword file in '`pwd`
-    mariadbpassword=$(cat mariadbpassword)
+  yum install -y mariadb-server mariadb 
+  if [[ -f ~/.my.cnf &&  ! -z $(grep -o 'password=' .my.cnf) ]] ; then
+    mariadbpassword=$(grep -o 'password=.*' ~/.my.cnf | sed 's/password=//' )
   else
     echo 'creating mariadb root password...'
-      pwseed="$HOSTNAME $(date --rfc-3339=ns)"
-      mariadbpassword=`echo $pwseed | md5sum | sed -e 's!\s!!g' -e 's!-!!g'`
-      echo $mariadbpassword >> mariadbpassword
-      chmod 0600 mariadbpassword
+    mariadbpassword=$( < /dev/urandom tr -dc [0-z] | tr -d "='%" | head -c25)
+    echo "[client]
+password=$mariadbpassword" > ~/.my.cnf
+    chmod 0600 ~/.my.cnf
   fi
   systemctl enable mariadb
   systemctl start mariadb
-  echo "
-Y
-$mariadbpassword
-$mariadbpassword
-Y
-Y
-Y
-Y
-" | mysql_secure_installation
-
-
-echo nginx...
-  yum install -y nginx
-  mv /etc/nginx.conf /etc/ngix.conf.default
 
 echo php...
-  yum install -y php-fpm php-mysql php
-  cp /etc/php-fpm.conf /etc/php-fpm.conf.default
-  printf '\n#cgi.fix_pathinfo=0\n' >> /etc/php-fpm.conf
-  systemctl restart php-fpm
+  yum install -y php-fpm php-mysql
+  cp /etc/php-fpm.conf /etc/php-fpm.conf.orig
+  cp /etc/php.ini      /etc/php.ini.orig
+  cp /etc/php-fpm.d/www.conf ~/etc_php-fpm.d_www.conf.orig 
+  sed -ie 's/^[;]*cgi.fix_pathinfo=./cgi.fix_pathinfo=0/' /etc/php.ini
+  sed -ie 's/= apache/= nginx/' /etc/php-fpm.d/www.conf
+  systemctl start php-fpm
+  systemctl enable php-fpm
 
 echo WordPress...
-  yum install -y php-gd  mariadb-server mariadb  
+  yum install -y php-gd
 if [ -f /usr/share/nginx/html/wp-activate.php ] ; then echo 'already installed.'
 else
   curl https://wordpress.org/latest.tar.gz | tar xzv \
     && mv wordpress/* /usr/share/nginx/html/ \
-    && rmdir -f wordpress
+    && rmdir wordpress
   curl https://downloads.wordpress.org/plugin/wp-fail2ban.3.5.3.zip -O \
     && unzip wp-fail2ban.3.5.3.zip \
     && mv wp-fail2ban /usr/share/nginx/html/wp-content/plugins/ \
     && rm wp-fail2ban.3.5.3.zip
 fi
 
-echo "nginx config for php..."
+echo "nginx for php..."
 
-cat > /etc/nginx.conf <<"EOF"
+  yum install -y nginx
+  cp /etc/nginx/nginx.conf nginx.conf.orig
+
+cat > /etc/nginx/nginx.conf <<"EOF"
 # English Documentation: http://nginx.org/en/docs/
 user nginx;
 worker_processes auto;
@@ -100,16 +93,19 @@ http {
     # Load configuration files for the default server block.
     include /etc/nginx/default.d/*.conf;
 
-    location ~ \.php$ {
-      fastcgi_pass  localhost:9000;
-      include /etc/nginx/fastcgi.conf;
+    location / {
     }
 
     location ~ /\.ht {
-          deny all;
-    }        
+      deny all;
+    }
 
-    location / {
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass http://localhost:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
     }
 
     error_page 404 /404.html;
@@ -119,6 +115,7 @@ http {
     error_page 500 502 503 504 /50x.html;
         location = /50x.html {
     }
+
   }
 
 # Settings for a TLS enabled server.
@@ -159,14 +156,14 @@ EOF
 
 echo 'Update fail2ban jail.local for nginx, php and WordPress...'
 
-echo >> /etc/fail2ban/jail.local <<"EOF"
+echo '
 [nginx-http-auth]
 enabled = true
 
-# To use 'nginx-limit-req' jail you should have `ngx_http_limit_req_module`
+# To use nginx-limit-req jail you should have `ngx_http_limit_req_module`
 # and define `limit_req` and `limit_req_zone` as described in nginx documentation
 # http://nginx.org/en/docs/http/ngx_http_limit_req_module.html
-# or for example see in 'config/filter.d/nginx-limit-req.conf'
+# or for example see in config/filter.d/nginx-limit-req.conf
 [nginx-limit-req]
 
 [nginx-botsearch]
@@ -175,7 +172,36 @@ enabled = true
 [php-url-fopen]
 enabled = true
 logpath = %(nginx_access_log)s
+' >> /etc/fail2ban/jail.local
+fail2ban-client reload
 
+echo '===============================================================
+Running mysql_secure_installation interactively before opening firewall ports:
+==============================================================='
+cat .my.cnf
+mysql_secure_installation
+
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --reload
+
+echo 'Installed nginx, php, WordPress'
+echo 'Done fail2ban rules and firewall rules fir php and nginx'
+
+curl -i localhost/index.php
+
+ip4=$(ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
+ip6=$(ip -o -6 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
+
+while $( curl -sI localhost/index.php | grep -q 'HTTP/1.1 302')
+do
+  read -p "========================================================
+Now run WordPress setup by browsing to http://$ip4/wp-admin/setup-config.php
+After that we can continue to set fail2ban rules for WordPress.
+Waiting ....
+==============================================================="
+done
+
+echo '
 [wordpress-hard]
 enabled = true
 filter = wordpress-hard
@@ -189,6 +215,6 @@ filter = wordpress-soft
 logpath = /var/log/auth.log
 maxretry = 3
 port = http,https
-EOF
+' >> /etc/fail2ban/jail.local
+fail2ban-client reload
 
-firewall-cmd --permanent --zone=public --add-service=http

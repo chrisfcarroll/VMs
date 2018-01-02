@@ -3,6 +3,9 @@
 	[
 		{
 			"path": "."
+		},
+		{
+			"path": "C:\\Users\\Chris\\.config\\Chris"
 		}
 	]
 }
