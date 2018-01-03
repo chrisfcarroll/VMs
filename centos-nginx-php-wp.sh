@@ -216,20 +216,23 @@ done
 
 echo "define('FS_METHOD', 'direct');" >> /usr/share/nginx/html/wp-config.php 
 
+cp /usr/share/nginx/html/wp-content/plugins/wp-fail2ban/filters.d/* /etc/fail2ban/filter.d/
+
 echo '
 [wordpress-hard]
 enabled = true
 filter = wordpress-hard
-logpath = /var/log/auth.log
+logpath = /var/log/secure
 maxretry = 1
 port = http,https
 
 [wordpress-soft]
 enabled = true
 filter = wordpress-soft
-logpath = /var/log/auth.log
+logpath = /var/log/secure
 maxretry = 3
 port = http,https
 ' >> /etc/fail2ban/jail.local
+
 fail2ban-client reload
 
