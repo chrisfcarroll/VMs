@@ -10,5 +10,4 @@
   	- run the WordPress installation in your browser  	
 - *Consider* centos-nginx-ssl.sh
 - *Use* reset-mariadb-password.sh if you break the root mysql login
-
-
+- *Use* wordpress-switch-to-https.sql when you are confident that you can browse to the site on https

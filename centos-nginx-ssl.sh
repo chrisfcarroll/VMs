@@ -2,7 +2,11 @@
 # WHEN EDITING THIS FILE ENSURE LINE-ENDINGS=UNIX IS SET
 # ------------------------------------------------------
 #
-echo "nginx ssl..."
+echo "nginx ssl and wordpress https ..."
+
+wordpressdatabase=${1:-wordpress}
+domain=${2:-www.cafe-encounter.net}
+nginxconf=${3:-/etc/nginx/nginx.conf}
 
 mkdir -p /etc/ssl/private && chmod 700 /etc/ssl/private
 if [[ -f /etc/ssl/private/nginx-selfsigned.key ]] ; then
@@ -29,9 +33,6 @@ echo "nginx config for ssl..."
 
 firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --reload
-
-nginxconf=${1:-/etc/nginx/nginx.conf}
-domain=${2:-www.cafe-encounter.net}
 
 grep -q '^ *listen 443' $nginxconf || \
   sed -ie \
@@ -86,6 +87,15 @@ grep -q '^ *ssl_prefer_server_ciphers' $nginxconf || \
 
 nginx -t && nginx -s reload && firewall-cmd --permanent --zone=public --add-service=https
 firewall-cmd --reload
+
+echo '================================================
+nginx ssl setup done with *self-signed certificate* , including firewall-cmd for https
+Next:
+- Copy your real certificate and key into /etc/ssl/certs/ /etc/ssl/private/ and edit $nginxconf accordingly
+- Run `nginx -t && nginx -s reload`
+- confirm you can browse to your site over https
+- Run `mysql $wordpressdatabase < wordpress-switch-to-https.sql`
+'
 
 # Settings for a TLS enabled server.
 #
