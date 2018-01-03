@@ -35,6 +35,12 @@ echo "Command line tools..."
 colorscheme blue
 ' > ~/.vimrc
 
+echo "sshd keepalive..."
+  sed -i \
+      -e 's/^#*ClientAliveInterval *$/ClientAliveInterval 120/' \
+      -e 's/^#*ClientAliveCountMax *$/ClientAliveCountMax 1000/' \
+      /etc/ssh/sshd_config
+
 echo "Firewall and fail2ban for sshd ..."
 	#firewall for just the ports we want. and because fail2ban on Centos assumes you are using firewalld
 	yum -y install firewalld

@@ -12,7 +12,7 @@ echo 'Mariadb for WordPress...'
     mariadbpassword=$(grep -o 'password=.*' ~/.my.cnf | sed 's/password=//' )
   else
     echo 'creating mariadb root password...'
-    mariadbpassword=$( < /dev/urandom tr -dc [0-z] | tr -d "='%" | head -c25)
+    mariadbpassword=$( < /dev/urandom tr -dc [0-z] | tr -d "\\=d'%\`" | head -c25)
     echo "[client]
 password=$mariadbpassword" > ~/.my.cnf
     chmod 0600 ~/.my.cnf
@@ -26,6 +26,7 @@ echo php...
   cp /etc/php.ini      /etc/php.ini.orig
   cp /etc/php-fpm.d/www.conf ~/etc_php-fpm.d_www.conf.orig 
   sed -ie 's/^[;]*cgi.fix_pathinfo=./cgi.fix_pathinfo=0/' /etc/php.ini
+  sed -ie 's/upload_max_filesize = .*$/upload_max_filesize = 10M/' /etc/php.ini  
   sed -ie 's/= apache/= nginx/' /etc/php-fpm.d/www.conf
   systemctl start php-fpm
   systemctl enable php-fpm
@@ -47,6 +48,7 @@ echo "nginx for php..."
 
   yum install -y nginx
   cp /etc/nginx/nginx.conf nginx.conf.orig
+  chown -R nginx:nginx /usr/share/nginx/html
 
 cat > /etc/nginx/nginx.conf <<"EOF"
 # English Documentation: http://nginx.org/en/docs/
@@ -88,7 +90,8 @@ http {
     listen       [::]:80 default_server;
     server_name  www.cafe-encounter.net;
     root         /usr/share/nginx/html;
-    index index.php index.html
+    index index.php index.html;
+    client_max_body_size 10M;
 
     # Load configuration files for the default server block.
     include /etc/nginx/default.d/*.conf;
@@ -102,7 +105,7 @@ http {
 
     location ~ \.php$ {
         try_files $uri =404;
-        fastcgi_pass http://localhost:9000;
+        fastcgi_pass localhost:9000;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
@@ -200,6 +203,8 @@ After that we can continue to set fail2ban rules for WordPress.
 Waiting ....
 ==============================================================="
 done
+
+echo "define('FS_METHOD', 'direct');" >> /usr/share/nginx/html/wp-config.php 
 
 echo '
 [wordpress-hard]
