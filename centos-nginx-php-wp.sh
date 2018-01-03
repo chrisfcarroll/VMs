@@ -6,6 +6,12 @@ echo "=================================================="
 echo "Installing nginx php wp"
 echo "=================================================="
 
+echo "nginx..."
+
+  yum install -y nginx
+  cp /etc/nginx/nginx.conf nginx.conf.orig
+  chown -R nginx:nginx /usr/share/nginx/html
+
 echo 'Mariadb for WordPress...'
   yum install -y mariadb-server mariadb 
   if [[ -f ~/.my.cnf &&  ! -z $(grep -o 'password=' .my.cnf) ]] ; then
@@ -21,7 +27,7 @@ password=$mariadbpassword" > ~/.my.cnf
   systemctl start mariadb
 
 echo php...
-  yum install -y php-fpm php-mysql
+  yum install -y php-fpm php-mysql php-xml
   cp /etc/php-fpm.conf /etc/php-fpm.conf.orig
   cp /etc/php.ini      /etc/php.ini.orig
   cp /etc/php-fpm.d/www.conf ~/etc_php-fpm.d_www.conf.orig 
@@ -31,24 +37,23 @@ echo php...
   systemctl start php-fpm
   systemctl enable php-fpm
 
-echo WordPress...
+wordpresssource='https://en-gb.wordpress.org/wordpress-4.9.1-en_GB.tar.gz'
+
+echo WordPress from $wordpresssource ...
   yum install -y php-gd
 if [ -f /usr/share/nginx/html/wp-activate.php ] ; then echo 'already installed.'
 else
-  curl https://wordpress.org/latest.tar.gz | tar xzv \
+  curl $wordpresssource | tar xzv \
     && mv wordpress/* /usr/share/nginx/html/ \
     && rmdir wordpress
+
   curl https://downloads.wordpress.org/plugin/wp-fail2ban.3.5.3.zip -O \
     && unzip wp-fail2ban.3.5.3.zip \
     && mv wp-fail2ban /usr/share/nginx/html/wp-content/plugins/ \
     && rm wp-fail2ban.3.5.3.zip
 fi
 
-echo "nginx for php..."
-
-  yum install -y nginx
-  cp /etc/nginx/nginx.conf nginx.conf.orig
-  chown -R nginx:nginx /usr/share/nginx/html
+echo "nginx config for php..."
 
 cat > /etc/nginx/nginx.conf <<"EOF"
 # English Documentation: http://nginx.org/en/docs/
@@ -198,7 +203,10 @@ ip6=$(ip -o -6 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 while $( curl -sI localhost/index.php | grep -q 'HTTP/1.1 302')
 do
   read -p "========================================================
-Now run WordPress setup by browsing to http://$ip4/wp-admin/setup-config.php
+Manual steps for WordPress:
+- ./create-wordpress-database databasename wordpressusername password
+- Browse to http://$ip4/wp-admin/setup-config.php
+
 After that we can continue to set fail2ban rules for WordPress.
 Waiting ....
 ==============================================================="

@@ -2,7 +2,8 @@
 # PowerShell Param statement : every line must end in #\ except the last line must with <#\
 # And, you ___can't use backticks___ in this section                                     #\
 param( [Parameter(Mandatory=$true)][string]$target,                                      #\
-       [string]$id_filepath = (Resolve-Path ~/.ssh/id_rsa.pub).Path                      #\
+       [string]$id_filepath = (Resolve-Path ~/.ssh/id_rsa.pub).Path,                     #\
+       [switch]$andinstall                                                               #\
      )                                                                                  <#\
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -38,3 +39,12 @@ out-null
 
 ssh $target "yum -y install tmux"
 ssh $target -t "tmux new-session -d -s yum-bootstrap 'yum -y update ; yum -y upgrade yum ; yum -y install yum-utils yum-cron'"
+
+if($andinstall){
+  "Continuing with nginx,php,wp install...
+
+  NB: this process will stall for several minutes waiting for yum update to complete.
+  
+  "
+  ssh $target "tmux new-session -d -s bootstrap-install './centos-bootstrap-vm.sh && centos-nginx-php-wp.sh'"
+}
