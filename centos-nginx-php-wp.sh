@@ -14,7 +14,7 @@ echo "nginx..."
 
 echo 'Mariadb for WordPress...'
   yum install -y mariadb-server mariadb 
-  if [[ -f ~/.my.cnf &&  ! -z $(grep -o 'password=' .my.cnf) ]] ; then
+  if [[ -f ~/.my.cnf && ! -z $(grep -o 'password=' .my.cnf) ]] ; then
     mariadbpassword=$(grep -o 'password=.*' ~/.my.cnf | sed 's/password=//' )
   else
     echo 'creating mariadb root password...'
@@ -102,6 +102,8 @@ http {
     include /etc/nginx/default.d/*.conf;
 
     location / {
+      index index.php index.html index.htm;
+      try_files $uri $uri/ /index.php?$args;
     }
 
     location ~ /\.ht {

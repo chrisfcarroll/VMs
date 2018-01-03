@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"word",
+				"wordpresssource"
+			],
+			[
+				"and",
+				"andinstall"
+			],
+			[
 				"time",
 				"timestampToRestoreFrom"
 			],
@@ -316,10 +324,6 @@
 				"lbRootDir"
 			],
 			[
-				"and",
-				"andHere"
-			],
-			[
 				"el",
 				"elseif"
 			],
@@ -510,10 +514,6 @@
 			[
 				"proje",
 				"projectDirectory"
-			],
-			[
-				"proj",
-				"projectDirectory"
 			]
 		]
 	},
@@ -604,17 +604,35 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/chris/Source/Repos/VMs"
+		"/B/Users/Chris/Source/Repos/VMs"
 	],
 	"file_history":
 	[
+		"/B/Users/Chris/Source/Repos/VMs/centos-nginx-php-wp.sh",
+		"/B/Users/Chris/Source/Repos/VMs/bootstrap-ssh.ps1",
+		"/C/Users/Chris/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1",
+		"/B/Users/Chris/Downloads/cafee950_cafeewp.sql",
+		"/C/Users/Chris/DownloadsB/cafee950_cafeewp.sql",
+		"/C/Users/Chris/DownloadsB/public_html/wp-config.php",
+		"/B/Users/Chris/Source/Repos/VMs/create-wordpress-database.sh",
+		"/B/Users/Chris/Source/Repos/VMs/centos-bootstrap-vm.sh",
+		"/C/Users/Chris/DownloadsB/public_html/*",
+		"/C/Users/Chris/postgresreg.txt",
+		"/B/Users/Chris/Source/Repos/VMs/cafee950_cafeewp.sql",
+		"/B/Users/Chris/Source/Repos/VMs/reset-mariadb-password.sh",
+		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/BackupContainer.Dockerfile",
+		"/C/Users/Chris/.ssh/known_hosts",
+		"/B/Users/Chris/Source/Repos/VMs/centos-bootstrap-vm-jsandnet-developer.sh",
+		"/C/Users/Chris/.config/Chris/secrets.ps1",
+		"/B/Users/Chris/Source/Repos/PowerShell-Bash-Dual-Script-Templates/PowerShell-Bash.ps1",
+		"/B/Users/Chris/Source/Repos/PowerShell-Bash-Dual-Script-Templates/Bash-or-PowerShell.ps1",
+		"/C/Program Files/Commands/cdr.ps1",
+		"/B/Users/Chris/Source/cdr.ps1",
 		"/Users/chris/Source/Repos/VMs/centos-nginx-php-wp.sh",
 		"/Q/Business Technical.txt",
 		"/B/Users/Chris/Source/VMs/centos-bootstrap-vm.sh",
 		"/B/Users/Chris/Source/VMs/centos-nginx-php-wp.sh",
 		"/B/Users/Chris/Source/VMs/ssh_config",
-		"/C/Users/Chris/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1",
-		"/C/Users/Chris/.config/Chris/secrets.ps1",
 		"/B/Users/Chris/Source/VMs/~/.config/Chris/secrets.ps1",
 		"/C/Program Files/mupdf-1.12.0-windows/README.txt",
 		"/D/FileHistory/Ian/CBOOKREAD/Configuration/Config1.xml",
@@ -622,7 +640,6 @@
 		"/B/Recovery.txt",
 		"/G/FileHistory/Chris/Z600 (2)/Configuration/Config2.xml",
 		"/G/FileHistory/Chris/Z600 (2)/Configuration/Config1.xml",
-		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/BackupContainer.Dockerfile",
 		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-environment-for-ops-and-build-common.ps1",
 		"/B/Users/Chris/Source/Repos/legalbricks/lb-environment-for-ops-and-build-common.ps1",
 		"/C/Program Files/Sublime Text 3/Recipes.txt",
@@ -653,7 +670,6 @@
 		"/C/Users/Chris/AppData/Roaming/postgresql/pgpass.conf",
 		"/C/Users/Chris/Desktop/pg.reg",
 		"/C/Users/Chris/Desktop/dd.reg",
-		"/C/Users/Chris/postgresreg.txt",
 		"/C/Users/Chris/Desktop/services.reg",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/backup-pruning",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/build.ps1",
@@ -700,7 +716,6 @@
 		"/B/Users/Chris/Source/Repos/InvokeWrappers/.gitignore",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/crontab.backups",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/entrypoint.sh",
-		"/C/Users/Chris/.ssh/known_hosts",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/lb-push-docker-images-to-aws-moogi.ps1",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/BackupRestoreS3Jumpmachine.Dockerfile",
 		"/B/Users/Chris/Source/Repos/legalbricks/eventstore/FromDockerFile/EventStoreWithS3Backup.Dockerfile",
@@ -720,26 +735,11 @@
 		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/run-matters.joblinker.ps1",
 		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/run-matters.matterviewprojector.ps1",
 		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/run-matters.searchprojector.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/run-matters.webapi.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/run-matters.wordaddinprojector.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/update-ecr-repo-joblinker.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/update-ecr-repo-matterviewprojector.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/update-ecs-task-and-service.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/update-lambda-configuration.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-buildstatus.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-create.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-deploy-to-vm.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-destroy-and-create.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-destroy.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-doall.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-drop-database.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-ensure-passwordless-login-certificate.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-fetchall.ps1",
-		"/B/Users/Chris/Source/Repos/legalbricks/ops/lb-gitall.ps1"
+		"/B/Users/Chris/Source/Repos/legalbricks/matters.webapi/run-matters.webapi.ps1"
 	],
 	"find":
 	{
-		"height": 261.0
+		"height": 52.0
 	},
 	"find_in_files":
 	{
@@ -767,6 +767,14 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"$host",
+			"https://www.cafe",
+			"https",
+			"user",
+			"'",
+			".default",
+			"^    ",
+			"\\t",
 			"2017",
 			"password",
 			"confirm",
@@ -886,22 +894,18 @@
 			"backup",
 			"#! /usr/bin/powershell",
 			"directory",
-			"gpg",
-			"secret",
-			"Lb__environmentName",
-			"HOSTNAME",
-			"s3backupurlroot",
-			"backuprestores3jumpmachine",
-			"$lbRootDir",
-			"$restore",
-			"hostName"
+			"gpg"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
+			"$remotehost",
+			"",
+			".orig",
+			"  ",
 			",",
 			" ",
 			"#host",
@@ -1025,11 +1029,7 @@
 			"\\1,\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\"key\": \"authorization\",\n\t\t\t\t\t\t\t\t\"value\": \"{{auth-bearer}}\",\n\t\t\t\t\t\t\t\t\"description\": \"\"\n\t\t\t\t\t\t\t}",
 			"magic marker",
 			"lbaws1env",
-			"lbaws1host",
-			"lbawsecs1",
-			"lbaws1",
-			"lbaws",
-			"lbaws1"
+			"lbaws1host"
 		],
 		"reverse": false,
 		"show_context": false,
@@ -1096,7 +1096,7 @@
 	"project": "VMs.sublime-project",
 	"replace":
 	{
-		"height": 517.0
+		"height": 93.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1614,7 +1614,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 284.0,
+	"side_bar_width": 394.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
