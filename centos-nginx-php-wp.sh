@@ -14,7 +14,7 @@ echo "nginx..."
 
 echo 'Mariadb for WordPress...'
   yum install -y mariadb-server mariadb 
-  if [[ -f ~/.my.cnf && ! -z $(grep -o 'password=' .my.cnf) ]] ; then
+  if [[ -f ~/.my.cnf && ! -z $(grep -o 'password=' ~/.my.cnf) ]] ; then
     mariadbpassword=$(grep -o 'password=.*' ~/.my.cnf | sed 's/password=//' )
   else
     echo 'creating mariadb root password...'
@@ -37,9 +37,19 @@ echo php...
   systemctl start php-fpm
   systemctl enable php-fpm
 
+echo 'crontab for php-fpm...'
+  rootcrontab='/var/spool/cron/root'
+  if [[ ! -f $rootcrontab ]] ; then touch $rootcrontab ; chmod 600 $rootcrontab ; fi
+  if [[ -z $(grep -o 'php-fpm' $rootcrontab ) ]] ; then
+    printf \
+      '#min  hour  dom mon dow   command\n0      */2   *   *   *    systemctl restart php-fpm\n\n' \
+        >> $rootcrontab
+  fi
+
+
 wordpresssource='https://en-gb.wordpress.org/wordpress-4.9.1-en_GB.tar.gz'
 
-echo WordPress from $wordpresssource ...
+echo 'WordPress from $wordpresssource ...'
   yum install -y php-gd
 if [ -f /usr/share/nginx/html/wp-activate.php ] ; then echo 'already installed.'
 else
