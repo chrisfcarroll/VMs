@@ -6,6 +6,8 @@ echo "=================================================="
 echo "Installing nginx php wp"
 echo "=================================================="
 
+WP_FAIL2BAN_PROXIES='104.27.182.132,104.27.182.133,104.27.182.0/24,192.168.0.0/24' #cloudflare,localhost
+
 echo "nginx..."
 
   yum install -y nginx
@@ -224,22 +226,33 @@ Waiting ....
 ==============================================================="
 done
 
-echo "define('FS_METHOD', 'direct');" >> /usr/share/nginx/html/wp-config.php 
+echo "
+define('WP_FAIL2BAN_PROXIES','$WP_FAIL2BAN_PROXIES');
+define('WP_FAIL2BAN_BLOCK_USER_ENUMERATION',true);
+define('WP_FAIL2BAN_LOG_SPAM',true);
+define('WP_FAIL2BAN_BLOCKED_USERS','^admin$');
+
+define('FS_METHOD', 'direct');
+" >> /usr/share/nginx/html/wp-config.php 
+
+
+cp /usr/share/nginx/html/wp-content/plugins/wp-fail2ban/filters.d/* /etc/fail2ban/filter.d/
 
 echo '
 [wordpress-hard]
 enabled = true
 filter = wordpress-hard
-logpath = /var/log/auth.log
+logpath = /var/log/secure
 maxretry = 1
 port = http,https
 
 [wordpress-soft]
 enabled = true
 filter = wordpress-soft
-logpath = /var/log/auth.log
+logpath = /var/log/secure
 maxretry = 3
 port = http,https
 ' >> /etc/fail2ban/jail.local
+
 fail2ban-client reload
 
