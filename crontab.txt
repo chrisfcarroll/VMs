@@ -1,0 +1,5 @@
+#
+#
+#min  hour   dom  mon dow   command
+0      */2    *    *   *    systemctl restart php-fpm
+0      9      */2  *   *    systemctl restart mariadb.service
