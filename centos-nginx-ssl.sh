@@ -2,11 +2,7 @@
 # WHEN EDITING THIS FILE ENSURE LINE-ENDINGS=UNIX IS SET
 # ------------------------------------------------------
 #
-echo "nginx ssl and wordpress https ..."
-
-wordpressdatabase=${1:-wordpress}
-domain=${2:-www.cafe-encounter.net}
-nginxconf=${3:-/etc/nginx/nginx.conf}
+echo "nginx ssl..."
 
 mkdir -p /etc/ssl/private && chmod 700 /etc/ssl/private
 if [[ -f /etc/ssl/private/nginx-selfsigned.key ]] ; then
@@ -16,23 +12,10 @@ else
   tmux neww "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt"
 fi
 
-echo "Trust CloudFlare "
-
-  mkdir -p /etc/pki/ca-trust/source/anchors
-
-  if [[ -f /etc/pki/ca-trust/source/anchors/cloudflare_origin_rsa.pem ]] ; then
-    echo "cloudflare_origin_rsa.pem already trusted"
-  else
-    curl \
-      https://support.cloudflare.com/hc/en-us/article_attachments/206709108/cloudflare_origin_rsa.pem \
-      -o /etc/pki/ca-trust/source/anchors/cloudflare_origin_rsa.pem
-    update-ca-trust
-  fi
-
 echo "nginx config for ssl..."
 
-firewall-cmd --permanent --zone=public --add-service=https
-firewall-cmd --reload
+nginxconf=${1:-/etc/nginx/nginx.conf}
+domain=${2:-www.cafe-encounter.net}
 
 grep -q '^ *listen 443' $nginxconf || \
   sed -ie \
@@ -85,18 +68,6 @@ grep -q '^ *ssl_prefer_server_ciphers' $nginxconf || \
     "s/server_name *$domain;/server_name  $domain;\n    ssl_prefer_server_ciphers on;/" \
     $nginxconf
 
-nginx -t && nginx -s reload && firewall-cmd --permanent --zone=public --add-service=https
-firewall-cmd --reload
-
-echo '================================================
-nginx ssl setup done with *self-signed certificate* , including firewall-cmd for https
-Next:
-- Copy your real certificate and key into /etc/ssl/certs/ /etc/ssl/private/ and edit $nginxconf accordingly
-- Run `nginx -t && nginx -s reload`
-- confirm you can browse to your site over https
-- Run `mysql $wordpressdatabase < wordpress-switch-to-https.sql`
-'
-
 # Settings for a TLS enabled server.
 #
 #    server {
@@ -112,3 +83,4 @@ Next:
 #        ssl_ciphers HIGH:!aNULL:!MD5;
 #        ssl_prefer_server_ciphers on;
 #    }
+

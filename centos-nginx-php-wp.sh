@@ -6,8 +6,6 @@ echo "=================================================="
 echo "Installing nginx php wp"
 echo "=================================================="
 
-WP_FAIL2BAN_PROXIES='104.27.182.132,104.27.182.133,104.27.182.0/24,192.168.0.0/24' #cloudflare,localhost
-
 echo "nginx..."
 
   yum install -y nginx
@@ -16,7 +14,7 @@ echo "nginx..."
 
 echo 'Mariadb for WordPress...'
   yum install -y mariadb-server mariadb 
-  if [[ -f ~/.my.cnf && ! -z $(grep -o 'password=' ~/.my.cnf) ]] ; then
+  if [[ -f ~/.my.cnf &&  ! -z $(grep -o 'password=' .my.cnf) ]] ; then
     mariadbpassword=$(grep -o 'password=.*' ~/.my.cnf | sed 's/password=//' )
   else
     echo 'creating mariadb root password...'
@@ -29,7 +27,7 @@ password=$mariadbpassword" > ~/.my.cnf
   systemctl start mariadb
 
 echo php...
-  yum install -y php-fpm php-mysql php-xml
+  yum install -y php-fpm php-mysql
   cp /etc/php-fpm.conf /etc/php-fpm.conf.orig
   cp /etc/php.ini      /etc/php.ini.orig
   cp /etc/php-fpm.d/www.conf ~/etc_php-fpm.d_www.conf.orig 
@@ -39,19 +37,9 @@ echo php...
   systemctl start php-fpm
   systemctl enable php-fpm
 
-echo 'crontab for php-fpm...'
-  rootcrontab='/var/spool/cron/root'
-  if [[ ! -f $rootcrontab ]] ; then touch $rootcrontab ; chmod 600 $rootcrontab ; fi
-  if [[ -z $(grep -o 'php-fpm' $rootcrontab ) ]] ; then
-    printf \
-      '#min  hour  dom mon dow   command\n0      */2   *   *   *    systemctl restart php-fpm\n\n' \
-        >> $rootcrontab
-  fi
-
-
 wordpresssource='https://en-gb.wordpress.org/wordpress-4.9.1-en_GB.tar.gz'
 
-echo 'WordPress from $wordpresssource ...'
+echo WordPress from $wordpresssource ...
   yum install -y php-gd
 if [ -f /usr/share/nginx/html/wp-activate.php ] ; then echo 'already installed.'
 else
@@ -114,8 +102,6 @@ http {
     include /etc/nginx/default.d/*.conf;
 
     location / {
-      index index.php index.html index.htm;
-      try_files $uri $uri/ /index.php?$args;
     }
 
     location ~ /\.ht {
@@ -217,42 +203,28 @@ ip6=$(ip -o -6 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 while $( curl -sI localhost/index.php | grep -q 'HTTP/1.1 302')
 do
   read -p "========================================================
-Manual steps for WordPress:
-- ./create-wordpress-database databasename wordpressusername password
-- Browse to http://$ip4/wp-admin/setup-config.php
-
+Now run WordPress setup by browsing to http://$ip4/wp-admin/setup-config.php
 After that we can continue to set fail2ban rules for WordPress.
 Waiting ....
 ==============================================================="
 done
 
-echo "
-define('WP_FAIL2BAN_PROXIES','$WP_FAIL2BAN_PROXIES');
-define('WP_FAIL2BAN_BLOCK_USER_ENUMERATION',true);
-define('WP_FAIL2BAN_LOG_SPAM',true);
-define('WP_FAIL2BAN_BLOCKED_USERS','^admin$');
-
-define('FS_METHOD', 'direct');
-" >> /usr/share/nginx/html/wp-config.php 
-
-
-cp /usr/share/nginx/html/wp-content/plugins/wp-fail2ban/filters.d/* /etc/fail2ban/filter.d/
+echo "define('FS_METHOD', 'direct');" >> /usr/share/nginx/html/wp-config.php 
 
 echo '
 [wordpress-hard]
 enabled = true
 filter = wordpress-hard
-logpath = /var/log/secure
+logpath = /var/log/auth.log
 maxretry = 1
 port = http,https
 
 [wordpress-soft]
 enabled = true
 filter = wordpress-soft
-logpath = /var/log/secure
+logpath = /var/log/auth.log
 maxretry = 3
 port = http,https
 ' >> /etc/fail2ban/jail.local
-
 fail2ban-client reload
 
