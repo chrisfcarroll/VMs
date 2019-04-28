@@ -1,4 +1,0 @@
-#
-#
-#min  hour  dom mon dow   command
-0      *     *   *   *    systemctl restart php-fpm
