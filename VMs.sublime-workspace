@@ -1,0 +1,265 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"am",
+				"amWin"
+			],
+			[
+				"Cloud",
+				"CloudProfile"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/chris/Source/Repos/VMs"
+	],
+	"file_history":
+	[
+		"/Users/chris/Source/Repos/VMs/bootstrap-ssh.sh",
+		"/Users/chris/Downloads/foundation-6/index.html",
+		"/Users/chris/OneDrive/DevMachine/macOS/bash_profile.OneDrive.bash",
+		"/Users/chris/OneDrive/DevMachine/Windows/Microsoft.PowerShell_profile.ps1",
+		"/Users/chris/Desktop/Markdown Editor – WordPress plugin | WordPress.org.webloc",
+		"/Users/chris/Downloads/redirection-www-cafe-encounter-net-27th-april-2019.json",
+		"/Volumes/CHRIS/Business Technical.txt",
+		"/Volumes/CHRIS/Chris Personal.txt",
+		"/Users/chris/.ssh/config",
+		"/Users/chris/Downloads/empty.html",
+		"/Users/chris/.bash_profile",
+		"/Users/chris/.config/chris/secrets.ps1",
+		"/Users/chris/.legalbricks/zip.ps1",
+		"/Users/chris/.legalbricks/lbenvironment.ps1",
+		"/Users/chris/.gitignore_global",
+		"/Users/chris/.vsts/locations.csv",
+		"/Users/chris/.gitconfig",
+		"/Volumes/C/Users/chris/.config/gitattributes",
+		"/Volumes/C/Users/chris/.config/gitignore_global",
+		"/Users/chris/OneDrive/DevMachine/Settings/Firefox/userChrome.css",
+		"/Users/chris/OneDrive/DevMachine/Settings/firefox chrome/userChrome.css",
+		"/Users/chris/OneDrive/DevMachine/macOS/bash_profile.bash",
+		"/Volumes/CHRIS/May personal.txt",
+		"/Users/chris/OneDrive/My Notes/City of Green Apples notes.txt",
+		"/Users/chris/OneDrive/My Notes/Multi-targetting .Net Framework and .Net Core.wp.md",
+		"/Users/chris/OneDrive/My Notes/Multi-targetting .Net Framework and .Net Core.md",
+		"/Users/chris/Desktop/My favorite mind-blowing Machine Learning-AI breakthroughs.webloc",
+		"/Volumes/CHRIS/Business.txt",
+		"/Users/chris/Source/Repos/TestBase/TestBase.AspNetCore.Mvc.GuineaPig/bin/Debug/netcoreapp2.0/publish/publish.csproj",
+		"/Users/chris/Source/Repos/TestBase/TestBase.AspNetCore.Mvc.GuineaPig/TestBase.Mvc.AspNetCore.GuineaPig.csproj",
+		"/Users/chris/Source/Repos/TestBase/TestBase.AspNetCore.Mvc.GuineaPig/bin/Debug/netcoreapp2.0/publish/web.config",
+		"/Users/chris/Source/Repos/TestBase/TestBase.Mvc/ReadMe.txt",
+		"/usr/local/bin/pdfconcat",
+		"/Users/chris/Documents/Household/HomeGroup h2KN3ue2u1.txt",
+		"/Users/chris/Documents/Household/May Inn HDB/Chris DBS Update Service.txt",
+		"/Users/chris/Source/Repos/TestBase/TestBase.AdoNet.Tests/TestBase.AdoNet.Tests.csproj",
+		"/Users/chris/OneDrive/DevMachine/macOS/Settings/Rider.Keymap.VisualStudioOSX.2019/installed.txt",
+		"/Users/chris/.julia/config/startup.jl",
+		"/Users/chris/Downloads/login.dms",
+		"/Users/chris/Downloads/IoT inspector start_inspector.app/Contents/Resources/Scripts/main.scpt",
+		"/Users/chris/Downloads/TMT7.application",
+		"/Users/chris/Downloads/_signout.dms",
+		"/Users/chris/Documents/My Notes/FB No Deal Brexit 2019 April.txt",
+		"/Users/chris/OneDrive/My Notes/FB No Deal Brexit 2019 April.txt",
+		"/Users/chris/Documents/fb Not sure what you mean by test.txt",
+		"/private/var/folders/2g/vfmd35sn3qs5h8rnfcxtwhk00000gn/T/com.microsoft.Outlook/Outlook_MessageSource_2019-04-06 11:30:48 +0000_0",
+		"/Users/chris/OneDrive/My Notes/BStudy Notes/Gehenna notes.txt",
+		"/Users/chris/Documents/FWG Mar 2019 notes.txt",
+		"/Users/chris/OneDrive/DevMachine/Software.2019.2.txt",
+		"/Users/chris/Downloads/Contents/MacOS/dmpYk.JxYovGGAl9",
+		"/Users/chris/Source/Repos/BarcodeRenderingFramework/README.md",
+		"/Users/chris/Music/iTunes/iTunes Library.itl",
+		"/Users/chris/Downloads/youraccount.dms",
+		"/Volumes/Jers Novel Writer 1.1.12/Read Me.jrwr",
+		"/Volumes/B/Users/Chris/Documents/OSXDocuments/Backups/listTMDifferences",
+		"/Volumes/B/Users/Chris/Documents/Scratch/conemu snippets.txt",
+		"/Volumes/B/Users/Chris/Documents/OSXDownloads/mhyph/mhyph.txt",
+		"/Users/chris/Pictures/Pictures/Thumbs.db",
+		"/Users/chris/OneDrive/My Notes/BStudy Notes/RS Zacchaeus 2016/Rock solid Zaccheus.txt",
+		"/Users/chris/OneDrive/My Notes/BStudy Notes/Genesis 1 - Science",
+		"/Users/chris/OneDrive/Software/ServiceStack DateTime handling.md",
+		"/Users/chris/Documents/Warrington Software/Projects/App/WebApplication2010/Default.aspx",
+		"/Users/chris/Documents/Warrington Software/Projects/App/WebApplication2010/Default.aspx.cs",
+		"/Users/chris/OneDrive/Software/Jumpstart Other/exclude RollInScript Proc.sql",
+		"/Users/chris/OneDrive/Software/Jumpstart Other/00 Template Change Script.sql",
+		"/Users/chris/OneDrive/Software/Jumpstart Other/exclude Rollback.sql",
+		"/Users/chris/Source/Repos/Robot Pi 1/left.py",
+		"/Users/chris/Source/Repos/rcrobot pi1/car.py",
+		"/Users/chris/Source/Repos/rcrobot pi1/car.pyc",
+		"/Users/chris/OneDrive/May Inn/May passport 2011",
+		"/Users/chris/OneDrive/DevMachine/Bash/bashrc",
+		"/Users/chris/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/chris/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 122.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 168.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "VMs.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 260.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
