@@ -64,6 +64,17 @@
 	],
 	"file_history":
 	[
+		"/Users/chris/Source/Repos/VMs/.git/MERGE_MSG",
+		"/Users/chris/Source/Repos/VMs/crontab.txt",
+		"/Users/chris/Source/Repos/VMs/crontab-root",
+		"/Users/chris/Source/Repos/VMs/yum-npm-and-dotnet-developer.sh",
+		"/Users/chris/Source/Repos/VMs/wordpress-create-database.sh",
+		"/Users/chris/Source/Repos/VMs/yum-yum-cron.sh",
+		"/Users/chris/Source/Repos/VMs/yum-nginx-kestrel.sh",
+		"/Users/chris/Source/Repos/VMs/centos-firewall-and-fail2ban.sh",
+		"/Users/chris/Source/Repos/VMs/reset-mariadb-password.sh",
+		"/Users/chris/Source/Repos/VMs/centos-bootstrap-vm.sh",
+		"/Users/chris/Source/Repos/VMs/.gitignore",
 		"/Users/chris/Source/Repos/VMs/bootstrap-ssh.sh",
 		"/Users/chris/Downloads/foundation-6/index.html",
 		"/Users/chris/OneDrive/DevMachine/macOS/bash_profile.OneDrive.bash",
@@ -140,7 +151,7 @@
 	],
 	"find":
 	{
-		"height": 34.0
+		"height": 46.0
 	},
 	"find_in_files":
 	{
@@ -154,6 +165,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"node",
+			"js"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -182,7 +195,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 46.0
 	},
 	"layout":
 	{
