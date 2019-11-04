@@ -25,8 +25,8 @@ echo "--------------------------------------------------------------------------
 
 echo "----------------------------------------------------------------------------"
 echo "getting npm and newman"
-	yum -y install npm
-	npm install newman --global
+	# yum -y install npm
+	# npm install newman --global
 
 	# 	echo "----------------------------------------------------------------------------"
 	# 	echo "getting mono and nuget"
