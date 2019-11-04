@@ -1,4 +1,4 @@
-# centos-bootstrap-vm-jsandnet-developer.sh
+# yum-git-psql-npm-dotnet-pwsh.sh
 # ------------------------------------------------------
 # WHEN EDITING THIS FILE ENSURE LINE-ENDINGS=UNIX IS SET
 # ------------------------------------------------------
@@ -10,14 +10,12 @@ echo "installing and configuring git"
 	yum -y install libunwind libicu #prereqs for git, I think
 	yum -y install git
 	git config --global push.default simple
-	git config --global user.email "iom1@warringtonsoftware.co.uk"
-	git config --global user.name "iom1"
-
-	# TODOremovethefollowingline	
-	# TODOsave bitbucket credentials for scriptrunner lb@warringtonsoftware.co.uk
+	#git config --global user.email "..."
+	#git config --global user.name "..."
 
 echo "----------------------------------------------------------------------------"
-	# echo "*note Postgres is past version 10* Getting and installing PostgreSQL Server 9.6..."
+	# echo "Getting and installing PostgreSQL Server 9.6..."
+	# echo "TODO: update this to Postgres 10 or later."
 	# [ $(which psql) ] || yum -y install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm
 	# yum -y groupinstall "PostgreSQL Database Server 9.6 PGDG"
 	# /usr/pgsql-9.6/bin/postgresql96-setup initdb
@@ -45,6 +43,11 @@ echo "getting npm and newman"
 	# 	chmod a+x nuget
 	# 	mv nuget /usr/bin
 	# 	nuget sources add -Name Private -Source http://nuget.privatecouk/nuget/Private/ -UserName "$pscriptsnugetusername" -Password "$pscriptsnugetpassword"	
+
+echo "----------------------------------------------------------------------------"
+echo "Powershell..."
+	# curl https://packages.microsoft.com/config/rhel/7/prod.repo | sudo tee /etc/yum.repos.d/microsoft.repo
+	# sudo yum install -y powershell
 
 echo "----------------------------------------------------------------------------"
 echo "getting dotnet core 3"

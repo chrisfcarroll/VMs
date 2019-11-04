@@ -18,7 +18,7 @@ echo "bash preferences ..."
   sed -ir 's!^alias \(rm\|cp\|mv\).*!!' ~/.bashrc
 
   printf '
-# Avoid darkblue because some of use use darkblue background for powershell shells
+# Avoid darkblue because some of us use darkblue background for powershell shells
 LS_COLORS=$LS_COLORS:"di=0;32:" ; export LS_COLORS
 alias nw='tmux new-window'
 set chris
@@ -71,10 +71,6 @@ EOF
 
   systemctl status firewalld
   firewall-cmd --list-all
-
-
-echo Powershell...
-type -P powershell || yum -y install https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-rc/powershell-6.0.0_rc-1.rhel.7.x86_64.rpm
 
 echo "----------------------------------------------------------------------------"
 echo "Bootstrapped: cli preferences, yum, firewalld and fail2ban"

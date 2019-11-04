@@ -12,7 +12,7 @@ param( [Parameter(Mandatory=$true)][string]$target,                             
 
 target=$1
 rsa_id_path=${2:-"~/.ssh/id_rsa.pub"}
-andinstall=$3
+andinstall=${3:-1}
 
 ssh-copy-id $target
 scp centos-* $target:
