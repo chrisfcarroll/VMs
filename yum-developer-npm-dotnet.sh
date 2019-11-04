@@ -17,7 +17,7 @@ echo "installing and configuring git"
 	# TODOsave bitbucket credentials for scriptrunner lb@warringtonsoftware.co.uk
 
 echo "----------------------------------------------------------------------------"
-	# echo "Getting and installing PostgreSQL Server..."
+	# echo "*note Postgres is past version 10* Getting and installing PostgreSQL Server 9.6..."
 	# [ $(which psql) ] || yum -y install https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-6-x86_64/pgdg-centos96-9.6-3.noarch.rpm
 	# yum -y groupinstall "PostgreSQL Database Server 9.6 PGDG"
 	# /usr/pgsql-9.6/bin/postgresql96-setup initdb
@@ -44,15 +44,15 @@ echo "getting npm and newman"
 	# EOF
 	# 	chmod a+x nuget
 	# 	mv nuget /usr/bin
-	# 	nuget sources add -Name LB -Source http://nuget.legalbricks.co.uk/nuget/LegalBricks/ -UserName "$lbscriptsnugetusername" -Password "$lbscriptsnugetpassword"	
+	# 	nuget sources add -Name Private -Source http://nuget.privatecouk/nuget/Private/ -UserName "$pscriptsnugetusername" -Password "$pscriptsnugetpassword"	
 
 echo "----------------------------------------------------------------------------"
-echo "getting dotnet core 2"
+echo "getting dotnet core 3"
 	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 	sudo sh -c 'echo -e "[packages-microsoft-com-prod]\nname=packages-microsoft-com-prod \nbaseurl=https://packages.microsoft.com/yumrepos/microsoft-rhel7.3-prod\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/dotnetdev.repo'
-	sudo yum install libunwind libicu	ln -s /usr/local/share/dotnet/dotnet /usr/bin/
+	sudo yum install libunwind libicu
 	sudo yum update
-	sudo yum install dotnet-sdk-2.0.0	
+	sudo yum install dotnet-sdk-3.0	
 	echo "confirming dotnet runs:"
-	dotnet new console -o helloworld
-	rm -rf helloworld
+	dotnet new console -o hellodotnetworld
+	rm -rf hellodotnetworld
