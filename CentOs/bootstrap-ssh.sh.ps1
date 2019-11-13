@@ -42,7 +42,7 @@ if(-not ($target -match "^[A-Za-z0-9\.-]+@[A-Za-z0-9\.-]+$") )
 
 
 cat $rsa_id_path | ssh $target "mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
-ls *.sh | %{
+ls centos*.sh | %{
   "Copying $_ ..."
   cat $_ | ssh $target "cat -> $($_.BaseName)$($_.Extension) ; chmod g+rx $($_.BaseName)$($_.Extension) ; sed -i 's/\r//' *.sh" 
 }

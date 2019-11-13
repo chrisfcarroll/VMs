@@ -20,7 +20,8 @@ if [[ ! "$target" =~ ^([A-Za-z0-9\\.-]+@)?[A-Za-z0-9\\.-]+$ ]] ; then
   exit 1
 fi
 ssh-copy-id $target
-ssh $target 'su - root -ic "export PKG_PATH=\"http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '"'1 2'"' -d.|cut -f 1 -d_)/All\" ; pkg_add -v pkgin"'
+scp netbsd-* $target:
+ssh $target 'su - root -ic "PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '"'1 2'"' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
 
 # Bash End --------------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -31,18 +32,17 @@ echo > /dev/null <<"out-null" ###
 
 if(-not (test-path $rsa_id_path))
   { throw "$rsa_id_path not found" }
-if(-not ($target -match "^[A-Za-z0-9\.-]+@[A-Za-z0-9\.-]+$") )
+if(-not ($target -match "^([A-Za-z0-9\.-]+@)?[A-Za-z0-9\.-]+$") )
   { throw "$target doesn't look like a valid user@host" }
 
 
 cat $rsa_id_path | ssh $target "mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
-ls *.sh | %{
+ls netbsd-* | %{
   "Copying $_ ..."
-  cat $_ | ssh $target "cat -> $($_.BaseName)$($_.Extension) ; chmod g+rx $($_.BaseName)$($_.Extension) ; sed -i 's/\r//' *.sh" 
+  cat $_ | ssh $target "cat -> $($_.BaseName)$($_.Extension) ; chmod ug+rx $($_.BaseName)$($_.Extension) ; sed -i 's/\r//' *.sh" 
 }
 
-ssh $target 'su - root -ic \"export PKG_PATH=\\\"http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '"'1 2'"' -d.|cut -f 1 -d_)/All\\\" ; pkg_add -v pkgin"'
-
+ssh $target 'su - root -ic \"PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f ''1 2'' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin \"'
 
 # Powershell End -------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
