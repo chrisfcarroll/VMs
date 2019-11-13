@@ -8,13 +8,17 @@ sed -i 's!https://cdn.netbsd.org/pub/pkgsrc/packages/NetBSD/\$arch/8.0/All!https
 grep -E ^https://  /usr/pkg/etc/pkgin/repositories.conf \
     || echo "https://cdn.netbsd.org/pub/pkgsrc/packages/NetBSD/$arch/8.1/All" \
        > /usr/pkg/etc/pkgin/repositories.conf 
-
+echo "
+Please wait several minutes for xfce4 to download and install ...
+"
 pkgin -y install xfce4 font-adobe-75* font-adobe-100* font-adobe-utopia* xscreensaver fam gvfs xfce4-thunar
 echo xfce4-session >> /root/.xinitrc
 echo xfce4-session >> /home/$SU_FROM/.xinitrc
 ln /home/$SU_FROM/.xinitrc /home/$SU_FROM/.xsession
 pkgin -y install firefox xpdf openquicktime mozilla-fonts* keepassx
 
+sed  -i 's!^#X11Forwarding no!X11Forwarding yes!'  /etc/ssh/sshd_config
+#sed  -i 's!^#XAuthLocation /usr/pkg/bin/xauth!XAuthLocation /usr/X11R7/bin/xauth!'  /etc/ssh/sshd_config
 
 # cp /usr/pkg/share/examples/rc.d/famd /etc/rc.d/
 # cp /usr/pkg/share/examples/rc.d/dbus /etc/rc.d/
