@@ -53,4 +53,13 @@ out-null
 # Both Bash and Powershell run the rest but with limited capabilities
 
 
-echo "Done"
+echo "
+Done.
+
+Note these scripts assume a standard (in 2019 / NetBSD 8.1) install of NetBSD with
+these choices made during setup:
+- network working
+- sshd enabled
+- root password is left blank and ssh to root is not possible
+- added user as member of wheel
+"
