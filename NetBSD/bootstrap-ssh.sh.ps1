@@ -37,12 +37,14 @@ if(-not ($target -match "^([A-Za-z0-9\.-]+@)?[A-Za-z0-9\.-]+$") )
 
 
 cat $rsa_id_path | ssh $target "mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
-ls netbsd-* | %{
+Get-ChildItem netbsd-* | %{
+  $f="$($_.BaseName)$($_.Extension)"
   "Copying $_ ..."
-  cat $_ | ssh $target "cat -> $($_.BaseName)$($_.Extension) ; chmod ug+rx $($_.BaseName)$($_.Extension) ; sed -i 's/\r//' *.sh" 
+  cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i 's/\r//' $f" 
 }
-
-ssh $target 'su - root -ic \"PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f ''1 2'' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin \"'
+$cmd='su - root -ic \"set -x ;PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/\$(uname -p)/\$(uname -r|cut -f ''1 2'' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
+echo $cmd
+ssh $target $cmd
 
 # Powershell End -------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
