@@ -2,8 +2,7 @@
 # PowerShell Param statement : every line must end in #\ except the last line must with <#\
 # And, you ___can't use backticks___ in this section                                     #\
 param( [Parameter(Mandatory=$true)][string]$target,                                      #\
-       [string]$rsa_id_path = (Resolve-Path ~/.ssh/id_rsa.pub).Path,                     #\
-       [switch]$andinstall                                                               #\
+       [string]$rsa_id_path = (Resolve-Path ~/.ssh/id_rsa.pub).Path                      #\
      )                                                                                  <#\
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `
 
@@ -22,6 +21,7 @@ fi
 ssh-copy-id $target
 scp netbsd-* $target:
 ssh $target 'su - root -ic "PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '"'1 2'"' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
+ssh $target 'su - root -ic "set -x ; mv /home/\$SU_FROM/*.sh \$HOME/"'
 
 # Bash End --------------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -43,13 +43,14 @@ Get-ChildItem netbsd-* | %{
   cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i 's/\r//' $f" 
 }
 $cmd='su - root -ic \"set -x ;PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/\$(uname -p)/\$(uname -r|cut -f ''1 2'' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
-echo $cmd
 ssh $target $cmd
+ssh $target 'su - root -ic \"set -x ; mv /home/\$SU_FROM/*.sh \$HOME/\"'
 
 # Powershell End -------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 out-null
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # Both Bash and Powershell run the rest but with limited capabilities
+
 
 echo "Done"
