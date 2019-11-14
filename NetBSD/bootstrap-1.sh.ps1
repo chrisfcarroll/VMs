@@ -40,7 +40,7 @@ cat $rsa_id_path | ssh $target "mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
 Get-ChildItem netbsd-* | %{
   $f="$($_.BaseName)$($_.Extension)"
   "Copying $_ ..."
-  cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i 's/\r//' $f" 
+  cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i 's/\\r//' $f" 
 }
 $cmd='su - root -ic \"set -x ;PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/\$(uname -p)/\$(uname -r|cut -f ''1 2'' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
 ssh $target $cmd
@@ -53,13 +53,11 @@ out-null
 # Both Bash and Powershell run the rest but with limited capabilities
 
 
-echo "
-Done.
+echo "Done.
 
 Note these scripts assume a standard (in 2019 / NetBSD 8.1) install of NetBSD with
 these choices made during setup:
 - network working
 - sshd enabled
 - root password is left blank and ssh to root is not possible
-- added user as member of wheel
-"
+- added user as member of wheel"

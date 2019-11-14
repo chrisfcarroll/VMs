@@ -96,13 +96,22 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/chris/Source/Repos/VMs"
+		"/Users/chris/Source/Repos/VMs",
+		"/Users/chris/Source/Repos/VMs/CentOs",
+		"/Users/chris/Source/Repos/VMs/NetBSD"
 	],
 	"file_history":
 	[
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-dev.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgsrc-pkgin.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-1.sh.ps1",
-		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-xfce-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-profile-setups.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-bash-vim-net-etc-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-3-install-admin-or-dev.ps1",
+		"/Users/chris/.config/chris/secrets.ps1",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-x-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-xfce-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-run-installs.ps1",
 		"/private/etc/ssh/ssh_config",
 		"/Users/chris/OneDrive/DevMachine/macOS/bash_profile.OneDrive.bash",
@@ -124,7 +133,6 @@
 		"/Users/chris/Desktop/Doing/2000_RDAEStoreAbbrevSAD WP snippet.html",
 		"/Users/chris/edit",
 		"/Users/chris/.config/.gitignore",
-		"/Users/chris/.config/chris/secrets.ps1",
 		"/Users/chris/Documents/Household/Letters other/IR Warr re Marriage",
 		"/Users/chris/Documents/Household/Letters other/Ivy Jan 97 - 2",
 		"/Volumes/CHRIS/Zoolz ThunderDrive Online.md",
@@ -221,13 +229,7 @@
 		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/privacy.html",
 		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/journey.html",
 		"/Users/chris/Desktop/32 bit apps as at 2019 Oct.txt",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/js/script.js",
-		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Views/_ViewStart.cshtml",
-		"/Users/chris/Backups/cafeewp.aftersetup1.sql",
-		"/Users/chris/history.sql",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/Form Fields from NDG.txt",
-		"/Users/chris/Downloads/Help System/index.txt",
-		"/Users/chris/Applications/CrossOver/Enterprise Architect 14/image-library-ea-12.xml"
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/js/script.js"
 	],
 	"find":
 	{
@@ -245,6 +247,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"VM25"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -252,6 +255,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"VM20"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -310,7 +314,7 @@
 	"project": "VMs.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 84.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -348,7 +352,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 178.0,
+	"side_bar_width": 313.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
