@@ -1,9 +1,11 @@
 [ `whoami` = root ] \
   || ( echo 'Not running as root, so cannot do pkg_add installs' && exit 1 ) || exit 1
+
+echo "uncommenting PKG_PATH in root profile"
 PKG_PATH="http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '1 2' -d.|cut -f 1 -d_)/All"
 sed -i 's!^#export PKG_PATH!export PKG_PATH!' $HOME/.profile
 
-pkg_add -v pkgin
+which pkgin || echo 'ERROR: pkgin not found. Install it as part of the initial system installation.'
 
 echo "
 crontab for vulnerabilities file
@@ -17,7 +19,7 @@ grep "# Download vulnerabilities file" /var/cron/tabs/root || echo '
 ' >> /var/cron/tabs/root
 
 echo "
-Pkg :  change 8.0 to 8.1
+Pkg : change 8.0 to 8.1
 "
 [ ! -f /usr/pkg/etc/pkgin/repositories.conf.orig ] && cp /usr/pkg/etc/pkgin/repositories.conf /usr/pkg/etc/pkgin/repositories.conf.orig
 sed -i 's!https://cdn.netbsd.org/pub/pkgsrc/packages/NetBSD/\$arch/8.0/All!https://cdn.netbsd.org/pub/pkgsrc/packages/NetBSD/\$arch/8.1/All!' /usr/pkg/etc/pkgin/repositories.conf

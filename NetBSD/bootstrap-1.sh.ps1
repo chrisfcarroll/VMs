@@ -20,7 +20,6 @@ if [[ ! "$target" =~ ^([A-Za-z0-9\\.-]+@)?[A-Za-z0-9\\.-]+$ ]] ; then
 fi
 ssh-copy-id $target
 scp netbsd-* $target:
-ssh $target 'su - root -ic "PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/$(uname -r|cut -f '"'1 2'"' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
 ssh $target 'su - root -ic "set -x ; mv /home/\$SU_FROM/*.sh \$HOME/"'
 
 # Bash End --------------------------------------------------------------
@@ -42,7 +41,6 @@ Get-ChildItem netbsd-* | %{
   "Copying $_ ..."
   cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i 's/\\r//' $f" 
 }
-$cmd='su - root -ic \"set -x ;PKG_PATH=http://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/\$(uname -p)/\$(uname -r|cut -f ''1 2'' -d.|cut -f 1 -d_)/All ; pkg_add -v pkgin"'
 ssh $target $cmd
 ssh $target 'su - root -ic \"set -x ; mv /home/\$SU_FROM/*.sh \$HOME/\"'
 
@@ -54,10 +52,12 @@ out-null
 
 
 echo "Done.
-
+***
 Note these scripts assume a standard (in 2019 / NetBSD 8.1) install of NetBSD with
 these choices made during setup:
+***
 - network working
 - sshd enabled
+- pkgin enabled (and optionally, pkgsrc enabled)
 - root password is left blank and ssh to root is not possible
 - added user as member of wheel"

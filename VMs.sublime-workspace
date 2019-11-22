@@ -101,17 +101,18 @@
 	],
 	"file_history":
 	[
-		"/Users/chris/Downloads/ppt.txt",
-		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgsrc-pkgin.sh",
-		"/Users/chris/OneDrive/Libraries/Library/Politics Social Legal/Oxford Union Society 2019 Evicton of Blind Student/Rules.txt",
-		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-dev.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-1.sh.ps1",
-		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
-		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-profile-setups.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-bash-vim-net-etc-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-x-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgin-pkgsrc.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-dev.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-profile-setups.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgsrc-pkgin.sh",
+		"/Users/chris/Downloads/ppt.txt",
+		"/Users/chris/OneDrive/Libraries/Library/Politics Social Legal/Oxford Union Society 2019 Evicton of Blind Student/Rules.txt",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-3-install-admin-or-dev.ps1",
 		"/Users/chris/.config/chris/secrets.ps1",
-		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-x-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-xfce-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-run-installs.ps1",
 		"/private/etc/ssh/ssh_config",
@@ -227,8 +228,7 @@
 		"/Volumes/XT750/Large Media/Text 2016 docs/From usr-local-texlive-2016-- texmf-dist --doc.txt",
 		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/C:\\Logs\\NationalDebtGroup.20191007.txt",
 		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/refer.html",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/privacy.html",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/journey.html"
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 2/privacy.html"
 	],
 	"find":
 	{

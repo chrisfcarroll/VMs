@@ -1,3 +1,5 @@
+which pkgin || echo 'ERROR: pkgin not found. Install it as part of the initial system installation.'
+
 desktop=${1:-xfce4}
 echo "
   Please wait several minutes for $desktop to download and install ...

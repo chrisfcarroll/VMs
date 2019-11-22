@@ -15,9 +15,6 @@ pinstall(){
 " >> /home/$SU_FROM/.profile
 fi
 
-
-
-
 [ -f ~/.vimrc ] || touch ~/.vimrc
 
 if [ -z "$(grep 'colorscheme' ~/.vimrc)" ] ; then 
