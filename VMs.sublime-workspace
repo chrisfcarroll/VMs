@@ -101,9 +101,9 @@
 	],
 	"file_history":
 	[
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-x-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-1.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-bash-vim-net-etc-desktop.sh",
-		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-x-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgin-pkgsrc.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-dev.sh",
 		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-profile-setups.sh",
@@ -246,6 +246,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"$ sudo ",
 			"VM25"
 		],
 		"highlight": true,
@@ -254,6 +255,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"         ",
 			"VM20"
 		],
 		"reverse": false,
@@ -313,7 +315,7 @@
 	"project": "VMs.sublime-project",
 	"replace":
 	{
-		"height": 84.0
+		"height": 78.0
 	},
 	"save_all_on_build": true,
 	"select_file":

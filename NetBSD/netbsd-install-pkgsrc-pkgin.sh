@@ -7,6 +7,12 @@ sed -i 's!^#export PKG_PATH!export PKG_PATH!' $HOME/.profile
 
 which pkgin || echo 'ERROR: pkgin not found. Install it as part of the initial system installation.'
 
+pkgin update
+if [ $? -gt 0 ] ; then 
+  echo "Pkgin error. Consider ftping base.tgz to manually extract libcrypto.12 ?"
+  ftp http://ftp.netbsd.org/pub/NetBSD/NetBSD-8.1/amd64/binary/sets/base.tgz
+fi
+
 echo "
 crontab for vulnerabilities file
 "
