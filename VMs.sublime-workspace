@@ -1,0 +1,357 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Resolve",
+				"Resolve-Path"
+			],
+			[
+				"EDIT",
+				"EDITOR"
+			],
+			[
+				"am",
+				"amMacos"
+			],
+			[
+				"ar",
+				"args"
+			],
+			[
+				"c",
+				"config"
+			],
+			[
+				"NDO",
+				"NDOStartUrl"
+			],
+			[
+				"W",
+				"Word"
+			],
+			[
+				"en",
+				"ENDCOMMENT"
+			],
+			[
+				"Target",
+				"TargetFramework"
+			],
+			[
+				"Targe",
+				"TargetFramework"
+			],
+			[
+				"Cloud",
+				"CloudProfile"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 185.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/chris/Source/Repos/VMs",
+		"/Users/chris/Source/Repos/VMs/FreeBSD"
+	],
+	"file_history":
+	[
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-dev.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-x-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-bash-vim-net-etc-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-pkg-update.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-3-install-admin-or-dev.ps1",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-1.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/.git/COMMIT_EDITMSG",
+		"/Users/chris/Source/Repos/VMs/.gitignore",
+		"/Users/chris/OneDrive/DevMachine/macOS/bash_profile.OneDrive.bash",
+		"/Users/chris/.config/chris/secrets.ps1",
+		"/Users/chris/.config/.gitignore",
+		"/Users/chris/.config/karabiner/karabiner.json",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-x-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-bash-vim-net-etc-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-1.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgin-pkgsrc.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-dev.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-profile-setups.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-pkgsrc-pkgin.sh",
+		"/Users/chris/Downloads/ppt.txt",
+		"/Users/chris/OneDrive/Libraries/Library/Politics Social Legal/Oxford Union Society 2019 Evicton of Blind Student/Rules.txt",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-3-install-admin-or-dev.ps1",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-xfce-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-2-run-installs.ps1",
+		"/private/etc/ssh/ssh_config",
+		"/Users/chris/defaults.txt",
+		"/opt/X11/lib/X11/xinit/xinitrc",
+		"/Users/chris/Source/Repos/VMs/NetBSD/netbsd-install-mate-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/.git/MERGE_MSG",
+		"/Volumes/[C] Win10.hidden/Users/chris/t.txt",
+		"/Users/chris/OneDrive/DevMachine/Windows/Microsoft.PowerShell_profile.ps1",
+		"/Users/chris/Source/Repos/VMs/NetBSD/bootstrap-ssh.sh.ps1",
+		"/Users/chris/.cabal/config",
+		"/Users/chris/Library/Scripts/empty.txt",
+		"/Users/chris/Library/Scripts/Finder New Text File.scpt",
+		"/Users/chris/.bash_profile",
+		"/Volumes/CHRIS/May personal.txt",
+		"/Users/chris/Desktop/Doing/2000_RDAEStoreAbbrevSAD.html",
+		"/Users/chris/Desktop/Doing/2000_RDAEStoreAbbrevSAD WP snippet.html",
+		"/Users/chris/edit",
+		"/Users/chris/Documents/Household/Letters other/IR Warr re Marriage",
+		"/Users/chris/Documents/Household/Letters other/Ivy Jan 97 - 2",
+		"/Volumes/CHRIS/Zoolz ThunderDrive Online.md",
+		"/Users/chris/OneDrive/My Notes/Software Architecture/Neal Ford 2019 Outline Building software architectures.txt",
+		"/Users/chris/OneDrive/DevMachine/Software Licenses.txt",
+		"/Volumes/CHRIS/Business.txt",
+		"/Users/chris/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1",
+		"/Users/chris/OneDrive/DevMachine/Windows/PowerShell_profile.ps1",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/.vs/NationalDebtOnline/config/applicationhost.config",
+		"/Volumes/[C] Win10/Users/chris/Links/Downloads.lnk",
+		"/Volumes/[C] Win10/Users/chris/Links/Desktop.lnk",
+		"/Volumes/CHRIS/Chris Personal.txt",
+		"/Users/chris/Downloads/Primo_BibTeX_Export.bib",
+		"/Users/chris/Source/Repos/VMs/yum-git-psql-npm-dotnet-pwsh.sh",
+		"/Users/chris/Source/Repos/VMs/yum-psql-npm-dotnet-pwsh.sh",
+		"/Users/chris/Source/Repos/VMs/centos-bootstrap-vm.sh",
+		"/Users/chris/Source/Repos/VMs/README.md",
+		"/Users/chris/Source/Repos/VMs/yum-developer-npm-dotnet.sh",
+		"/Users/chris/Source/Repos/VMs/bootstrap-ssh.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/crontab.txt",
+		"/Users/chris/Source/Repos/VMs/bootstrap-ssh.ps1",
+		"/Volumes/CHRIS/AZ-3c751e5d/Azure Account information.txt",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Services/HubSolvService.cs",
+		"/Users/chris/OneDrive/Documents/a.txt.txt",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Web.config",
+		"/Volumes/GP Drive/Production Support/Access.md.txt",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Build/GenerateLivePackage.sh",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/C:\\Logs\\NationalDebtOnline.20191030.txt",
+		"/Users/chris/Applications/vsts-agent-chrisfcarroll/_work/r1/a/_NDO/drop/WebApp.deploy-readme.txt",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/.git/COMMIT_EDITMSG",
+		"/Users/chris/Source/Scratch/smippets/SimpleCrypt.cs",
+		"/Users/chris/Source/Scratch/smippets/Data8ModelWithFxAntiforgeryToken.cs",
+		"/Users/chris/Source/Repos/snippets/GoogleApiCantUseProxyAndServiceAccountCredentialsAtSameTime.linq",
+		"/Users/chris/Source/Repos/snippets/Rijndael encode decode attempt.linq",
+		"/Volumes/XT750/Backups/Cafe-Encounter/backup-10.18.2016_17-33-27_cafee950/homedir/public_html/robots.txt",
+		"/Volumes/XT750/Backups/Cafe-Encounter/backup-10.18.2016_17-33-27_cafee950/dnszones/cafe-encounter.net.db",
+		"/Volumes/XT750/Backups/Cafe-Encounter/backup-10.18.2016_17-33-27_cafee950/mysql/cafee950_cafeewp.sql",
+		"/Volumes/XT750/Backups/Cafe-Encounter/backup-10.18.2016_17-33-27_cafee950/mysql/cafee950_cafeewp.create",
+		"/Users/chris/Documents/Unsorted Notes/Twitter 2019 October climate change.txt",
+		"/Users/chris/Applications/vsts-agent-chrisfcarroll/_work/ReleaseRootMapping/e431837b-99f9-4cc2-8382-79467ea7425b/ba3eba6c-07c1-433d-a143-9b57722fdb7e/1/DefinitionMapping.json",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/Backend Todo Notes.txt",
+		"/Users/chris/Source/Scratch/Gists/AutoHotKey for a Mac User on Windows.ahk",
+		"/Users/chris/Downloads/WebApp/Content/d_C/a/1/s/Ui/obj/Release/Package/PackageTmp/Web.config",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/C:\\Logs\\NationalDebtOnline.20191023.txt",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 3/privacy.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 3/refer.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 3/journey.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 3/index.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO HTML 3/cookies.html",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Web.Live.config",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Keys.cs",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/mono_crash.0.0.json",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Build/GenerateLiveConfig.csproj",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Build/TransformConfig.csproj",
+		"/Users/chris/Downloads/build.txt",
+		"/Users/chris/Downloads/TransformConfig.csproj",
+		"/Applications/PowerShell.app/Contents/MacOS/PowerShell.sh",
+		"/Users/chris/Downloads/Xerox WorkCentre 7220",
+		"/Users/chris/Downloads/Xerox-WorkCentre_7228-Postscript-Xerox.ppd",
+		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Windows.Chris.2019.10.json",
+		"/Users/chris/Documents/Unsorted Notes/Twitter 2019 climate change.txt",
+		"/Users/chris/Source/Scratch/gui.cs/MonoNetFx.targets",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/.git/MERGE_MSG",
+		"/Users/chris/Downloads/WebApp(1)/Content/d_C/a/1/s/Ui/obj/Release/Package/PackageTmp/Web.config",
+		"/Users/chris/Downloads/drop/WebApp/Content/d_C/a/1/s/Ui/obj/Release/Package/PackageTmp/Web.config",
+		"/Users/chris/Downloads/WebApp/Content/d_C/a/1/s/Ui/obj/Release/Package/PackageTmp/ApplicationInsights.config",
+		"/Users/chris/Downloads/WebApp/parameters.xml",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/Data8ExampleMobileValidationResponse.xml",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/obj/Release/TransformWebConfig/transformed/Web.config",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/ExampleMobileValidationResponse.xml",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/journey.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/refer_2.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/refer.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/privacy.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/complaints.html",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Views/Default/privacy.cshtml",
+		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Views/Default/complaints.cshtml",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/cookies.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/index.html",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/Corrections/Frontend Corrections.txt",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO Brief/Home Page Assets/Home Page Desktop Copy.txt",
+		"/Users/chris/.config/karabiner/automatic_backups/karabiner_20191015.json",
+		"/Users/chris/Documents/Warrington Software/Projects/GP/Corrections/Text Change About IVAs and how they work.txt",
+		"/Volumes/CHRIS/Chris Giffgaffs.txt",
+		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Windows Shortcuts.Chris.2019.json",
+		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Left-Ctrl to Left Cmd.json"
+	],
+	"find":
+	{
+		"height": 31.0
+	},
+	"find_in_files":
+	{
+		"height": 244.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 31.0
+	},
+	"input":
+	{
+		"height": 84.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 168.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "VMs.sublime-project",
+	"replace":
+	{
+		"height": 58.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 254.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
