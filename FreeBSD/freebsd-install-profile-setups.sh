@@ -1,6 +1,6 @@
-[ -f /etc/doas.conf ] \
-  && grep "permit nopass $USER" /etc/doas.conf \
-  || su root -c "echo \"permit nopass $USER\" >> /etc/doas.conf"
+[ -f /usr/local/etc/doas.conf ] \
+  && grep "permit nopass $USER" /usr/local/etc/doas.conf \
+  || su root -c "echo \"permit nopass $USER\" >> /usr/local/etc/doas.conf"
 
 if [ -z "$(grep '#Aliases' ~/.profile)" ] ; then 
   echo "#Aliases

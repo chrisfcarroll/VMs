@@ -101,11 +101,12 @@
 	],
 	"file_history":
 	[
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-pkg-update.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-x-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-dev.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-profile-setups.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-1.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/.git/COMMIT_EDITMSG",
-		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-pkg-update.sh.ps1",
-		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-dev.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-bash-vim-net-etc-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-3-install-admin-or-dev.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
@@ -227,12 +228,11 @@
 		"/Users/chris/.config/karabiner/automatic_backups/karabiner_20191015.json",
 		"/Users/chris/Documents/Warrington Software/Projects/GP/Corrections/Text Change About IVAs and how they work.txt",
 		"/Volumes/CHRIS/Chris Giffgaffs.txt",
-		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Windows Shortcuts.Chris.2019.json",
-		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Left-Ctrl to Left Cmd.json"
+		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Windows Shortcuts.Chris.2019.json"
 	],
 	"find":
 	{
-		"height": 31.0
+		"height": 43.0
 	},
 	"find_in_files":
 	{

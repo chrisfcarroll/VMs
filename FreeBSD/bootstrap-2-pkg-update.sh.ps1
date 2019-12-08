@@ -16,8 +16,6 @@ if [[ ! "$target" =~ ^([A-Za-z0-9\\.-]+@)?[A-Za-z0-9\\.-]+$ ]] ; then
   exit 1
 fi
 
-ssh $target 'su - root -c "pkg update"'
-
 # Bash End --------------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 echo > /dev/null <<"out-null" ###
@@ -30,13 +28,12 @@ if(-not ($target -match "^([A-Za-z0-9\.-]+@)?[A-Za-z0-9\.-]+$") )
   throw "Usage: $PSCommandPath <[targetlogin@]targetmachine>" 
 }
 
-  $cmd='su - root -c \"pkg update\"'
-  ssh $target $cmd
-
 # Powershell End -------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 out-null
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # Both Bash and Powershell run the rest but with limited capabilities
 
+ssh $target 'su - root -c "env ASSUME_ALWAYS_YES=YES pkg"'
+ssh $target 'su - root -c "pkg update"'
 echo "Done"
