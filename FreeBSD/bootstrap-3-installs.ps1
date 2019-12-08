@@ -20,6 +20,10 @@ for f in freebsd-* ; do
   ssh $target 'su root -c "./'$f'"'
 done
 
+ssh $target 'doas pw group mod video -m $USER'
+
+
+
 # Bash End --------------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 echo > /dev/null <<"out-null" ###

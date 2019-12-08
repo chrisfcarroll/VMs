@@ -1,0 +1,516 @@
+Message from freetype2-2.10.1:
+
+--
+The 2.7.x series now uses the new subpixel hinting mode (V40 port's option) as
+the default, emulating a modern version of ClearType. This change inevitably
+leads to different rendering results, and you might change port's options to
+adapt it to your taste (or use the new "FREETYPE_PROPERTIES" environment
+variable).
+
+The environment variable "FREETYPE_PROPERTIES" can be used to control the
+driver properties. Example:
+
+FREETYPE_PROPERTIES=truetype:interpreter-version=35 \
+  cff:no-stem-darkening=1 \
+  autofitter:warping=1
+
+This allows to select, say, the subpixel hinting mode at runtime for a given
+application.
+
+If LONG_PCF_NAMES port's option was enabled, the PCF family names may include
+the foundry and information whether they contain wide characters. For example,
+"Sony Fixed" or "Misc Fixed Wide", instead of "Fixed". This can be disabled at
+run time with using pcf:no-long-family-names property, if needed. Example:
+
+FREETYPE_PROPERTIES=pcf:no-long-family-names=1
+
+How to recreate fontconfig cache with using such environment variable,
+if needed:
+# env FREETYPE_PROPERTIES=pcf:no-long-family-names=1 fc-cache -fsv
+
+The controllable properties are listed in the section "Controlling FreeType
+Modules" in the reference's table of contents
+(/usr/local/share/doc/freetype2/reference/site/index.html, if documentation was installed).
+=====
+Message from python36-3.6.9:
+
+--
+Note that some standard Python modules are provided as separate ports
+as they require additional dependencies. They are available as:
+
+py36-gdbm       databases/py-gdbm@py36
+py36-sqlite3    databases/py-sqlite3@py36
+py36-tkinter    x11-toolkits/py-tkinter@py36
+=====
+Message from dejavu-2.37_1:
+
+--
+Make sure that the freetype module is loaded.  If it is not, add the following
+line to the "Modules" section of your X Windows configuration file:
+
+  Load "freetype"
+
+Add the following line to the "Files" section of X Windows configuration file:
+
+  FontPath "/usr/local/share/fonts/dejavu/"
+
+Note: your X Windows configuration file is typically /etc/X11/XF86Config
+if you are using XFree86, and /etc/X11/xorg.conf if you are using X.Org.
+=====
+Message from ca_root_nss-3.47.1:
+
+--
+FreeBSD does not, and can not warrant that the certification authorities
+whose certificates are included in this package have in any way been
+audited for trustworthiness or RFC 3647 compliance.
+
+Assessment and verification of trust is the complete responsibility of the
+system administrator.
+
+
+This package installs symlinks to support root certificates discovery by
+default for software that uses OpenSSL.
+
+This enables SSL Certificate Verification by client software without manual
+intervention.
+
+If you prefer to do this manually, replace the following symlinks with
+either an empty file or your site-local certificate bundle.
+
+  * /etc/ssl/cert.pem
+  * /usr/local/etc/ssl/cert.pem
+  * /usr/local/openssl/cert.pem
+=====
+Message from trousers-0.3.14_2:
+
+--
+To run tcsd automatically, add the following line to /etc/rc.conf:
+
+tcsd_enable="YES"
+
+You might want to edit /usr/local/etc/tcsd.conf to reflect your setup.
+
+If you want to use tcsd with software TPM emulator, use the following
+configuration in /etc/rc.conf:
+
+tcsd_enable="YES"
+tcsd_mode="emulator"
+tpmd_enable="YES"
+
+To use TPM, add your_account to '_tss' group like following:
+
+# pw groupmod _tss -m your_account
+=====
+Message from perl5-5.30.0:
+
+--
+The /usr/bin/perl symlink has been removed starting with Perl 5.20.
+For shebangs, you should either use:
+
+#!/usr/local/bin/perl
+
+or
+
+#!/usr/bin/env perl
+
+The first one will only work if you have a /usr/local/bin/perl,
+the second will work as long as perl is in PATH.
+=====
+Message from ruby-2.6.5,1:
+
+--
+Some of the standard commands are provided as separate ports for ease
+of upgrading:
+
+  devel/ruby-gems:  gem - RubyGems package manager
+  devel/rubygem-rake: rake - Ruby Make
+
+And some of the standard libraries are provided as separate ports
+since they require extra dependencies:
+
+  databases/rubygem-dbm:  DBM module
+  databases/rubygem-gdbm: GDBM module
+
+Install them as occasion demands.
+=====
+Message from ctags-5.8:
+
+--
+The executable for Exuberant CTAGS is installed as /usr/local/bin/exctags
+=====
+Message from doas-6.2:
+
+--
+To use doas,
+
+/usr/local/etc/doas.conf
+
+must be created. Refer to doas.conf(5) for further details.
+
+Note: In order to be able to run most desktop (GUI) applications, the user
+needs to have the keepenv keyword specified. If keepenv is not specified then
+key elements, like the user's $HOME variable, will be reset and cause the GUI
+application to crash.
+
+Users who only need to run command line applications can usually get away
+without keepenv.
+
+When in doubt, try to avoid using keepenv as it is less secure to have
+environment variables passed to privileged users.
+=====
+Message from zsh-5.7.1_1:
+
+--
+==========================================================
+
+By default, zsh looks for system-wide defaults in
+/usr/local/etc.
+
+If you previously set up /etc/zprofile, /etc/zshenv, etc.,
+either move them to /usr/local/etc or rebuild zsh with the
+ETCDIR option enabled.
+
+Message from cvsps-2.1_2:
+
+--
+===>   NOTICE:
+
+The cvsps port currently does not have a maintainer. As a result, it is
+more likely to have unresolved issues, not be up-to-date, or even be removed in
+the future. To volunteer to maintain this port, please create an issue at:
+
+https://bugs.freebsd.org/bugzilla
+
+More information about port maintainership is available at:
+
+https://www.freebsd.org/doc/en/articles/contributing/ports-contributing.html#maintain-port
+=====
+Message from git-2.23.0:
+
+--
+If you installed the GITWEB option please follow these instructions:
+
+In the directory /usr/local/share/examples/git/gitweb you can find all files to
+make gitweb work as a public repository on the web.
+
+All you have to do to make gitweb work is:
+1) Please be sure you're able to execute CGI scripts in
+   /usr/local/share/examples/git/gitweb.
+2) Set the GITWEB_CONFIG variable in your webserver's config to
+   /usr/local/etc/git/gitweb.conf. This variable is passed to gitweb.cgi.
+3) Restart server.
+
+
+If you installed the CONTRIB option please note that the scripts are
+installed in /usr/local/share/git-core/contrib. Some of them require
+other ports to be installed (perl, python, etc), which you may need to
+install manually.
+
+
+ + Creating /usr/local/share/sgml/catalog
+ + Registering CATALOG catalog.ports (SGML)
+ + Creating /usr/local/share/sgml/catalog.ports
+ + Creating /usr/local/share/xml/catalog
+ + Registering nextCatalog catalog.ports (XML)
+ + Creating /usr/local/share/xml/catalog.ports
+===> Creating groups.
+Creating group 'polkit' with gid '562'.
+===> Creating users
+Creating user 'polkit' with uid '562'.
+===> Creating groups.
+Creating group 'haldaemon' with gid '560'.
+===> Creating users
+Creating user 'haldaemon' with uid '560'.
+===> Creating groups.
+Creating group 'webcamd' with gid '145'.
+===> Creating users
+Creating user 'webcamd' with uid '145'.
+===> Creating groups.
+Creating group 'pulse' with gid '563'.
+Creating group 'pulse-access' with gid '564'.
+Creating group 'pulse-rt' with gid '557'.
+===> Creating users
+Creating user 'pulse' with uid '563'.
+
+Message from python27-2.7.16_1:
+
+--
+Note that some standard Python modules are provided as separate ports
+as they require additional dependencies. They are available as:
+
+bsddb           databases/py-bsddb
+gdbm            databases/py-gdbm
+sqlite3         databases/py-sqlite3
+tkinter         x11-toolkits/py-tkinter
+=====
+Message from xmlcatmgr-2.2_2:
+
+--
+The following catalogs are installed:
+
+ 1) /usr/local/share/sgml/catalog
+
+   The top level catalog for SGML stuff.  It is not changed
+   by any ports/packages except textproc/xmlcatmgr.
+
+ 2) /usr/local/share/sgml/catalog.ports
+
+   This catalog is for handling SGML stuff installed under
+   /usr/local/share/sgml.  It is changed by ports/packages.
+
+ 3) /usr/local/share/xml/catalog
+
+   The top level catalog for XML stuff.  It is not changed
+   by any ports/packages except textproc/xmlcatmgr.
+
+ 4) /usr/local/share/xml/catalog.ports
+
+   This catalog is for handling XML stuff installed under
+   /usr/local/share/xml.  It is changed by ports/packages.
+=====
+Message from py27-setuptools-41.2.0:
+
+--
+Only /usr/local/bin/easy_install-2.7 script has been installed
+  since Python 2.7 is not the default Python version.
+=====
+Message from openldap-client-2.4.48:
+
+--
+The OpenLDAP client package has been successfully installed.
+
+Edit
+  /usr/local/etc/openldap/ldap.conf
+to change the system-wide client defaults.
+
+Try `man ldap.conf' and visit the OpenLDAP FAQ-O-Matic at
+  http://www.OpenLDAP.org/faq/index.cgi?file=3
+for more information.
+=====
+Message from webcamd-5.3.7.1:
+
+--
+1) webcamd requires the cuse4bsd(3) or cuse(3) kernel module, depending on
+how webcamd was compiled. Please load this dependency by doing:
+
+       # FreeBSD < 11.x, package from ports
+       # kldload cuse4bsd
+or
+       # FreeBSD >= 11.x, part of default kernel build
+       # kldload cuse
+
+or by adding
+
+       cuse4bsd_load="YES"
+or
+       cuse_load="YES"
+
+to your /boot/loader.conf.
+
+2) add webcamd_enable="YES"
+
+to your /etc/rc.conf
+
+3) Please restart devd to start webcamd
+
+  # service devd restart
+
+4) Optionally add a user to the "webcamd" group
+
+  # pw groupmod webcamd -m <username>
+
+5) If webcamd still did not start, consult the installed webcamd rc.d
+script for more help and instructions on how to start webcamd.
+=====
+Message from ibus-1.5.20:
+
+--
+ibus installation finished. To use ibus, please do the following:
+
+If you are using bash, please add following lines to your $HOME/.bashrc:
+
+export XIM=ibus
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export XIM_PROGRAM="ibus-daemon"
+export XIM_ARGS="--daemonize --xim"
+
+If you are using tcsh, please add following lines to your $HOME/.cshrc:
+
+setenv XIM ibus
+setenv GTK_IM_MODULE ibus
+setenv QT_IM_MODULE ibus
+setenv XMODIFIERS @im=ibus
+setenv XIM_PROGRAM ibus-daemon
+setenv XIM_ARGS "--daemonize --xim"
+
+If you are using KDE4, you may create a shell script in $HOME/.kde4/env,
+and add following lines:
+
+#!/bin/sh
+export XIM=ibus
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export XIM_PROGRAM="ibus-daemon"
+export XIM_ARGS="--daemonize --xim"
+
+Following input methods/engines are available in ports:
+
+chinese/ibus-chewing    Chewing engine for IBus
+chinese/ibus-libpinyin    Intelligent Pinyin engine based on libpinyin
+chinese/ibus-pinyin   The PinYin input method
+japanese/ibus-anthy   Anthy engine for IBus
+japanese/ibus-mozc    Mozc engine for IBus
+japanese/ibus-skk   SKK engine for IBus
+korean/ibus-hangul    Hangul engine for IBus
+textproc/ibus-kmfl    KMFL IMEngine for IBus framework
+textproc/ibus-m17n    m17n IM engine for IBus framework
+textproc/ibus-table   Table based IM framework for IBus
+textproc/ibus-typing-booster    Faster typing by context sensitive completion
+
+and QT4 input method module, textproc/ibus-qt.
+
+If ibus cannot start or the panel does not appear, please ensure
+that you are using up-to-date python.
+=====
+Message from pulseaudio-13.0:
+
+--
+Pulseaudio tries to determine default values for FreeBSD OSS driver at first
+start, based on /dev/sndstat output. The hw.snd.default_unit sysctl may affect
+these values, but restart of the Pulseaudio might be needed to rescan it again,
+e.g. `pacmd exit`.
+
+Pulseaudio has separate input and output configure lines. You can change them
+with using following commands:
+
+To change the default sink (output):
+# pacmd set-default-sink 3
+To change the default source (input):
+# pacmd set-default-source 3
+
+This can also be set in /usr/local/etc/pulse/default.pa
+
+Replace the number '3' with the new default you want to set.
+
+The audio/freedesktop-sound-theme is needed if the default sound files
+are uncommented in the /usr/local/etc/pulse/default.pa file.
+=====
+Message from gnome-keyring-3.28.2_2:
+
+--
+Gnome-keyring uses pinentry-gnome3 for gpg interactions, please add the
+following line to your ~/.gnupg/gpg-agent.conf to enable the pinentry
+dialog.
+
+pinentry-program /usr/local/bin/pinentry-gnome3
+=====
+Message from cheese-3.28.0:
+
+--
+For cheese to work, webcamd needs to be running and the user which wants
+to run cheese needs to be added to the webcamd group.
+
+This can be done by:
+
+# pw groupmod webcamd -m jerry
+=====
+Message from libgtop-2.38.0_1:
+
+--
+In order to use the File System read/write monitor, you must chmod
+/dev/devstat so that all users can open it read-only.  For example:
+
+# chmod 0444 /dev/devstat
+
+In order for this to persist across reboots, add the following to
+/etc/devfs.conf:
+
+perm  devstat 044
+
+=====
+Message from qtchooser-66:
+
+--
+qtchooser is a wrapper that allows selecting whether Qt4 or Qt5 binaries for
+qmake, moc and other tools will be run when invoking the binaries in $PATH.
+
+By default, the Qt5 versions are run. It is possible to change the behavior by
+setting the QT_SELECT environment variable to "qt4". See qtchooser(1) for more
+information.
+=====
+Message from opencv-core-3.4.1_23:
+
+--
+===>   NOTICE:
+
+The opencv-core port currently does not have a maintainer. As a result, it is
+more likely to have unresolved issues, not be up-to-date, or even be removed in
+the future. To volunteer to maintain this port, please create an issue at:
+
+https://bugs.freebsd.org/bugzilla
+
+More information about port maintainership is available at:
+
+https://www.freebsd.org/doc/en/articles/contributing/ports-contributing.html#maintain-port
+=====
+Message from firefox-71.0_2,1:
+
+--
+## Missing features
+
+Some features found on Windows, macOS and Linux are not implemented:
+
+- Native audio (requires OSS backend, feature parity with ALSA or PulseAudio)
+- Encrypted Media Extensions (requires Widevine CDM binary)
+- Process sandboxing (requires Capsicum backend)
+- Reduced memory usage (requires mozjemalloc)
+- Crash Reporter (requires Google Breakpad and reproducible builds)
+- Performance profiling (requires GeckoProfiler)
+- Gamepad API (requires libusbhid backend)
+- WebVR (requires open source runtime)
+- TCP fast open
+- `about:networking` (requires link state notification)
+
+## Crashes on FreeBSD 11.2
+
+Web Content process may frequently crash due to a [kernel bug].
+Either upgrade to FreeBSD 11.3 or try the following workaround:
+
+    $ sysctl net.local.stream.recvspace=16384
+
+[kernel bug]: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=181741
+
+## Audio backend
+
+To select non-default audio backend open `about:config` page and
+create `media.cubeb.backend` preference. Supported values are: `alsa`,
+`jack`, `pulse`, `pulse-rust`, `sndio`. Currently used backend can be
+inspected on `about:support` page.
+
+## smb:// issues
+Network group, machine, and share browsing does not work correctly.
+
+## sftp://
+Only sftp access using public key authentication works. To easily
+setup public key authentication to `remote_host`:
+
+    $ ssh-keygen
+    $ cat ~/.ssh/id_rsa.pub | ssh remote_host "cat >> .ssh/authorized_keys"
+
+The SSH server on `remote_host` must allow pub key authentication.
+=====
+Message from xpdf-4.01_2,1:
+
+--
+Please note: The binaries in this package -- pdffonts, pdfimages, pdfinfo,
+pdfdetach, pdftohtml, pdftopng, pdftoppm, pdftops, pdftotext -- are
+installed in ${LOCALBASE}/libexec/xpdf. The reason for this is to not
+conflict with the poppler-utils package, which is a prerequisite of many
+other packages. If you need to use any of these utilites,
+
+a) create symlinks in ${LOCALBASE}/bin or some other directory in $PATH, or
+b) install graphics/poppler-utils.
+

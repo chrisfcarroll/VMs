@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"G",
+				"gnome3"
+			],
+			[
+				"ss",
+				"sshd_config"
+			],
+			[
+				"sys",
+				"sysctl"
+			],
+			[
 				"Resolve",
 				"Resolve-Path"
 			],
@@ -101,13 +113,16 @@
 	],
 	"file_history":
 	[
-		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-pkg-update.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-3-installs.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-x-desktop.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/install messages.txt",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-commandline.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-bash-vim-net-etc-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-dev.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-pkg-update.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-profile-setups.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-1.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/.git/COMMIT_EDITMSG",
-		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-bash-vim-net-etc-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-3-install-admin-or-dev.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-install-pkgsrc-pkgin.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/.gitignore",
@@ -225,10 +240,7 @@
 		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/index.html",
 		"/Users/chris/Documents/Warrington Software/Projects/GP/Corrections/Frontend Corrections.txt",
 		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO Brief/Home Page Assets/Home Page Desktop Copy.txt",
-		"/Users/chris/.config/karabiner/automatic_backups/karabiner_20191015.json",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/Corrections/Text Change About IVAs and how they work.txt",
-		"/Volumes/CHRIS/Chris Giffgaffs.txt",
-		"/Users/chris/.config/karabiner/assets/complex_modifications/CherryPick Windows Shortcuts.Chris.2019.json"
+		"/Users/chris/.config/karabiner/automatic_backups/karabiner_20191015.json"
 	],
 	"find":
 	{

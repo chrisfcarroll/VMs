@@ -1,27 +1,32 @@
 export ASSUME_ALWAYS_YES=YES
 
-desktop=${1:-cinnamon}
+desktop=${1:-gnome3}
 echo "
-  Please wait several minutes for $desktop to download and install ...
+  Please wait several minutes for xorg and $desktop to download and install ...
   "
+pkg install xorg
+
 if [ "$desktop" = "xfce4" ] ; then
   pkg install xfce4 xfce4-thunar
-  #echo "exec xfce4-session" > $HOME/.xinitrc
+  grep "xfce4-session" $HOME/.xinitrc || echo "exec xfce4-session" > $HOME/.xinitrc
+
 elif [ "$desktop" = "gnome3" ] ; then 
-  pkg install gnome-desktop3 gedit gnome-backgrounds \
+  pkg install gdm gnome-desktop3 gedit gnome-backgrounds \
         gnome-control-center gnome-keyring nautilus \
         gnome-icon-theme gnome-themes gnome-tweeks mousetweaks
-  #echo "exec gnome-session" > $HOME/.xinitrc
+  sysrc gdm_enable="YES" gnome_enable="YES"​  
+  grep "gnome-session" $HOME/.xinitrc || echo "exec gnome-session" > $HOME/.xinitrc
+  
 else
-  pkg install cinnamon
-  #echo cinnamon-session > $HOME/.xinitrc
+  pkg install slim cinnamon
+  sysrc slim_enable="YES" gnome_enable="YES"​  
+  grep "cinnamon-session" $HOME/.xinitrc || echo "exec cinnamon-session" > $HOME/.xinitrc
 fi
 
-doas sysrc -f /boot/loader.conf kern.vty=vt​
-doas sysrc -f /etc/sysctl.conf vfs.usermount=1​
-doas sysrc dbus_enable="YES" hald_enable="YES" gdm_enable="YES" gnome_enable="YES"​ snd_driver_load="YES"
+sysrc dbus_enable="YES" hald_enable="YES" snd_driver_load="YES"
+grep 'kern.vty=vt' /boot/loader.conf || printf '\nkern.vty=vt' >> /boot/loader.conf
+grep vfs.usermount=1​ /etc/sysctl.conf || printf '\nvfs.usermount=1​' >> /etc/sysctl.conf
 
-pkg install font-adobe-100 font-adobe-utopia
 pkg install firefox xpdf
 
 
@@ -31,15 +36,17 @@ else
   echo "Papirus icon theme already present"
 fi
 
-sed  -i '' 's!^#X11Forwarding no!X11Forwarding yes!'  /etc/ssh/sshd_config
-/etc/rc.d/sshd restart
+if grep '^X11Forwarding yes' /etc/ssh/sshd_config ; then
+  echo 'X11Forwarding enabled'
+else 
+  sed  -i '' 's!^#X11Forwarding no!X11Forwarding yes!'  /etc/ssh/sshd_config
+  /etc/rc.d/sshd restart
+fi
 
 if grep "/proc" /etc/fstab ; then
-  echo "doing /etc/fstab" 
-  echo "" >> /etc/fstab
-  echo "proc  /proc   procfs   rw    0   0" >> /etc/fstab
-  echo "" >> /etc/fstab
-  echo "fdesc   /dev/fd   fdescfs   rw,auto,late    0   0" >> /etc/fstab
+  echo "/etc/fstab done"
 else
-  echo "/etc/fstab done 2"
+  echo "doing /etc/fstab" 
+  printf "\nproc  \t\t/proc \tprocfs \trw \t0 \t0" >> /etc/fstab
+  printf "\nfdesc \t\t/dev/fd \tfdescfs \trw,auto,late 0 \t0\n" >> /etc/fstab
 fi
