@@ -1,6 +1,3 @@
-echo "
-Installing bash vim nano git wget and mozilla-rootcerts
-"
 env ASSUME_ALWAYS_YES=YES pkg install bash vim nano git wget mozilla-rootcerts
 mozilla-rootcerts install
 

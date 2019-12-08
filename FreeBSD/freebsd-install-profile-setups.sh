@@ -1,18 +1,13 @@
+[ -f /etc/doas.conf ] \
+  && grep "permit nopass $USER" /etc/doas.conf \
+  || su root -c "echo \"permit nopass $USER\" >> /etc/doas.conf"
+
 if [ -z "$(grep '#Aliases' ~/.profile)" ] ; then 
   echo "#Aliases
-alias pinstall='pkgin -y install'
+alias pinstall='env ASSUME_ALWAYS_YES=YES pkg install'
 " >> ~/.profile
 else 
   echo "#Aliases section already found"
-fi
-
-if [ -n "$SU_FROM" -a -z "$(grep '#Aliases' /home/$SU_FROM/.profile)" ] ; then
-  echo "#Aliases
-pinstall(){
-  su - root -c \"pkgin -y install \$*\"
-}
-[ -z \"\$TMUX\" ] && tmux
-" >> /home/$SU_FROM/.profile
 fi
 
 [ -f ~/.vimrc ] || touch ~/.vimrc

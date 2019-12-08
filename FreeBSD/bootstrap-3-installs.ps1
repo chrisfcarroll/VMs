@@ -17,7 +17,7 @@ if [[ ! "$target" =~ ^([A-Za-z0-9\\.-]+@)?[A-Za-z0-9\\.-]+$ ]] ; then
 fi
 
 for f in freebsd-* ; do
-  ssh $target 'su -c "set -x ; \$HOME/'$f'"'
+  ssh $target 'su root -c "./'$f'"'
 done
 
 # Bash End --------------------------------------------------------------
@@ -36,7 +36,7 @@ Get-ChildItem freebsd-* | %{
   $f="$($_.BaseName)$($_.Extension)"
   "Running /`$HOME/$f as root ..."
   # ssh $target "su - root -ic \"set -x ; \`$HOME/$f \""
-  $cmd='su -c \"set -x ; \$HOME/' + $f + '\"'
+  $cmd='su root -c \"./' + $f + '\"'
   ssh $target $cmd
 }
 
