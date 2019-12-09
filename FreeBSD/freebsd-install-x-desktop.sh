@@ -1,6 +1,8 @@
 export ASSUME_ALWAYS_YES=YES
 
-desktop=${1:-gnome3lite}
+# see also https://cooltrainer.org/a-freebsd-desktop-howto/
+
+desktop=${1:-gnome3-lite}
 echo "
   Please wait several minutes for xorg and $desktop to download and install ...
 
@@ -54,38 +56,3 @@ else
   printf "\nproc  \t\t/proc \tprocfs \trw \t0 \t0" >> /etc/fstab
   printf "\nfdesc \t\t/dev/fd \tfdescfs \trw,auto,late 0 \t0\n" >> /etc/fstab
 fi
-
-#------------------------------------------------------------------
-#VirtualBox
-
-if [ "VirtualBox" = "$(dmidecode -s system-product-name)" ] ; then
-  echo "running in a VirtualBox VM. Installing VirtualBox Extensions."
-  pkg install virtualbox-ose-additions virtualbox-ose-kmod
-
-  grep 'vboxdrv_load' /boot/loader.conf || printf '\nvboxdrv_load="YES"' >> /boot/loader.conf
-
-  sysrc vboxguest_enable="YES" vboxservice_enable="YES"
-
-  for u in $(users) ; do 
-    [ $u = gdm -o $u = psql ]  && continue
-    pw groupmod vboxusers -m $u
-    pw groupmod operator -m $u
-    echo "
-    Access to clipboard sharing requires users added to group wheel,
-    which has not been done automatically.
-    "
-  done
-
-  grep 'SDL_VIDEODRIVER=vgl' /etc/login.conf \
-    || sed -i '.bak' 's!:setenv=!:setenv=SDL_VIDEODRIVER=vgl,!' /etc/login.conf \
-    && cap_mkdb /etc/login.conf
-  
-fi
-
-
-#--------------------------------------------------------------------
-# See https://wiki.winehq.org/FreeBSD for the state of play and the 
-# recommendation to use i386-wine
-
-pkg install i386-wine-devel winetricks crosextrafonts-carlito
-

@@ -19,7 +19,7 @@ if [[ ! "$target" =~ ^([A-Za-z0-9\\.-]+@)?[A-Za-z0-9\\.-]+$ ]] ; then
   exit 1
 fi
 ssh-copy-id $target
-scp freebsd-* $target:
+scp freebsd-* install-* $target:
 
 # Bash End --------------------------------------------------------------
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -35,7 +35,7 @@ if(-not ($target -match "^([A-Za-z0-9\.-]+@)?[A-Za-z0-9\.-]+$") )
 
 
 cat $rsa_id_path | ssh $target "mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
-Get-ChildItem freebsd-* | %{
+Get-ChildItem freebsd-* install-* | %{
   $f="$($_.BaseName)$($_.Extension)"
   "Copying $f ..."
   cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i '' 's/\\r//' $f" 
