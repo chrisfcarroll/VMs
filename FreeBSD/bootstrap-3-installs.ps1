@@ -39,7 +39,6 @@ if(-not ($target -match "^([A-Za-z0-9\.-]+@)?[A-Za-z0-9\.-]+$") )
 Get-ChildItem freebsd-* | %{
   $f="$($_.BaseName)$($_.Extension)"
   "Running /`$HOME/$f as root ..."
-  # ssh $target "su - root -ic \"set -x ; \`$HOME/$f \""
   $cmd='su root -c \"./' + $f + '\"'
   ssh $target $cmd
 }

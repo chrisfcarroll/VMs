@@ -514,3 +514,324 @@ other packages. If you need to use any of these utilites,
 a) create symlinks in ${LOCALBASE}/bin or some other directory in $PATH, or
 b) install graphics/poppler-utils.
 
+
+===> Creating groups.
+Creating group 'vboxusers' with gid '920'.
+===> Creating users
+Creating user 'vboxusers' with uid '920'.
+[6/6] Extracting virtualbox-ose-5.2.32_1: 100%
+=====
+Message from aalib-1.4.r5_13:
+
+--
+===>   NOTICE:
+
+The aalib port currently does not have a maintainer. As a result, it is
+more likely to have unresolved issues, not be up-to-date, or even be removed in
+the future. To volunteer to maintain this port, please create an issue at:
+
+https://bugs.freebsd.org/bugzilla
+
+More information about port maintainership is available at:
+
+https://www.freebsd.org/doc/en/articles/contributing/ports-contributing.html#maintain-port
+=====
+Message from sdl-1.2.15_14,2:
+
+--
+Your SDL library has been built with libvgl support, which means that you
+ can run almost any SDL application straight on your console (VESA 2.0
+ compatible videocard is required).
+
+ To do this you have to load the vesa kernel module or enable it in your
+ kernel, and set environment variable "SDL_VIDEODRIVER=vgl".
+=====
+Message from virtualbox-ose-5.2.32_1:
+
+--
+VirtualBox was installed.
+
+You need to load the vboxdrv kernel module via /boot/loader.conf:
+
+vboxdrv_load="YES"
+
+You also have to add all users to your vboxusers group in order to use vbox.
+
+% pw groupmod vboxusers -m jerry
+
+Reboot the machine to load the needed kernel modules.
+
+
+Bridging Support:
+=================
+
+For bridged networking please add the following line to your /etc/rc.conf:
+
+vboxnet_enable="YES"
+
+
+USB Support:
+============
+
+For USB support your user needs to be in the operator group and needs read
+and write permissions to the USB device.
+
+% pw groupmod operator -m jerry
+
+Add the following to /etc/devfs.rules (create if it doesn't exist):
+
+[system=10]
+add path 'usb/*' mode 0660 group operator
+
+To load these new rule add the following to /etc/rc.conf:
+
+devfs_system_ruleset="system"
+
+Then restart devfs to load the new rules:
+
+% /etc/rc.d/devfs restart
+
+
+Troubleshooting:
+================
+
+Running VirtualBox as non-root user may fail with a fatal error
+NS_ERROR_FACTORY_NOT_REGISTERED. In this case delete /tmp/.vbox-*-ipc file.
+
+If you experience "Network: write Failed: Cannot allocate memory" errors
+try to increase net.graph.maxdata in /boot/loader.conf
+
+If you are using AIO, then increase these limits (PR#168298):
+vfs.aio.max_buf_aio=8192
+vfs.aio.max_aio_queue_per_proc=65536
+vfs.aio.max_aio_per_proc=8192
+vfs.aio.max_aio_queue=65536
+To check if AIO is used use: kldstat -v | grep aio
+
+Check wiki page for known issues and troubleshooting:
+http://wiki.freebsd.org/VirtualBox
+
+Please report any problems to emulation@. Thanks!
+
+----------------------------------------------------
+
+Message from virtualbox-ose-additions-5.2.32_1:
+
+--
+VirtualBox Guest Additions were installed.
+
+
+You need to enable the vboxguest startscript to load the kernel module and
+vboxservice to use host time synchronization.
+
+vboxguest_enable="YES"
+vboxservice_enable="YES"
+
+You also have to add all X11 users that want to use any of the additional
+features (clipboard sharing, window scaling) to the wheel group.
+
+% pw groupmod wheel -m jerry
+
+Reboot the machine to load the needed kernel modules.
+
+For detailed informations please visit http://wiki.freebsd.org/VirtualBox
+
+
+2015: Virtual Box uses devd(8) now rather than hald(8) but devd_enable is started by default anyway
+
+
+
+=======================================
+
+=====
+Message from gnome-shell-extension-windowoverlay-icons-0.0.0.20171103_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-weather-0.0.0.20180411_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-trash-0.0.0.20171125_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-recent-items-15:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-panel-osd-0.0.0.20171023_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-openweather-0.0.0.20171126_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-mediaplayer-0.0.0.20180316_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-lockkeys-0.0.0.20180511_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-hidetopbar-0.0.0.20180511_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-filesmenu-0.0.0.20171125_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-dashtodock-65_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-coverflow-0.0.0.20180110_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+=====
+Message from gnome-shell-extension-audio-output-switcher-0.0.0.20171022_1:
+
+--
+The gnome-shell extensions won't be usable until the gnome-shell
+gets restarted. To do so, running the shell, press ALT+F2 and
+type 'r'. That will restart the shell.
+
+To enable or configure an extension, after restarting the shell, you
+have to open a new gnome-tweak-tool instance. The new extensions
+should appear in the extensions section.
+
+Use the extension at your own risk.
+# 
+========================================
+i386-wine
+
+This system does not appear to use a nvidia graphics driver.  If this changes
+and then every time the driver's version changes execute (as root)
+  sh /usr/local/share/wine/patch-nvidia.sh
+to get 2D/3D acceleration to work with the nvidia driver.  Without this wine
+will crash when a program requires 2D/3D graphics acceleration.
+
+=====
+Message from i386-wine-devel-4.0.r1_1,1:
+
+--
+Some ZFS tuning guides recommend setting KVA_PAGES=512 in your kernel
+configuration.  This is incompatible with Wine.  The maximum possible
+is KVA_PAGES=500, which should still be enough for ZFS.
+
+The port also installs some of Wine's documentation which describes
+additional programs that are not in the manual pages under
+  /usr/local/share/doc/wine
+There is more in the source tree but the others are only useful in
+conjunction with the rest of the source tree.
