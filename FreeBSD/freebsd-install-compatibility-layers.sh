@@ -86,3 +86,25 @@ grep 'JDK_HOME=/usr/local/openjdk13' /etc/login.conf \
   || sed -i '.bak' 's!:setenv=!:setenv=JDK_HOME=/usr/local/openjdk13,!' /etc/login.conf \
   && cap_mkdb /etc/login.conf
 
+
+#----------------------------------------------------------------------
+# echo "
+#   dotnet core no yet ported and not yet working using linux
+#   download Url last checked Dec 2019, dotnet core 3.1
+#   "
+
+# dotnetcorecurrentversionlinuxx64="https://download.visualstudio.microsoft.com/download/pr/d731f991-8e68-4c7c-8ea0-fad5605b077a/49497b5420eecbd905158d86d738af64/dotnet-sdk-3.1.100-linux-x64.tar.gz"
+
+# curl -O $dotnetcorecurrentversionlinuxx64
+
+# mkdir -p $dotbase/dotnet && tar zxf dotnet-sdk-3.1.100-linux-x64.tar.gz -C /usr/local/share/dotnet && rm dotnet-sdk-3.1.100-linux-x64.tar.gz
+# export DOTNET_ROOT=/usr/local/share/dotnet
+# export PATH=$PATH:/usr/local/share/dotnet
+
+# if grep 'DOTNET_ROOT=' /etc/login.conf ; then
+#   echo "dotnet login.conf done"
+# else
+#   sed -i '.bak1' 's!:setenv=!:setenv=DOTNET_ROOT=/usr/local/share/dotnet,!' /etc/login.conf
+#   sed -i '.bak2' 's!~/bin:\\!~/bin /usr/local/share/dotnet:\\!' /etc/login.conf
+#   cap_mkdb /etc/login.conf
+# fi
