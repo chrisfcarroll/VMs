@@ -12,11 +12,11 @@ pkg install xorg
 
 if [ "$desktop" = "gnome3-lite" ] ; then 
   pkg install gdm gnome3-lite
-  sysrc gdm_enable="YES" gnome_enable="YES"​  
+  sysrc gdm_enable="YES" gnome_enable="YES"
   # grep "gnome-session" $HOME/.xinitrc || echo "exec gnome-session" > $HOME/.xinitrc
 elif [ "$desktop" = "gnome3" ] ; then 
   pkg install gdm gnome3
-  sysrc gdm_enable="YES" gnome_enable="YES"​  
+  sysrc gdm_enable="YES" gnome_enable="YES"
   # grep "gnome-session" $HOME/.xinitrc || echo "exec gnome-session" > $HOME/.xinitrc
 
 elif [ "$desktop" = "xfce4" ] ; then
@@ -24,8 +24,9 @@ elif [ "$desktop" = "xfce4" ] ; then
   sysrc slim_enable="YES"
   # grep "xfce4-session" $HOME/.xinitrc || echo "exec xfce4-session" > $HOME/.xinitrc
 else
+  echo "WARNING: cinnamon may only work for root login?"
   pkg install slim cinnamon
-  sysrc slim_enable="YES" gnome_enable="YES"​  
+  sysrc slim_enable="YES" gnome_enable="YES"
   # grep "cinnamon-session" $HOME/.xinitrc || echo "exec cinnamon-session" > $HOME/.xinitrc
 fi
 
