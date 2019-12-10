@@ -1,9 +1,9 @@
-if [ -z "$(grep '#Aliases' ~/.profile)" ] ; then 
+if grep '#Aliases' ~/.profile ; then 
+  echo "#Aliases section already found"
+else 
   echo "#Aliases
 alias pinstall='pkgin -y install'
 " >> ~/.profile
-else 
-  echo "#Aliases section already found"
 fi
 
 if [ -n "$SU_FROM" -a -z "$(grep '#Aliases' /home/$SU_FROM/.profile)" ] ; then
@@ -17,11 +17,11 @@ fi
 
 [ -f ~/.vimrc ] || touch ~/.vimrc
 
-if [ -z "$(grep 'colorscheme' ~/.vimrc)" ] ; then 
+if grep 'colorscheme' ~/.vimrc ; then 
+  echo ".vimrc already found"
+else 
   echo "
 syntax on
 colorscheme desert
 " >> ~/.vimrc
-else 
-  echo ".vimrc already found"
 fi
