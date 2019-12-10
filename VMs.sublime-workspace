@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"dot",
+				"dotnetcorecurrentversionlinuxx64"
+			],
+			[
+				"install",
+				"Installing"
+			],
+			[
 				"ea",
 				"easetupfull"
 			],
@@ -67,23 +75,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "FreeBSD/bootstrap-1.sh.ps1",
-			"settings":
-			{
-				"buffer_size": 2308,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "FreeBSD/freebsd-install-x-desktop.sh",
-			"settings":
-			{
-				"buffer_size": 3084,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -134,13 +125,15 @@
 	],
 	"file_history":
 	[
+		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-compatibility-layers.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/install messages.txt",
-		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-1.sh.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-x-desktop.sh",
-		"/Users/chris/Source/Repos/VMs/FreeBSD/install-sparx-enterprise-architect.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-commandline.sh",
-		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-3-installs.ps1",
+		"/Users/chris/Desktop/WIP.txt",
 		"/Users/chris/.config/chris/secrets.ps1",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-1.sh.ps1",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/install-sparx-enterprise-architect.sh",
+		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-3-installs.ps1",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-bash-vim-net-etc-desktop.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/freebsd-install-dev.sh",
 		"/Users/chris/Source/Repos/VMs/FreeBSD/bootstrap-2-pkg-update.sh.ps1",
@@ -259,9 +252,7 @@
 		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Views/Default/privacy.cshtml",
 		"/Users/chris/Source/Repos/GP-NationalDebtOnline/Ui/Views/Default/complaints.cshtml",
 		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/cookies.html",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/index.html",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/Corrections/Frontend Corrections.txt",
-		"/Users/chris/Documents/Warrington Software/Projects/GP/NDO Brief/Home Page Assets/Home Page Desktop Copy.txt"
+		"/Users/chris/Documents/Warrington Software/Projects/GP/NMDO HTML 2.1/index.html"
 	],
 	"find":
 	{
@@ -279,6 +270,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"HOME"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -286,6 +278,7 @@
 		"regex": true,
 		"replace_history":
 		[
+			"dotbase"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -296,69 +289,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "FreeBSD/bootstrap-1.sh.ps1",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2308,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PowerShell/Support/PowershellSyntax.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "FreeBSD/freebsd-install-x-desktop.sh",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3084,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								302,
-								302
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		},
 		{
@@ -395,7 +327,7 @@
 		"cols":
 		[
 			0.0,
-			0.6699712002,
+			0.905832969623,
 			1.0
 		],
 		"rows":
@@ -417,7 +349,7 @@
 	"project": "VMs.sublime-project",
 	"replace":
 	{
-		"height": 58.0
+		"height": 78.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -455,7 +387,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 193.0,
+	"side_bar_width": 328.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

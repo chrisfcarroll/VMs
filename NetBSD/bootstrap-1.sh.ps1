@@ -57,7 +57,13 @@ Note these scripts assume a standard (in 2019 / NetBSD 8.1) install of NetBSD wi
 these choices made during setup:
 ***
 - network working
+- you created a user as member of wheel
 - sshd enabled
-- pkgin enabled (and optionally, pkgsrc enabled)
-- root password is left blank and ssh to root is not possible
-- added user as member of wheel"
+- pkgin installed (and optionally, pkgsrc enabled)
+- One of these is true :
+    - root password is left blank 
+    - OR you have set su to allow passwordless elevation 
+    - OR you are happy to watch the scripts and retype the password for su half a dozen times
+- ssh to root is not allowed
+
+"
