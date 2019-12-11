@@ -41,7 +41,6 @@ Get-ChildItem netbsd-* | %{
   "Copying $_ ..."
   cat $_ | ssh $target "cat -> $f ; chmod ug+rx $f ; sed -i 's/\\r//' $f" 
 }
-ssh $target $cmd
 ssh $target 'su - root -ic \"set -x ; mv /home/\$SU_FROM/*.sh \$HOME/\"'
 
 # Powershell End -------------------------------------------------------
