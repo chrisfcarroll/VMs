@@ -23,6 +23,10 @@ alias gaa='git add :/'
 alias tma='tmux a'
 alias tml='tmux ls'
 alias tms='tmux switch'
+#
+alias cdr='cd ~/Repos'
+alias cdar='cd ~/Repos/VMs/FedoraAgents2026'
+#
 EDITOR=$(which vim)
 PAGER='less -X'
 function editrc() { open ~/.zshrc ; open ~/Repos/VMs/FedoraAgents2026/zshrc ; }
