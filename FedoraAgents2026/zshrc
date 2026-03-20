@@ -11,9 +11,17 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 #
+# ===========================================================
 alias open=xdg-open
 function ss() { xdg-open "https://ddg.gg/$*" ; }
 alias ll='ls -l'
 alias wh=which
 alias e=echo
-
+alias edit='$EDITOR'
+alias gitacom='git commit --all -m'
+alias gaa='git add :/'
+alias tma='tmux a'
+alias tml='tmux ls'
+alias tms='tmux switch'
+EDITOR=$(which vim)
+# ===========================================================
