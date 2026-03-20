@@ -24,4 +24,6 @@ alias tma='tmux a'
 alias tml='tmux ls'
 alias tms='tmux switch'
 EDITOR=$(which vim)
+PAGER='less -X'
+function editrc() { open ~/.zshrc ; open ~/Repos/VMs/FedoraAgents2026/zshrc ; }
 # ===========================================================
