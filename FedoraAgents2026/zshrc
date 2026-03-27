@@ -13,19 +13,23 @@ compinit
 #
 # ===========================================================
 alias open=xdg-open
-function ss() { xdg-open "https://ddg.gg/$*" ; }
+function ss() { xdg-open "https://ddg.gg/$*" & ; }
 alias ll='ls -l'
 alias wh=which
 alias e=echo
 alias edit='$EDITOR'
 alias gitacom='git commit --all -m'
 alias gaa='git add :/'
+alias glog="git log --pretty=format:'%Cred%h%Creset %C(yellow)%d%Creset %s %Cgreen%cd %C(bold blue)%an%Creset' --abbrev-commit --date=format:'%d-%m-%Y %H:%M'"
+#
 alias tma='tmux a'
 alias tml='tmux ls'
 alias tms='tmux switch'
 #
 alias cdr='cd ~/Repos'
 alias cdar='cd ~/Repos/VMs/FedoraAgents2026'
+alias cds='cd /media/psf/scratch'
+alias cdf='cd /media/psf/scratch/agentfrepos'
 #
 EDITOR=$(which vim)
 PAGER='less -X'
