@@ -5,7 +5,7 @@ $startup = Join-Path $env:AppData "Microsoft\Windows\Start Menu\Programs\Startup
 $ahkScriptName="mac-keyboard-and-prefs.ahk"
 $ahkscriptTarget= Join-Path $startup $ahkScriptName
 
-if(where.exe AutoHotKey.exe){
+if((where.exe AutoHotKey.exe) -or (Test-Path $env:ProgramFiles\AutoHotkey\AutoHotkey.exe)){
     "✅ AutoHotKey installed"
 }
 else{
@@ -18,7 +18,7 @@ else{
     # Alternative:
     # winget install 9PLQFDG8HH9D #AutoHotKey from the windows store.
 }
-$ahkexe=(where.exe AutoHotKey)
+$ahkexe=("AutoHotkey.exe","$env:ProgramFiles\AutoHotkey\AutoHotkey.exe" | Where {$_ -and (Get-Command $_ -EA Silent)} | Select -First 1)
 
 if(Test-Path $ahkscriptTarget){
     "✅ AutoHotKey mac-keyboard-and-prefs.ahk installed"
@@ -66,6 +66,14 @@ else
     "❓ PowerShell_profile exists. Not Overwriting it." 
 }
 
+if(Get-Module Posh-Git | select Name){
+    "✅ PowerShell Posh-Git installed"
+}
+else
+{
+  Install-Module -Name posh-git -Scope CurrentUser    
+}
+
 # ----------------------------------------------------------------------------
 
 
@@ -85,7 +93,10 @@ if(Get-Command git.exe -EA Silent){
     WinGet install Git.Git
 }
 
-if(Get-Command sublime_text.exe -EA Silent){
+if("sublime_text.exe","$env:ProgramFiles\Sublime Text\sublime_text.exe","$env:ProgramFiles\Sublime Text 3\sublime_text.exe" |
+   Where { $_ -and (Get-Command $_ -EA Silent)} | 
+   Select -First 1)
+{
     "✅ SublimeText installed"
 }else{
     WinGet install SublimeHQ.SublimeText.4.Portable
