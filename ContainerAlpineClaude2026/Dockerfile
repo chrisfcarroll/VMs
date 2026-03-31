@@ -1,7 +1,7 @@
 FROM alpine:latest
 RUN apk add --no-cache zsh
-RUN apk add dotnet10-sdk dotnet-sdk-8.0 dotnet-sdk-6.0 mono
-RUN vim chromium ttf-freefont freetype-dev
+RUN apk add dotnet10-sdk dotnet-sdk-8.0 mono
+RUN apk add vim chromium ttf-freefont freetype-dev
 RUN apk add nodejs npm git
 RUN apk add --no-cache curl doas
 RUN apk add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl3 libstdc++
