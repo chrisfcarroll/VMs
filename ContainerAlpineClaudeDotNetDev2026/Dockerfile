@@ -65,22 +65,25 @@ RUN chmod a+x ~/go.sh
 WORKDIR /vmrepos
 # --------------------------------
 # Repos to work on can be mounted at runtime under /vmrepos.
-# Also mount the file and directory for claude settings & memory.
+# Also mount the file and directory for claude settings & memory, for a total of 3 mounts:
+# 1. Repos directory
+# 2. ~/.claude directory
+# 3. ~/.claude.json file
 # Example : 
 #     docker run -it 
-#                -e GIT_USER_NAME="Agent1 for $(git config --get user.name)" `
-#                -e GIT_USER_EMAIL="$(git config --get user.email)" `
+#                -e GIT_AUTHOR_NAME=`"Agent1 for $(git config --get user.name)`" `
+#                -e GIT_AUTHOR_NAME=`"$(git config --get user.email)`" `
 #                -v ~\vmrepos:/vmrepos `
 #                -v ~\claude-home\.claude:/home/agent1/.claude `
 #                -v ~\claude-home\.claude.json:/home/agent1/.claude.json `
 #        alpineclaude:latest
 # --------------------------------
-ARG GIT_USER_NAME
-ARG GIT_USER_EMAIL
-ENV GIT_USER_NAME=$GIT_USER_NAME
-ENV GIT_USER_EMAIL=$GIT_USER_EMAIL
+ARG GIT_AUTHOR_NAME
+ARG GIT_AUTHOR_EMAIL
+ENV GIT_AUTHOR_NAME=$GIT_AUTHOR_NAME
+ENV GIT_AUTHOR_EMAIL=$GIT_AUTHOR_EMAIL
 # --------------------------------
 #
-RUN if [ -n "$GIT_USER_NAME"  ] ; then git config --global user.name "Agent1 for $GIT_USER_NAME" ; fi
-RUN if [ -n "$GIT_USER_EMAIL" ] ; then git config --global user.email "$GIT_USER_EMAIL" ; fi
+RUN if [ -n "$GIT_AUTHOR_NAME"  ] ; then git config --global user.name "AgentC for $GIT_AUTHOR_NAME" ; fi
+RUN if [ -n "$GIT_AUTHOR_EMAIL" ] ; then git config --global user.email "$GIT_AUTHOR_EMAIL" ; fi
 ENTRYPOINT ["zsh", "-c", "/home/agent1/go.sh ; exec zsh -i"]
