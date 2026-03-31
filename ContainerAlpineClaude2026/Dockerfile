@@ -1,6 +1,7 @@
 FROM alpine:latest
 RUN apk add --no-cache zsh
-RUN apk add dotnet10-sdk vim chromium ttf-freefont freetype-dev
+RUN apk add dotnet10-sdk dotnet-sdk-8.0 dotnet-sdk-6.0 mono
+RUN vim chromium ttf-freefont freetype-dev
 RUN apk add nodejs npm git
 RUN apk add --no-cache curl doas
 RUN apk add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl3 libstdc++
@@ -15,6 +16,7 @@ RUN rm -rf /tmp/powershell*
 RUN apk add docs oh-my-zsh tmux
 RUN apk add libgcc libstdc++ ripgrep bash # Claude.AI dependencies
 RUN apk add musl-locales ncurses-terminfo
+RUN apk add krb5
 RUN touch /etc/rc.conf
 RUN sed -i 's/#unicode="NO"/#unicode="NO"\nunicode="YES"/' /etc/rc.conf
 RUN adduser -S agent1 -G wheel
@@ -25,10 +27,8 @@ RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd pwsh" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
-COPY install-claude-ai-2026-03-20.sh /tmp/
 USER agent1
 RUN curl -fsSL https://claude.ai/install.sh | bash
-# failing to read the script RUN cat /tmp/install-claude-ai-2026-03-20.sh | bash
 RUN echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.zshrc
 RUN git config --global rerere.enabled true
 RUN git config --global alias.root 'rev-parse --show-toplevel'
@@ -47,6 +47,7 @@ alias ll='ls -alF'
 alias tms='tmux switch'
 alias tml='tmux ls'
 alias tma='tmux a'
+LESS="-X"
 plugins=(git)
 ZSH_THEME="robbyrussell"
 source /usr/share/oh-my-zsh/oh-my-zsh.sh
