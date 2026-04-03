@@ -28,8 +28,8 @@
     Name of the agent running in the container. Used for Git author attribution and .claude directory naming.
     Default: "AgentC"
 
-.PARAMETER RepoMounts
-    Host directory path to mount as /vmrepos in the container. Resolved from ~/RepoMounts by default.
+.PARAMETER WorkDirToMount
+    Host directory path to mount as /vmrepos in the container. Resolved from ~/WorkDirToMount by default.
 
 .PARAMETER imageDir
     Directory containing Dockerfiles. Used with -buildImage to locate the Dockerfile.
@@ -37,7 +37,7 @@
 
 .PARAMETER claudeSaveDir
     Host directory for storing Claude configuration and state volumes.
-    Default: ~/RepoMounts/claude-home
+    Default: ~/WorkDirToMount/claude-home
 
 .EXAMPLE
     .\Claude-It.ps1
@@ -88,14 +88,14 @@
 
 [CmdletBinding()]
 param (
-    [string]$image         = "alpine-claude-dotnet-dev",
-    [switch]$buildImage    = $false,
-    [string[]]$portsMap    = @("3000:3000","3001:3001"),
-    [string]$agentName     = "AgentC",
-    [string]$RepoMounts    = (Resolve-Path ~/RepoMounts -EA Silent),
-    [string]$imageDir      = (Resolve-Path ~/Repos/Dockerfiles -EA Silent),
-    [string]$claudeSaveDir = (Resolve-Path ~/RepoMounts/claude-home -EA Silent),
-    [switch]$help          = $false
+    [string]$image          = "alpine-claude-dotnet-dev",
+    [switch]$buildImage     = $false,
+    [string[]]$portsMap     = @("3000:3000","3001:3001"),
+    [string]$agentName      = "AgentC",
+    [string]$WorkDirToMount = (Resolve-Path ~/WorkDirToMount -EA Silent),
+    [string]$imageDir       = (Resolve-Path ~/Repos/Dockerfiles -EA Silent),
+    [string]$claudeSaveDir  = (Resolve-Path ~/WorkDirToMount/claude-home -EA Silent),
+    [switch]$help           = $false
 
 )
 
@@ -103,6 +103,32 @@ param (
 if ($help) {
     Get-Help $PSCommandPath -Full
     exit 0
+}
+
+# Prompt for paths that couldn't be resolved
+if (-not $WorkDirToMount) {
+    $WorkDirToMount = Read-Host "Enter path to the working directory you want to mount in the container. 
+    This is the working directory you are asking Claude to work in, so it should contain the git repos you want to work on."
+    if(-not (Test-Path -Path $WorkDirToMount)) {
+        Write-Warning "The specified WorkDirToMount does not exist: $WorkDirToMount"
+        exit 1
+    }
+}
+
+if ($buildImage -and -not $imageDirPath) {
+    $imageDirPath = Read-Host "Enter path to Dockerfiles directory"
+    if(-not (Test-Path -Path $imageDirPath/$image)) {
+        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $imageDirPath/$image"
+        exit 1
+    }
+}
+
+if (-not $claudeSaveDirPath) {
+    $claudeSaveDirPath = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/claude-savesessions"
+    $claudeSaveDirPath = $claudeSaveDirPath,"~/claude-savesessions" | Select -First 1
+    if(-not (Test-Path -Path $claudeSaveDirPath)) {
+        New-Item -Path $claudeSaveDirPath
+    }
 }
 
 # Ensure required commands
@@ -116,8 +142,8 @@ if (-not (Get-Command git -EA Silent)) {
 }
 
 # Ensure required paths exist
-if (-not (Test-Path -Path $RepoMounts -PathType Container)) {
-    Write-Warning "RepoMounts directory does not exist: $RepoMounts. 
+if (-not (Test-Path -Path $WorkDirToMount -PathType Container)) {
+    Write-Warning "WorkDirToMount directory does not exist: $WorkDirToMount. 
     Please specify a directory where you have a git repo, or repos, you want Claude to work on."
     exit 1
 }
@@ -167,7 +193,7 @@ Write-Host @"
     docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
-                -v `"$RepoMounts`:/vmrepos`" `
+                -v `"$WorkDirToMount`:/vmrepos`" `
                 -v `"$claudeSaveDir/claude-home/.claude`:/home/$agentNameLower`/.claude`" `
                 -v `"$claudeSaveDir/claude-home/.claude.json`:/home/$agentNameLower`/.claude.json`" `
             $image`:latest
@@ -176,7 +202,7 @@ Write-Host @"
 docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
-            -v "$RepoMounts`:/vmrepos" `
+            -v "$WorkDirToMount`:/vmrepos" `
             -v "$claudeSaveDir/claude-home/.claude:/home/$agentNameLower/.claude" `
             -v "$claudeSaveDir/claude-home/.claude.json:/home/$agentNameLower/.claude.json" `
     $image`:latest
