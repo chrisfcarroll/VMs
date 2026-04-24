@@ -1,6 +1,6 @@
 # ContainerAlpineClaudeDotNetDev2026
 
-A sandbox for agentic AI to safely run free of permissions interruption. Out of the box, it's setup for claude code:
+A sandbox for agentic AI to safely work, free of permissions interruption, on your chosen repo(s). Out of the box, it's set up for claude code:
 
 ```
 ./Claude-It.ps1
