@@ -1,33 +1,32 @@
 # ContainerAlpineClaudeDotNetDev2026
 
-A Docker container image based on Alpine Linux, set up as an interactive development environment with Claude Code, .NET SDKs, and common dev tools. Designed to run Claude as a coding agent against repositories mounted from the host.
+A sandbox for agentic AI to safely run free of permissions interruption. Out of the box, it's setup for claude code:
+
+```
+./Claude-It.ps1
+# or
+./claude-it.sh
+```
+
+The agent gets work done by having access to the git repos mounted in the container, so it can get, commit and push.
 
 ## What's in the image
 
+Edit the dockerfile to taste. It's currently set up with:
+
 - **Alpine Linux** (latest) with zsh, oh-my-zsh, tmux, vim, ripgrep
-- **.NET SDK 8.0 and 10**, Mono
+- **.NET SDK 8.0 and 10, and Mono**
 - **Node.js** and npm
 - **PowerShell 7.5**
-- **Chromium** (headless-capable)
 - **Claude Code CLI** (installed via `claude.ai/install.sh`)
-- A non-root user `agent1` with passwordless `doas` for `apk`, `npm`, `dotnet`, `pwsh`, and `uv`
+- A **non-root user `agent1`** with passwordless `doas` for `apk`, `npm`, `dotnet`, `pwsh`, and `uv`
 
-On startup, the container launches a tmux session with Claude Code ready to go.
+On startup, the container launches a **tmux** session with Claude Code ready to go. Tmux makes it easier for you to reach a terminal whilst Claude chugs away.
 
-## Directory contents
-
-| File | Purpose |
-|---|---|
-| `Dockerfile` | Builds the Alpine-based dev image |
-| `Claude-It.ps1` | PowerShell launcher script (Windows/macOS/Linux) |
-| `claude-it.sh` | Bash launcher script (Linux/macOS) |
-| `for-claude-in-a-vm--settings.json` | Example Claude Code settings (bypass permissions, Opus model) |
 
 ## Prerequisites
 
-- Docker
-- Git
-- A Claude Code subscription or `ANTHROPIC_API_KEY`
+- Docker, Git, a subscription.
 
 ## Quick start
 
