@@ -14,15 +14,11 @@ The agent gets work done by having access to the git repos mounted in the contai
 
 Edit the dockerfile to taste. It's currently set up with:
 
-- **Alpine Linux** (latest) with zsh, oh-my-zsh, tmux, vim, ripgrep
-- **.NET SDK 8.0 and 10, and Mono**
-- **Node.js** and npm
-- **PowerShell 7.5**
+- **Alpine Linux** (latest) with zsh, oh-my-zsh, tmux, vim, ripgrep, **.NET SDK 8.0 and 10, and Mono**, **Node.js** and npm, **PowerShell 7.5**
 - **Claude Code CLI** (installed via `claude.ai/install.sh`)
-- A **non-root user `agent1`** with passwordless `doas` for `apk`, `npm`, `dotnet`, `pwsh`, and `uv`
+- A **non-root user `agent1`** with passwordless `doas` for installations: `apk`, `npm`, `dotnet`, `pwsh`, and `uv`
 
 On startup, the container launches a **tmux** session with Claude Code ready to go. Tmux makes it easier for you to reach a terminal whilst Claude chugs away.
-
 
 ## Prerequisites
 
