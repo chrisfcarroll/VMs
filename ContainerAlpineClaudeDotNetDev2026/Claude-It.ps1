@@ -88,14 +88,15 @@
 
 [CmdletBinding()]
 param (
+    [string]$WorkDirToMount ,
+    [string]$claudeSaveDir  ,
     [string]$image          = "alpine-claude-dotnet-dev",
     [switch]$buildImage     = $false,
+    [string]$imageDir       ,
     [string[]]$portsMap     = @("3000:3000","3001:3001"),
     [string]$agentName      = "AgentC",
-    [string]$WorkDirToMount = (Resolve-Path ~/WorkDirToMount -EA Silent),
-    [string]$imageDir       = (Resolve-Path ~/Repos/Dockerfiles -EA Silent),
-    [string]$claudeSaveDir  = (Resolve-Path ~/WorkDirToMount/claude-home -EA Silent),
-    [switch]$help           = $false
+    [switch]$help           = $false,
+    [switch]$dryRun         = $false
 
 )
 
@@ -103,32 +104,6 @@ param (
 if ($help) {
     Get-Help $PSCommandPath -Full
     exit 0
-}
-
-# Prompt for paths that couldn't be resolved
-if (-not $WorkDirToMount) {
-    $WorkDirToMount = Read-Host "Enter path to the working directory you want to mount in the container. 
-    This is the working directory you are asking Claude to work in, so it should contain the git repos you want to work on."
-    if(-not (Test-Path -Path $WorkDirToMount)) {
-        Write-Warning "The specified WorkDirToMount does not exist: $WorkDirToMount"
-        exit 1
-    }
-}
-
-if ($buildImage -and -not $imageDirPath) {
-    $imageDirPath = Read-Host "Enter path to Dockerfiles directory"
-    if(-not (Test-Path -Path $imageDirPath/$image)) {
-        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $imageDirPath/$image"
-        exit 1
-    }
-}
-
-if (-not $claudeSaveDirPath) {
-    $claudeSaveDirPath = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/claude-savesessions"
-    $claudeSaveDirPath = $claudeSaveDirPath,"~/claude-savesessions" | Select -First 1
-    if(-not (Test-Path -Path $claudeSaveDirPath)) {
-        New-Item -Path $claudeSaveDirPath
-    }
 }
 
 # Ensure required commands
@@ -141,29 +116,74 @@ if (-not (Get-Command git -EA Silent)) {
     exit 1
 }
 
+
+#abbreviations for $script:<varname> which is mutable, unlike the param variables which are read-only. So we can prompt the user for missing values.
+$sWorkDirToMount = $WorkDirToMount
+$sClaudeSaveDir = $claudeSaveDir
+$sImageDir = $imageDir
+$sImage = $image
+$validImages = (docker images --format "{{.Repository}}:{{.Tag}}")
+Write-Verbose ([string]::join("`n", @("    docker images") + $validImages)).ToString()
+
+# Prompt for paths that couldn't be resolved
+if (-not $sWorkDirToMount) {
+    $sWorkDirToMount = Read-Host "Enter path to the working directory you want to mount in the container.
+    This is the working directory you are asking Claude to work in, so it should contain the git repos you want to work on."
+    if(-not $sWorkDirToMount -or -not (Test-Path -Path $sWorkDirToMount -EA Silent)) {
+        Write-Warning "The specified WorkDirToMount does not exist: $sWorkDirToMount"
+        exit 1
+    }
+}
+
+if ($buildImage -and -not $sImageDir) {
+    $sImageDir = Read-Host "Enter path to Dockerfiles directory"
+    if(-not $sImageDir -or -not (Test-Path -Path $sImageDir/$image -EA Silent)) {
+        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $sImageDir/$image"
+        exit 1
+    }
+}
+if (-not $sImage) {
+    $sImage = Read-Host "Specify an image to run."
+    if(-not $sImage) {
+        Write-Warning "No image specified. Please specify an image to run from the list above."
+        exit 1
+    }
+}
+
+
+if (-not $sClaudeSaveDir) {
+    $sClaudeSaveDir = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/claude-savesessions"
+    $sClaudeSaveDir = $sClaudeSaveDir,"~/claude-savesessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
+    if(-not (Test-Path -Path $sClaudeSaveDir)) {
+        New-Item -Path $sClaudeSaveDir -ItemType Directory
+    }
+}
+
 # Ensure required paths exist
-if (-not (Test-Path -Path $WorkDirToMount -PathType Container)) {
-    Write-Warning "WorkDirToMount directory does not exist: $WorkDirToMount. 
+if (-not (Test-Path -Path $sWorkDirToMount -PathType Container -EA Silent)) {
+    Write-Warning "WorkDirToMount directory does not exist: $sWorkDirToMount. 
     Please specify a directory where you have a git repo, or repos, you want Claude to work on."
     exit 1
 }
 
-if ($buildImage -and -not (Test-Path -Path $imageDir -PathType Container)) {
-    Write-Warning "You asked for buildImage, but ImageDir directory does not exist: $imageDir"
+"    Checking $image ..."
+
+if ($buildImage -and -not (Test-Path -Path $sImageDir -PathType Container -EA Silent)) {
+    Write-Warning "You asked for buildImage, but ImageDir directory does not exist: $sImageDir"
     exit 1
 }
-elseif ($buildImage -and -not (Test-Path -Path "$imageDir/$image/Dockerfile")) {
-    Write-Warning "You asked for buildImage, but Dockerfile not found at: $imageDir/$image/Dockerfile"
+elseif ($buildImage -and -not (Test-Path -Path "$sImageDir/$image/Dockerfile")) {
+    Write-Warning "You asked for buildImage, but Dockerfile not found at: $sImageDir/$image/Dockerfile"
     exit 1
 
-}elseif (-not $buildImage -and -not (docker image inspect "$($image):latest" 2>$null)) {
-    Write-Warning "Docker image '$image:latest' does not exist and -buildImage was not specified.
+}elseif (-not $buildImage -and -not ($validImages | where { $_ -and $_.StartsWith($image) } | Select -First 1)) {
+    Write-Warning "Docker image '$image' does not exist and -buildImage was not specified.
     Either build the image with -buildImage flag or ensure the image is available locally."
     exit 1
 }
 
-if (-not (Test-Path -Path $claudeSaveDir -PathType Container)) {
-    Write-Warning "ClaudeSaveDir directory does not exist: $claudeSaveDir. 
+if (-not (Test-Path -Path $sClaudeSaveDir -PathType Container -EA Silent)) {
+    Write-Warning "ClaudeSaveDir directory does not exist: $sClaudeSaveDir.
     Choose somewhere to save your Claude credentials and session data, for instance ~/claude-home.
     This directory will be mounted into the container to preserve your Claude state across runs."
     exit 1
@@ -173,40 +193,48 @@ if (-not (Test-Path -Path $claudeSaveDir -PathType Container)) {
 #
 $agentNameLower= $agentName.ToLower()
 $onBehalfOf= $env:GIT_AUTHOR_NAME,$env:GIT_COMMITTER_NAME,"$(git config --get user.name)" | Select -First 1
-$gitAuthorName= "$agentNameLower for $onBehalfOf"
+$gitAuthorName= "$agentName for $onBehalfOf"
 $gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Select -First 1
 
 
-if($buildImage -and (Test-Path -Path "$imageDir/$image/Dockerfile")){ 
-    docker build $imageDir/$image -t "$($image):latest" ; 
+if($buildImage){
+    docker build $sImageDir/$image -t "$($image):latest" ;
 }
 
-if($portsMap.Count -gt 2){ 
+if($portsMap.Count -gt 2){
     Write-Warning "This script only handles two port mappings. Extra mappings will be ignored."
 }
 
-if($portsMap.Count -lt 2){ 
+if($portsMap.Count -lt 2){
     $portsMap = $portsMap,"3000:3000","3001:3001" | Select -First 2
 }
 
-Write-Host @"
+
+if($sWorkDirToMount -ne (Resolve-Path $sWorkDirToMount -EA Silent).Path){
+    Write-Verbose "    WorkDirToMount: $(Resolve-Path $sWorkDirToMount -EA Silent).Path"
+}
+if($sClaudeSaveDir -ne (Resolve-Path $sClaudeSaveDir -EA Silent).Path){
+    Write-Verbose "    ClaudeSaveDir: $(Resolve-Path $sClaudeSaveDir -EA Silent).Path"
+}
+
+@"
     docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
-                -v `"$WorkDirToMount`:/vmrepos`" `
-                -v `"$claudeSaveDir/claude-home/.claude`:/home/$agentNameLower`/.claude`" `
-                -v `"$claudeSaveDir/claude-home/.claude.json`:/home/$agentNameLower`/.claude.json`" `
+                -v `"$sWorkDirToMount`:/vmrepos`" `
+                -v `"$sClaudeSaveDir/.claude`:/home/$agentNameLower`/.claude`" `
+                -v `"$sClaudeSaveDir/.claude.json`:/home/$agentNameLower`/.claude.json`" `
             $image`:latest
 "@
+
+if($dryRun){
+    exit 0
+}
 
 docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
-            -v "$WorkDirToMount`:/vmrepos" `
-            -v "$claudeSaveDir/claude-home/.claude:/home/$agentNameLower/.claude" `
-            -v "$claudeSaveDir/claude-home/.claude.json:/home/$agentNameLower/.claude.json" `
+            -v "$sWorkDirToMount`:/vmrepos" `
+            -v "$sClaudeSaveDir/.claude:/home/$agentNameLower/.claude" `
+            -v "$sClaudeSaveDir/.claude.json:/home/$agentNameLower/.claude.json" `
     $image`:latest
-
-
-
-
