@@ -37,7 +37,8 @@ RUN git config --global alias.glog "log --color --pretty=format:'%Cred%h%Creset 
 RUN git config --global core.autocrlf true
 RUN cat <<'EOF' >> ~/.zshrc
 export PS1='%2~]'
-alias glog='git log --color --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --graph'
+alias glog='git log --color --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit'
+alias glogg='git log --color --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --graph'
 alias gco='git checkout'
 alias gaa='git add -A'
 alias grv='git remote -v'
@@ -47,7 +48,7 @@ alias ll='ls -alF'
 alias tms='tmux switch'
 alias tml='tmux ls'
 alias tma='tmux a'
-LESS="-X"
+export LESS="-FRX"
 plugins=(git)
 ZSH_THEME="robbyrussell"
 source /usr/share/oh-my-zsh/oh-my-zsh.sh
