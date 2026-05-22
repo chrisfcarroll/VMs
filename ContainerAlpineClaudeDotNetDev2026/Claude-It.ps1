@@ -135,6 +135,7 @@ if (-not $sWorkDirToMount) {
         exit 1
     }
 }
+$sWorkDirToMount =  Resolve-Path $sWorkDirToMount
 
 if ($buildImage -and -not $sImageDir) {
     $sImageDir = Read-Host "Enter path to Dockerfiles directory"
@@ -142,6 +143,7 @@ if ($buildImage -and -not $sImageDir) {
         Write-Warning "You asked to build the image, but the Dockerfile does not exist: $sImageDir/$image"
         exit 1
     }
+    $sImageDir = Resolve-Path $sImageDir
 }
 if (-not $sImage) {
     $sImage = Read-Host "Specify an image to run."
@@ -151,7 +153,6 @@ if (-not $sImage) {
     }
 }
 
-
 if (-not $sClaudeSaveDir) {
     $sClaudeSaveDir = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/claude-savesessions"
     $sClaudeSaveDir = $sClaudeSaveDir,"~/claude-savesessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
@@ -159,6 +160,7 @@ if (-not $sClaudeSaveDir) {
         New-Item -Path $sClaudeSaveDir -ItemType Directory
     }
 }
+$sClaudeSaveDir=(Resolve-Path $sClaudeSaveDir)
 
 # Ensure required paths exist
 if (-not (Test-Path -Path $sWorkDirToMount -PathType Container -EA Silent)) {
