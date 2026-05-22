@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Launches a Docker container with Alpine Linux, Claude API access, and .NET development tools.
+    Launches a Docker container with Alpine Linux, Claude code, and .NET development tools.
 
 .DESCRIPTION
     Creates and runs a Docker container for development using Claude as an agent. The script recognises:
@@ -26,7 +26,8 @@
 
 .PARAMETER agentName
     Name of the agent running in the container. Used for Git author attribution and .claude directory naming.
-    Default: "AgentC"
+    This must match the USER set in the Dockerfile for your image.
+    Default: "Agent1"
 
 .PARAMETER WorkDirToMount
     Host directory path to mount as /vmrepos in the container. Resolved from ~/WorkDirToMount by default.
@@ -64,14 +65,14 @@
 # Mount these two directories/files as volumes:
 #
 #   docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
-#               -e GIT_AUTHOR_NAME=`"AgentC for $(git config --get user.name)`" `
+#               -e GIT_AUTHOR_NAME=`"$agentName for $(git config --get user.name)`" `
 #               -e GIT_AUTHOR_EMAIL=`"$(git config --get user.email)`" `
 #               -v $VMMounts`:/vmrepos `
-#               -v "$claudeSaveDir\claude-home\.claude:/home/agentc/.claude" `
-#               -v "$claudeSaveDir\claude-home\.claude.json:/home/agentc/.claude.json" `
+#               -v "$claudeSaveDir\claude-home\.claude:/home/$agentName/.claude" `
+#               -v "$claudeSaveDir\claude-home\.claude.json:/home/$agentName/.claude.json" `
 #           $image`:latest
 #
-#   Replace /home/user/ with the actual home directory inside your container (e.g., /root if running as root).
+#   $agentName must be the actual home directory (i.e. the actual user name) inside your container.
 
 #   What each Claude mount preserves:
 #   ┌────────────────┬────────────────────────────────────────────────────────────────┐
@@ -94,7 +95,7 @@ param (
     [switch]$buildImage     = $false,
     [string]$imageDir       ,
     [string[]]$portsMap     = @("3000:3000","3001:3001"),
-    [string]$agentName      = "AgentC",
+    [string]$agentName      = "Agent1",
     [switch]$help           = $false,
     [switch]$dryRun         = $false
 
