@@ -154,8 +154,8 @@ if (-not $sImage) {
 }
 
 if (-not $sClaudeSaveDir) {
-    $sClaudeSaveDir = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/claude-savesessions"
-    $sClaudeSaveDir = $sClaudeSaveDir,"~/claude-savesessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
+    $sClaudeSaveDir = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/.claude-it-sessions"
+    $sClaudeSaveDir = $sClaudeSaveDir,"~/.claude-it-sessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
     if(-not (Test-Path -Path $sClaudeSaveDir)) {
         New-Item -Path $sClaudeSaveDir -ItemType Directory
     }
