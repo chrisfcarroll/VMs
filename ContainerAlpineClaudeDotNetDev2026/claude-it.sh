@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Launches a Docker container with Alpine Linux, Claude API access, and .NET development tools.
+# Launches a Docker container with Alpine Linux, Claude code, and .NET development tools.
 #
 # Creates and runs a Docker container for development using Claude as an agent. The script recognises:
 # - Volume mounts for code repositories and Claude configuration
@@ -23,7 +23,9 @@
 #   --image-dir DIR       Directory containing Dockerfiles. Used with --build-image.
 #   --ports PORT1 PORT2   Port mappings in "host:container" format. Default: "3000:3000" "3001:3001"
 #                         Maximum of 2 port mappings supported; additional mappings are ignored.
-#   --agent-name NAME     Name of the agent running in the container. Default: "AgentC"
+#   --agent-name NAME     Name of the agent running in the container. Used for Git author attribution
+#                         and .claude directory naming. Must match the USER set in the Dockerfile.
+#                         Default: "Agent1"
 #   --dry-run             Print the docker run command without executing it.
 #   --help                Show this help message.
 #
@@ -61,7 +63,7 @@ image="alpine-claude-dotnet-dev"
 build_image=false
 image_dir=""
 ports=("3000:3000" "3001:3001")
-agent_name="AgentC"
+agent_name="Agent1"
 dry_run=false
 
 # Parse arguments
@@ -136,6 +138,7 @@ if [[ -z "$work_dir_to_mount" ]]; then
         exit 1
     fi
 fi
+work_dir_to_mount=$(realpath "$work_dir_to_mount")
 
 if [[ "$build_image" == true && -z "$image_dir" ]]; then
     echo "Enter path to Dockerfiles directory:"
@@ -144,6 +147,7 @@ if [[ "$build_image" == true && -z "$image_dir" ]]; then
         echo "Warning: You asked to build the image, but the Dockerfile does not exist: $image_dir/$image" >&2
         exit 1
     fi
+    image_dir=$(realpath "$image_dir")
 fi
 
 if [[ -z "$image" ]]; then
@@ -156,15 +160,16 @@ if [[ -z "$image" ]]; then
 fi
 
 if [[ -z "$claude_save_dir" ]]; then
-    echo "Enter path to save Claude data. Otherwise we will default to ~/claude-savesessions:"
+    echo "Enter path to save Claude data. Otherwise we will default to ~/.claude-it-sessions"
     read -r claude_save_dir
     if [[ -z "$claude_save_dir" ]]; then
-        claude_save_dir="$HOME/claude-savesessions"
+        claude_save_dir="$HOME/.claude-it-sessions"
     fi
     if [[ ! -d "$claude_save_dir" ]]; then
         mkdir -p "$claude_save_dir"
     fi
 fi
+claude_save_dir=$(realpath "$claude_save_dir")
 
 # Ensure required paths exist
 if [[ ! -d "$work_dir_to_mount" ]]; then
