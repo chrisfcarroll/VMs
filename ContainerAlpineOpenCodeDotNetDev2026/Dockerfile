@@ -28,8 +28,6 @@ RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd pwsh" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
 USER agent1
-RUN curl -fsSL https://opencode.ai/install | bash
-RUN echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.zshrc
 RUN git config --global rerere.enabled true
 RUN git config --global alias.root 'rev-parse --show-toplevel'
 RUN git config --global alias.lg  "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --graph"
@@ -65,6 +63,7 @@ for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
 tmux -u new-session -d ; tmux -u new-session /home/agent1/.local/bin/opencode
 EOF
 RUN chmod a+x ~/go.sh
+RUN curl -fsSL https://opencode.ai/install | bash
 WORKDIR /vmrepos
 # --------------------------------
 # Repos to work on can be mounted at runtime under /vmrepos.

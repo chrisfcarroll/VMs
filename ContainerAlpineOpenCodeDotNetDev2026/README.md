@@ -53,7 +53,7 @@ docker build . -t alpine-opencode-dotnet-dev:latest
 
 docker run -it \
     -p 3000:3000 -p 3001:3001 \
-    -e GIT_AUTHOR_NAME="AgentO for $(git config --get user.name)" \
+    -e GIT_AUTHOR_NAME="Agent1 for $(git config --get user.name)" \
     -e GIT_AUTHOR_EMAIL="$(git config --get user.email)" \
     -v ~/WorkDirToMount:/vmrepos \
     -v ~/opencode-home/.local/share/opencode:/home/agent1/.local/share/opencode \
@@ -80,9 +80,9 @@ Both `OpenCode-It.ps1` and `opencode-it.sh` accept the same logical parameters:
 | `--image` / `-image` | `alpine-opencode-dotnet-dev` | Docker image name |
 | `--build-image` / `-buildImage` | off | Build the image before running |
 | `--ports-map` / `-portsMap` | `3000:3000`, `3001:3001` | Port mappings (max 2) |
-| `--agent-name` / `-agentName` | `AgentO` | Agent name, used for git attribution |
+| `--agent-name` / `-agentName` | `Agent1` | Agent name, used for git attribution |
 | `--workdir-to-mount` / `-WorkDirToMount` | `~/WorkDirToMount` | Host path mounted at `/vmrepos` |
 | `--image-dir` / `-imageDir` | `~/Repos/Dockerfiles` | Directory containing Dockerfiles |
 | `--opencode-save-dir` / `-opencodeSaveDir` | `~/WorkDirToMount/opencode-home` | Host path for OpenCode state persistence |
 
-The scripts automatically derive the git author name and email from your environment or git config, prefixed with the agent name (e.g. `AgentO for Your Name`).
+The scripts automatically derive the git author name and email from your environment or git config, prefixed with the agent name (e.g. `Agent1 for Your Name`).

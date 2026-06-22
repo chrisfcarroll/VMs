@@ -94,7 +94,7 @@ param (
     [switch]$buildImage     = $false,
     [string]$imageDir       ,
     [string[]]$portsMap     = @("3002:3002","3003:3003"),
-    [string]$agentName      = "AgentO",
+    [string]$agentName      = "Agent1",
     [switch]$help           = $false,
     [switch]$dryRun         = $false
 
@@ -200,7 +200,7 @@ $gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Selec
 
 
 if($buildImage){
-    docker build $sImageDir/$image -t "$($image):latest" ;
+    docker build $sImageDir -t "$($image):latest" ;
 }
 
 if($portsMap.Count -gt 2){
