@@ -201,7 +201,7 @@ $gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Selec
 
 
 if($buildImage){
-    docker build $sImageDir/$image -t "$($image):latest" ;
+    docker build $sImageDir -t "$($image):latest"
 }
 
 if($portsMap.Count -gt 2){
