@@ -1,20 +1,19 @@
 <#
 .SYNOPSIS
-    Launches a Docker container with Alpine Linux, Claude code, and .NET development tools.
+    Launches a Docker container with Alpine Linux, OpenCode, and .NET development tools.
 
 .DESCRIPTION
-    Creates and runs a Docker container for development using Claude as an agent. The script recognises:
-    - Volume mounts for code repositories and Claude configuration
+    Creates and runs a Docker container for development using OpenCode as an agent. The script recognises:
+    - Volume mounts for code repositories and OpenCode configuration
     - Git author environment variables or config settings (name and email)
-    - Paths to preserve Claude credentials, settings, and session data across container runs
+    - Paths to preserve OpenCode configuration and state across container runs
     - Port mappings
 
     The script supports optional image building and port mappings. Container mounts preserve:
-    - ~/.claude/: Credentials and settings
-    - ~/.claude.json: OAuth session data and MCP configurations
+    - ~/.config/opencode/: Configuration and state
 
 .PARAMETER image
-    Docker image name to run. Default: "alpine-claude-dotnet-dev"
+    Docker image name to run. Default: "alpine-opencode-dotnet-dev"
 
 .PARAMETER buildImage
     If specified, builds the Docker image from Dockerfile before running the container.
@@ -25,7 +24,7 @@
     Maximum of 2 port mappings supported; additional mappings are ignored.
 
 .PARAMETER agentName
-    Name of the agent running in the container. Used for Git author attribution and .claude directory naming.
+    Name of the agent running in the container. Used for Git author attribution.
     This must match the USER set in the Dockerfile for your image.
     Default: "Agent1"
 
@@ -36,66 +35,66 @@
     Directory containing Dockerfiles. Used with -buildImage to locate the Dockerfile.
     Default: ~/Repos/Dockerfiles
 
-.PARAMETER claudeSaveDir
-    Host directory for storing Claude configuration and state volumes.
-    Default: ~/WorkDirToMount/claude-home
+.PARAMETER opencodeSaveDir
+    Host directory to look for ./.local/share/opencode directory, for storing OpenCode 
+    configuration and state volumes.
+    Default: ~
 
 .EXAMPLE
-    .\Claude-It.ps1
-    Runs the default Alpine Claude .NET dev container with default settings.
+    .\OpenCode-It.ps1
+    Runs the default Alpine OpenCode .NET dev container with default settings.
 
 .EXAMPLE
-    .\Claude-It.ps1 -buildImage -image my-custom-image -agentName "MyAgent"
+    .\OpenCode-It.ps1 -buildImage -image my-custom-image -agentName "MyAgent"
     Builds the image first, then runs it with custom agent name.
 
 .EXAMPLE
-    .\Claude-It.ps1 -portsMap @("8000:3000", "8001:3001")
+    .\OpenCode-It.ps1 -portsMap @("8000:3000", "8001:3001")
     Runs the container with custom port mappings.
 
 .NOTES
     - Git author name and email are automatically captured from environment or git config
     - The script assumes Docker and git are installed and available
-    - Volume mounts preserve Claude state between container runs
-    - Alternatively, use ANTHROPIC_API_KEY environment variable to avoid volume mounts for credentials
+    - Volume mounts preserve OpenCode state between container runs
+    - Pass provider-specific API key env vars (e.g. OPENAI_API_KEY) to avoid volume mounts for credentials
 
 .LINK
     https://docs.docker.com/engine/reference/commandline/run/
 #>
 
-# Mount these two directories/files as volumes:
+# Mount the config directory as a volume:
 #
 #   docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
 #               -e GIT_AUTHOR_NAME=`"$agentName for $(git config --get user.name)`" `
 #               -e GIT_AUTHOR_EMAIL=`"$(git config --get user.email)`" `
 #               -v $VMMounts`:/vmrepos `
-#               -v "$claudeSaveDir\claude-home\.claude:/home/$agentName/.claude" `
-#               -v "$claudeSaveDir\claude-home\.claude.json:/home/$agentName/.claude.json" `
+#               -v "$opencodeSaveDir/.local/share/opencode:/home/$agentName/.local/share/opencode" `
 #           $image`:latest
 #
 #   $agentName must be the actual home directory (i.e. the actual user name) inside your container.
 
-#   What each Claude mount preserves:
-#   ┌────────────────┬────────────────────────────────────────────────────────────────┐
-#   │     Mount      │                            Contains                            │
-#   ├────────────────┼────────────────────────────────────────────────────────────────┤
-#   │ ~/.claude/     │ Credentials (.credentials.json), settings, permissions, memory │
-#   ├────────────────┼────────────────────────────────────────────────────────────────┤
-#   │ ~/.claude.json │ OAuth session data, MCP configs, theme/editor preferences      │
-#   └────────────────┴────────────────────────────────────────────────────────────────┘
+#   What the OpenCode mount preserves:
+#   ┌──────────────────────────┬──────────────────────────────────────────────┐
+#   │          Mount           │                   Contains                   │
+#   ├──────────────────────────┼──────────────────────────────────────────────┤
+#   │ ~/.config/opencode/      │ Configuration (opencode.json, agents, etc.) │
+#   ├──────────────────────────┼──────────────────────────────────────────────┤
+#   │ ~/.local/share/opencode/ │ Data and auth (auth.json, etc.)             │
+#   └──────────────────────────┴──────────────────────────────────────────────┘
 
 #   Or use environment variables instead to avoid volume mounts entirely:
-#   docker run -it -e ANTHROPIC_API_KEY=your-key your-image
-#   The ANTHROPIC_API_KEY env var is the simplest approach if you're using an API key rather than OAuth/subscription login.
+#   docker run -it -e OPENAI_API_KEY=your-key your-image
+#   Pass a provider-specific API key env var for the simplest approach.
 
 [CmdletBinding()]
 param (
-    [string]$WorkDirToMount ,
-    [string]$claudeSaveDir  ,
-    [string]$image          = "alpine-claude-dotnet-dev",
+    [string]$WorkDirToMount = (Resolve-Path '.').Path,
+    [string]$opencodeSaveDir= (Resolve-Path '~').Path  ,
+    [string]$image          = "alpine-opencode-dotnet-dev",
     [switch]$buildImage     = $false,
     [string]$imageDir       ,
-    [string[]]$portsMap     = @("3000:3000","3001:3001"),
-    [string]$agentName      = "Agent1",
+    [string[]]$portsMap     = @("3002:3002","3003:3003"),
+    [string]$agentName      = "AgentO",
     [switch]$help           = $false,
     [switch]$dryRun         = $false
 
@@ -120,7 +119,7 @@ if (-not (Get-Command git -EA Silent)) {
 
 #abbreviations for $script:<varname> which is mutable, unlike the param variables which are read-only. So we can prompt the user for missing values.
 $sWorkDirToMount = $WorkDirToMount
-$sClaudeSaveDir = $claudeSaveDir
+$sOpencodeSaveDir = $opencodeSaveDir
 $sImageDir = $imageDir
 $sImage = $image
 $validImages = (docker images --format "{{.Repository}}:{{.Tag}}")
@@ -129,13 +128,13 @@ Write-Verbose ([string]::join("`n", @("    docker images") + $validImages)).ToSt
 # Prompt for paths that couldn't be resolved
 if (-not $sWorkDirToMount) {
     $sWorkDirToMount = Read-Host "Enter path to the working directory you want to mount in the container.
-    This is the working directory you are asking Claude to work in, so it should contain the git repos you want to work on."
+    This is the working directory you are asking OpenCode to work in, so it should contain the git repos you want to work on."
     if(-not $sWorkDirToMount -or -not (Test-Path -Path $sWorkDirToMount -EA Silent)) {
         Write-Warning "The specified WorkDirToMount does not exist: $sWorkDirToMount"
         exit 1
     }
 }
-$sWorkDirToMount =  Resolve-Path $sWorkDirToMount
+$sWorkDirToMount =  (Resolve-Path $sWorkDirToMount).Path
 
 if ($buildImage -and -not $sImageDir) {
     $sImageDir = Read-Host "Enter path to Dockerfiles directory"
@@ -153,19 +152,19 @@ if (-not $sImage) {
     }
 }
 
-if (-not $sClaudeSaveDir) {
-    $sClaudeSaveDir = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/.claude-it-sessions"
-    $sClaudeSaveDir = $sClaudeSaveDir,"~/.claude-it-sessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
-    if(-not (Test-Path -Path $sClaudeSaveDir)) {
-        New-Item -Path $sClaudeSaveDir -ItemType Directory
+if (-not $sOpencodeSaveDir) {
+    $sOpencodeSaveDir = Read-Host "Enter path to save OpenCode data. Otherwise we will default to ~/.opencode-it-sessions"
+    $sOpencodeSaveDir = $sOpencodeSaveDir,"~/.opencode-it-sessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
+    if(-not (Test-Path -Path $sOpencodeSaveDir)) {
+        New-Item -Path $sOpencodeSaveDir -ItemType Directory
     }
 }
-$sClaudeSaveDir=(Resolve-Path $sClaudeSaveDir)
+$sOpencodeSaveDir=(Resolve-Path $sOpencodeSaveDir).Path
 
 # Ensure required paths exist
 if (-not (Test-Path -Path $sWorkDirToMount -PathType Container -EA Silent)) {
-    Write-Warning "WorkDirToMount directory does not exist: $sWorkDirToMount. 
-    Please specify a directory where you have a git repo, or repos, you want Claude to work on."
+    Write-Warning "WorkDirToMount directory does not exist: $sWorkDirToMount.
+    Please specify a directory where you have a git repo, or repos, you want OpenCode to work on."
     exit 1
 }
 
@@ -176,7 +175,7 @@ if ($buildImage -and -not (Test-Path -Path $sImageDir -PathType Container -EA Si
     exit 1
 }
 elseif ($buildImage -and -not (Test-Path -Path "$sImageDir/Dockerfile")) {
-    Write-Warning "You asked for buildImage, but no Dockerfile found in $sImageDir"
+    Write-Warning "You asked for buildImage, but no Dockerfile not found in $sImageDir"
     exit 1
 
 }elseif (-not $buildImage -and -not ($validImages | where { $_ -and $_.StartsWith($image) } | Select -First 1)) {
@@ -185,10 +184,10 @@ elseif ($buildImage -and -not (Test-Path -Path "$sImageDir/Dockerfile")) {
     exit 1
 }
 
-if (-not (Test-Path -Path $sClaudeSaveDir -PathType Container -EA Silent)) {
-    Write-Warning "ClaudeSaveDir directory does not exist: $sClaudeSaveDir.
-    Choose somewhere to save your Claude credentials and session data, for instance ~/claude-home.
-    This directory will be mounted into the container to preserve your Claude state across runs."
+if (-not (Test-Path -Path $sOpencodeSaveDir -PathType Container -EA Silent)) {
+    Write-Warning "OpencodeSaveDir directory does not exist: $sOpencodeSaveDir.
+    Choose somewhere to save your OpenCode configuration and state, for instance ~/opencode-home.
+    This directory will be mounted into the container to preserve your OpenCode state across runs."
     exit 1
 }
 #
@@ -216,8 +215,8 @@ if($portsMap.Count -lt 2){
 if($sWorkDirToMount -ne (Resolve-Path $sWorkDirToMount -EA Silent).Path){
     Write-Verbose "    WorkDirToMount: $(Resolve-Path $sWorkDirToMount -EA Silent).Path"
 }
-if($sClaudeSaveDir -ne (Resolve-Path $sClaudeSaveDir -EA Silent).Path){
-    Write-Verbose "    ClaudeSaveDir: $(Resolve-Path $sClaudeSaveDir -EA Silent).Path"
+if($sOpencodeSaveDir -ne (Resolve-Path $sOpencodeSaveDir -EA Silent).Path){
+    Write-Verbose "    OpencodeSaveDir: $(Resolve-Path $sOpencodeSaveDir -EA Silent).Path"
 }
 
 @"
@@ -225,8 +224,7 @@ if($sClaudeSaveDir -ne (Resolve-Path $sClaudeSaveDir -EA Silent).Path){
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
                 -v `"$sWorkDirToMount`:/vmrepos`" `
-                -v `"$sClaudeSaveDir/.claude`:/home/$agentNameLower`/.claude`" `
-                -v `"$sClaudeSaveDir/.claude.json`:/home/$agentNameLower`/.claude.json`" `
+                -v `"$sOpencodeSaveDir/.local/share/opencode`:/home/$agentNameLower`/.local/share/opencode`" `
             $image`:latest
 "@
 
@@ -238,6 +236,5 @@ docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
             -v "$sWorkDirToMount`:/vmrepos" `
-            -v "$sClaudeSaveDir/.claude:/home/$agentNameLower/.claude" `
-            -v "$sClaudeSaveDir/.claude.json:/home/$agentNameLower/.claude.json" `
+            -v "$sOpencodeSaveDir/.local/share/opencode:/home/$agentNameLower/.local/share/opencode" `
     $image`:latest
