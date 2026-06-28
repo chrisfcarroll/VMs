@@ -57,8 +57,8 @@
 set -euo pipefail
 
 # Defaults
-work_dir_to_mount=""
-claude_save_dir=""
+work_dir_to_mount="."
+claude_save_dir="~/.config/claude-it"
 image="alpine-claude-dotnet-dev"
 build_image=false
 image_dir=""
