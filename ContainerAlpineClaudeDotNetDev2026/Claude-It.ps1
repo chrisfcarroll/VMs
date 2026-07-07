@@ -94,7 +94,7 @@ param (
     [string]$image          = "alpine-claude-dotnet-dev",
     [switch]$buildImage     = $false,
     [string]$imageDir       ,
-    [string[]]$portsMap     = @("3000:3000","3001:3001"),
+    [string[]]$portsMap     = @("0:3000","0:3001"),
     [string]$agentName      = "Agent1",
     [switch]$help           = $false,
     [switch]$dryRun         = $false
@@ -209,7 +209,7 @@ if($portsMap.Count -gt 2){
 }
 
 if($portsMap.Count -lt 2){
-    $portsMap = $portsMap,"3000:3000","3001:3001" | Select -First 2
+    $portsMap = ($portsMap + "0:3000" + "0:3001") | Select -First 2
 }
 
 
@@ -221,7 +221,7 @@ if($sClaudeSaveDir -ne (Resolve-Path $sClaudeSaveDir -EA Silent).Path){
 }
 
 @"
-    docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
+    docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
                 -v `"$sWorkDirToMount`:/vmrepos`" `
@@ -234,7 +234,7 @@ if($dryRun){
     exit 0
 }
 
-docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
+docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
             -v "$sWorkDirToMount`:/vmrepos" `
