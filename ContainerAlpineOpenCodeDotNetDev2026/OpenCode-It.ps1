@@ -77,9 +77,9 @@
 #   ┌──────────────────────────┬──────────────────────────────────────────────┐
 #   │          Mount           │                   Contains                   │
 #   ├──────────────────────────┼──────────────────────────────────────────────┤
-#   │ ~/.config/opencode/      │ Configuration (opencode.json, agents, etc.) │
+#   │ ~/.config/opencode/      │ Configuration (opencode.json, agents, etc.)  │
 #   ├──────────────────────────┼──────────────────────────────────────────────┤
-#   │ ~/.local/share/opencode/ │ Data and auth (auth.json, etc.)             │
+#   │ ~/.local/share/opencode/ │ Data and auth (auth.json, etc.)              │
 #   └──────────────────────────┴──────────────────────────────────────────────┘
 
 #   Or use environment variables instead to avoid volume mounts entirely:
@@ -89,11 +89,11 @@
 [CmdletBinding()]
 param (
     [string]$WorkDirToMount = (Resolve-Path '.').Path,
-    [string]$opencodeSaveDir= (Resolve-Path '~').Path  ,
+    [string]$opencodeSaveDir= (Resolve-Path "~/.opencode-it-sessions" -EA Silent).Path  ,
     [string]$image          = "alpine-opencode-dotnet-dev",
     [switch]$buildImage     = $false,
     [string]$imageDir       ,
-    [string[]]$portsMap     = @("3002:3002","3003:3003"),
+    [string[]]$portsMap     = @("0:3000","0:3001"),
     [string]$agentName      = "Agent1",
     [switch]$help           = $false,
     [switch]$dryRun         = $false
@@ -126,7 +126,7 @@ $validImages = (docker images --format "{{.Repository}}:{{.Tag}}")
 Write-Verbose ([string]::join("`n", @("    docker images") + $validImages)).ToString()
 
 # Prompt for paths that couldn't be resolved
-if (-not $sWorkDirToMount) {
+if ([string]::IsNullOrWhiteSpace($sWorkDirToMount)) {
     $sWorkDirToMount = Read-Host "Enter path to the working directory you want to mount in the container.
     This is the working directory you are asking OpenCode to work in, so it should contain the git repos you want to work on."
     if(-not $sWorkDirToMount -or -not (Test-Path -Path $sWorkDirToMount -EA Silent)) {
@@ -200,7 +200,7 @@ $gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Selec
 
 
 if($buildImage){
-    docker build $sImageDir -t "$($image):latest" ;
+    docker build $sImageDir -t "$image`:latest" ;
 }
 
 if($portsMap.Count -gt 2){
@@ -208,7 +208,7 @@ if($portsMap.Count -gt 2){
 }
 
 if($portsMap.Count -lt 2){
-    $portsMap = $portsMap,"3000:3000","3001:3001" | Select -First 2
+    $portsMap = ($portsMap + "0:3000" + "0:3001") | Select -First 2
 }
 
 
@@ -232,7 +232,7 @@ if($dryRun){
     exit 0
 }
 
-docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
+docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
             -v "$sWorkDirToMount`:/vmrepos" `

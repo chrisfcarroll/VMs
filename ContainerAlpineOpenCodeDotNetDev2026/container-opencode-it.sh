@@ -1,57 +1,50 @@
 #!/usr/bin/env bash
 #
-# Launches a container with Alpine Linux, OpenCode, and .NET development tools.
+# Launches an Apple container with Alpine Linux, OpenCode, and .NET development tools.
 #
-# Automatically detects and uses whichever container runtime is available:
-# Docker (docker) or the Apple container CLI (container). Use --runtime to force one.
-#
-# Creates and runs a container for development using OpenCode as an agent. The script recognises:
+# Creates and runs a Apple container for development using OpenCode as an agent. The script recognises:
 # - Volume mounts for code repositories and OpenCode configuration
 # - Git author environment variables or config settings (name and email)
 # - Paths to preserve OpenCode configuration and state across container runs
 # - Port mappings
 #
 # The script supports optional image building and port mappings. Container mounts preserve:
-# - ~/.config/opencode/: Configuration and state
+# - ~/.local/share/opencode/: Data and auth
 #
 # Usage:
-#   ./opencode-it.sh [OPTIONS]
+#   ./container-opencode-it.sh [OPTIONS]
 #
 # Options:
-#   --work-dir DIR           Host directory path to mount as /vmrepos in the container.
-#   --opencode-save-dir DIR  Host directory for storing OpenCode configuration and state volumes.
-#   --image NAME             Image name to run. Default: "alpine-opencode-dotnet-dev"
-#   --build-image            If specified, builds the image from a Dockerfile before running.
-#   --image-dir DIR          Directory containing Dockerfiles. Used with --build-image (docker runtime).
-#   --image-dockerfile FILE  Path to a Dockerfile. Used with --build-image (container runtime).
-#   --runtime NAME           Container runtime to use: "docker" or "container".
-#                            Default: auto-detected (docker preferred, then container).
+#   --work-dir DIR            Host directory path to mount as /vmrepos in the container.
+#                             Defaults to "."
+#   --opencode-save-dir DIR   Host directory for storing OpenCode configuration and state volumes.
+#                             Defaults to ~/.config/opencode-it
+#   --image NAME              image name to run. Default: "alpine-opencode-dotnet-dev"
+#   --build-image            If specified, builds the container image from Dockerfile before running.
+#   --image-dockerfile FILE  path to Dockerfile, required for --build-image.
 #   --ports PORT1 PORT2      Port mappings in "host:container" format. Default: "0:3000" "0:3001"
 #                            A host port of 0 lets the runtime auto-assign a free host port, so
 #                            multiple containers can run at once without port collisions.
 #                            Maximum of 2 port mappings supported; additional mappings are ignored.
 #   --agent-name NAME        Name of the agent running in the container. Used for Git author attribution.
-#                            Must match the USER set in the Dockerfile.
+#                            NOTE: You must match the USER set in the Dockerfile.
 #                            Default: "Agent1"
-#   --dry-run                Print the run command without executing it.
+#   --dry-run                Print the container command without executing it.
 #   --help                   Show this help message.
 #
 # Examples:
-#   ./opencode-it.sh --work-dir ~/my-repos
+#   ./container-opencode-it.sh --work-dir ~/my-repos
 #       Runs the default container with a custom work directory.
 #
-#   ./opencode-it.sh --build-image --image my-custom-image --agent-name "MyAgent" --image-dir ~/Dockerfiles
-#       Builds the image first (docker), then runs it with custom agent name.
+#   ./container-opencode-it.sh --build-image --image my-custom-image --agent-name "MyAgent" --image-dockerfile Dockerfile
+#       Builds the image first, then runs it with custom agent name.
 #
-#   ./opencode-it.sh --runtime container --build-image --image-dockerfile ./Dockerfile
-#       Forces the Apple container runtime and builds from a Dockerfile path.
-#
-#   ./opencode-it.sh --ports "8000:3000" "8001:3001"
+#   ./container-opencode-it.sh --ports "8000:3000" "8001:3001"
 #       Runs the container with custom port mappings.
 #
 # Notes:
 #   - Git author name and email are automatically captured from environment or git config
-#   - The script assumes a supported container runtime and git are installed and available
+#   - The script assumes apple container and git are installed and available
 #   - Volume mounts preserve OpenCode state between container runs
 #   - Pass provider-specific API key env vars (e.g. OPENAI_API_KEY) to avoid volume mounts for credentials
 #
@@ -66,12 +59,10 @@ set -euo pipefail
 
 # Defaults
 work_dir_to_mount="."
-opencode_save_dir="~/.config/opencode-it"
+opencode_save_dir="$HOME/.config/opencode-it"
 image="alpine-opencode-dotnet-dev"
 build_image=false
-image_dir=""
 image_dockerfile=""
-runtime=""
 ports=("0:3000" "0:3001")
 agent_name="Agent1"
 dry_run=false
@@ -95,16 +86,8 @@ while [[ $# -gt 0 ]]; do
             build_image=true
             shift
             ;;
-        --image-dir)
-            image_dir="$2"
-            shift 2
-            ;;
         --image-dockerfile)
             image_dockerfile="$2"
-            shift 2
-            ;;
-        --runtime)
-            runtime="$2"
             shift 2
             ;;
         --ports)
@@ -124,7 +107,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help)
-            sed -n '2,/^$/{ s/^# \?//; p }' "$0"
+            sed -n '2,/^$/{ s/^#\s*//; p; }' "$0"
             exit 0
             ;;
         *)
@@ -134,45 +117,18 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Detect / validate the container runtime
-case "$runtime" in
-    "")
-        # Auto-detect: prefer docker, then Apple container
-        if command -v docker &>/dev/null; then
-            runtime="docker"
-        elif command -v container &>/dev/null; then
-            runtime="container"
-        else
-            echo "Warning: No container runtime found. Please install Docker or the Apple container CLI." >&2
-            echo "Apple container install guide: https://github.com/apple/container/blob/main/docs/tutorials/start-here.md" >&2
-            exit 1
-        fi
-        ;;
-    docker|container)
-        if ! command -v "$runtime" &>/dev/null; then
-            echo "Warning: Requested runtime '$runtime' not found. Please install it and ensure it is in your PATH." >&2
-            exit 1
-        fi
-        ;;
-    *)
-        echo "Warning: Unknown runtime '$runtime'. Valid values are 'docker' or 'container'." >&2
-        exit 1
-        ;;
-esac
-echo "    Using container runtime: $runtime"
-
 # Ensure required commands
+if ! command -v container &>/dev/null; then
+    echo "Warning: container command not found. An installation guide is at 
+    https://github.com/apple/container/blob/main/docs/tutorials/start-here.md." >&2
+    exit 1
+fi
 if ! command -v git &>/dev/null; then
     echo "Warning: Git command not found. Please install Git and ensure it is in your PATH." >&2
     exit 1
 fi
 
-# List existing images in a runtime-appropriate way
-if [[ "$runtime" == "docker" ]]; then
-    valid_images=$(docker images --format "{{.Repository}}:{{.Tag}}")
-else
-    valid_images=$(container image ls)
-fi
+valid_images=$(container image ls)
 
 # Prompt for paths that couldn't be resolved
 if [[ -z "$work_dir_to_mount" ]]; then
@@ -186,28 +142,14 @@ if [[ -z "$work_dir_to_mount" ]]; then
 fi
 work_dir_to_mount=$(realpath "$work_dir_to_mount")
 
-if [[ "$build_image" == true ]]; then
-    if [[ "$runtime" == "docker" ]]; then
-        if [[ -z "$image_dir" ]]; then
-            echo "Enter path to Dockerfiles directory:"
-            read -r image_dir
-        fi
-        if [[ -z "$image_dir" || ! -d "$image_dir/$image" ]]; then
-            echo "Warning: You asked to build the image, but the Dockerfile directory does not exist: $image_dir/$image" >&2
-            exit 1
-        fi
-        image_dir=$(realpath "$image_dir")
-    else
-        if [[ -z "$image_dockerfile" ]]; then
-            echo "Enter path to your $image Dockerfile:"
-            read -r image_dockerfile
-        fi
-        if [[ -z "$image_dockerfile" || ! -f "$image_dockerfile" ]]; then
-            echo "Warning: You asked to build the image, but there is no Dockerfile at: $image_dockerfile" >&2
-            exit 1
-        fi
-        image_dockerfile=$(realpath "$image_dockerfile")
+if [[ "$build_image" == true && -z "$image_dockerfile" ]]; then
+    echo "Enter path to your $image Dockerfile:"
+    read -r image_dockerfile
+    if [[ -z "$image_dockerfile" || ! -f "$image_dockerfile" ]]; then
+        echo "Warning: You asked to build the image, but there is no Dockerfile in: $image_dockerfile" >&2
+        exit 1
     fi
+    image_dockerfile=$(realpath "$image_dockerfile")
 fi
 
 if [[ -z "$image" ]]; then
@@ -223,7 +165,7 @@ if [[ -z "$opencode_save_dir" ]]; then
     echo "Enter path to save OpenCode data. Otherwise we will default to ~/.opencode-it-sessions"
     read -r opencode_save_dir
     if [[ -z "$opencode_save_dir" ]]; then
-        opencode_save_dir="$HOME/.opencode-it-sessions"
+        opencode_save_dir="$HOME/.config/opencode-it"
     fi
     if [[ ! -d "$opencode_save_dir" ]]; then
         mkdir -p "$opencode_save_dir"
@@ -240,30 +182,18 @@ fi
 
 echo "    Checking $image ..."
 
-if [[ "$build_image" == true ]]; then
-    if [[ "$runtime" == "docker" ]]; then
-        if [[ ! -d "$image_dir" ]]; then
-            echo "Warning: You asked for buildImage, but ImageDir directory does not exist: $image_dir" >&2
-            exit 1
-        elif [[ ! -f "$image_dir/$image/Dockerfile" ]]; then
-            echo "Warning: You asked for buildImage, but Dockerfile not found at: $image_dir/$image/Dockerfile" >&2
-            exit 1
-        fi
-    else
-        if [[ ! -f "$image_dockerfile" ]]; then
-            echo "Warning: You asked for buildImage, but Dockerfile doesn't exist: $image_dockerfile" >&2
-            exit 1
-        fi
-    fi
-elif ! echo "$valid_images" | grep -q "^${image}"; then
-    echo "Warning: $runtime image '$image' does not exist and --build-image was not specified." >&2
-    echo "Either build the image with --build-image flag or ensure the image is available locally." >&2
+if [[ "$build_image" == true && ! -f "$image_dockerfile" ]]; then
+    echo "Warning: You asked for buildImage, but file doesn't exist: $image_dockerfile" >&2
+    exit 1
+elif [[ "$build_image" != true ]] && ! echo "$valid_images" | grep -q "^${image}"; then
+    echo "Warning: container image '$image' does not exist and --build-image was not specified." >&2
+    echo "Either build the image with the --build-image flag or ensure the image is available locally." >&2
     exit 1
 fi
 
 if [[ ! -d "$opencode_save_dir" ]]; then
-    echo "Warning: OpencodeSaveDir directory does not exist: $opencode_save_dir." >&2
-    echo "Choose somewhere to save your OpenCode configuration and state, for instance ~/opencode-home." >&2
+    echo "Warning: opencode-save-dir directory does not exist: $opencode_save_dir." >&2
+    echo "Choose somewhere to save your OpenCode configuration and state, for instance ~/.config/opencode-it" >&2
     echo "This directory will be mounted into the container to preserve your OpenCode state across runs." >&2
     exit 1
 fi
@@ -276,11 +206,7 @@ git_author_email="${GIT_AUTHOR_EMAIL:-$(git config --get user.email 2>/dev/null 
 
 # Build image if requested
 if [[ "$build_image" == true ]]; then
-    if [[ "$runtime" == "docker" ]]; then
-        docker build "$image_dir/$image" -t "${image}:latest"
-    else
-        container build "$image_dockerfile" -t "${image}:latest"
-    fi
+    container build "$image_dockerfile" -t "${image}:latest"
 fi
 
 # Handle port mappings
@@ -299,7 +225,7 @@ done
 
 # Print the command
 cat <<EOF
-    $runtime run -it -p ${ports[0]} -p ${ports[1]} \\
+    container run -it -p ${ports[0]} -p ${ports[1]} \\
                 -e GIT_AUTHOR_NAME="$git_author_name" \\
                 -e GIT_AUTHOR_EMAIL="$git_author_email" \\
                 -v "$work_dir_to_mount:/vmrepos" \\
@@ -311,7 +237,7 @@ if [[ "$dry_run" == true ]]; then
     exit 0
 fi
 
-"$runtime" run -it -p "${ports[0]}" -p "${ports[1]}" \
+container run -it -p "${ports[0]}" -p "${ports[1]}" \
             -e GIT_AUTHOR_NAME="$git_author_name" \
             -e GIT_AUTHOR_EMAIL="$git_author_email" \
             -v "$work_dir_to_mount:/vmrepos" \

@@ -14,7 +14,7 @@ RUN chmod +x /opt/microsoft/powershell/7/pwsh
 RUN ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
 RUN rm -rf /tmp/powershell*
 RUN apk add docs oh-my-zsh tmux
-RUN apk add libgcc libstdc++ ripgrep bash # opencode dependencies
+RUN apk add libgcc libstdc++ ripgrep bash # maybe opencode dependencies
 RUN apk add musl-locales ncurses-terminfo
 RUN apk add krb5
 RUN touch /etc/rc.conf
@@ -28,6 +28,8 @@ RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd pwsh" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
 USER agent1
+RUN curl -fsSL https://opencode.ai/install | bash
+RUN echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.zshrc
 RUN git config --global rerere.enabled true
 RUN git config --global alias.root 'rev-parse --show-toplevel'
 RUN git config --global alias.lg  "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --graph"
@@ -63,7 +65,6 @@ for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
 tmux -u new-session -d ; tmux -u new-session /home/agent1/.local/bin/opencode
 EOF
 RUN chmod a+x ~/go.sh
-RUN curl -fsSL https://opencode.ai/install | bash
 WORKDIR /vmrepos
 # --------------------------------
 # Repos to work on can be mounted at runtime under /vmrepos.
@@ -85,6 +86,6 @@ ENV GIT_AUTHOR_NAME=$GIT_AUTHOR_NAME
 ENV GIT_AUTHOR_EMAIL=$GIT_AUTHOR_EMAIL
 # --------------------------------
 #
-RUN if [ -n "$GIT_AUTHOR_NAME"  ] ; then git config --global user.name "Agent1 for $GIT_AUTHOR_NAME" ; fi
+RUN if [ -n "$GIT_AUTHOR_NAME"  ] ; then git config --global user.name "AgentO for $GIT_AUTHOR_NAME" ; fi
 RUN if [ -n "$GIT_AUTHOR_EMAIL" ] ; then git config --global user.email "$GIT_AUTHOR_EMAIL" ; fi
 ENTRYPOINT ["zsh", "-c", "/home/agent1/go.sh ; exec zsh -i"]
