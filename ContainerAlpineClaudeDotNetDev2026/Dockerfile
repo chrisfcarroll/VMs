@@ -41,6 +41,8 @@ alias glogg='git log --color --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Crese
 alias glog='git log --color --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit'
 alias gco='git checkout'
 alias gaa='git add -A'
+alias gitacom='git commit -am'
+alias gb='git branch'
 alias grv='git remote -v'
 alias gs='git status'
 alias la='ls -A'

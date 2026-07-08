@@ -23,7 +23,9 @@
 #   --image NAME            image name to run. Default: "alpine-claude-dotnet-dev"
 #   --build-image           If specified, builds the container image from Dockerfile before running.
 #   --image-dockerfile FILE path to Dockerfile, required for --build-image.
-#   --ports PORT1 PORT2     Port mappings in "host:container" format. Default: "3000:3000" "3001:3001"
+#   --ports PORT1 PORT2     Port mappings in "host:container" format. Default: "0:3000" "0:3001"
+#                           A host port of 0 lets the runtime auto-assign a free host port, so
+#                           multiple containers can run at once without port collisions.
 #                           Maximum of 2 port mappings supported; additional mappings are ignored.
 #   --agent-name NAME       Name of the agent running in the container. Used for Git author attribution
 #                           and .claude directory naming. NOTE: You must match the USER set in the Dockerfile.
@@ -64,7 +66,7 @@ claude_save_dir="$HOME/.config/claude-it"
 image="alpine-claude-dotnet-dev"
 build_image=false
 image_dockerfile=""
-ports=("3000:3000" "3001:3001")
+ports=("0:3000" "0:3001")
 agent_name="Agent1"
 dry_run=false
 
@@ -218,9 +220,9 @@ fi
 # Ensure at least 2 port mappings
 while [[ ${#ports[@]} -lt 2 ]]; do
     if [[ ${#ports[@]} -eq 0 ]]; then
-        ports+=("3000:3000")
+        ports+=("0:3000")
     else
-        ports+=("3001:3001")
+        ports+=("0:3001")
     fi
 done
 

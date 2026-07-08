@@ -89,8 +89,8 @@
 
 [CmdletBinding()]
 param (
-    [string]$WorkDirToMount ,
-    [string]$claudeSaveDir  ,
+    [string]$WorkDirToMount = (Resolve-Path '.').Path,
+    [string]$claudeSaveDir  = (Resolve-Path "~/.claude-it-sessions" -EA Silent).Path,
     [string]$image          = "alpine-claude-dotnet-dev",
     [switch]$buildImage     = $false,
     [string]$imageDir       ,
@@ -127,7 +127,7 @@ $validImages = (docker images --format "{{.Repository}}:{{.Tag}}")
 Write-Verbose ([string]::join("`n", @("    docker images") + $validImages)).ToString()
 
 # Prompt for paths that couldn't be resolved
-if (-not $sWorkDirToMount) {
+if ([string]::IsNullOrWhiteSpace($sWorkDirToMount)) {
     $sWorkDirToMount = Read-Host "Enter path to the working directory you want to mount in the container.
     This is the working directory you are asking Claude to work in, so it should contain the git repos you want to work on."
     if(-not $sWorkDirToMount -or -not (Test-Path -Path $sWorkDirToMount -EA Silent)) {
@@ -135,7 +135,7 @@ if (-not $sWorkDirToMount) {
         exit 1
     }
 }
-$sWorkDirToMount =  Resolve-Path $sWorkDirToMount
+$sWorkDirToMount =  (Resolve-Path $sWorkDirToMount).Path
 
 if ($buildImage -and -not $sImageDir) {
     $sImageDir = Read-Host "Enter path to Dockerfiles directory"
@@ -160,7 +160,7 @@ if (-not $sClaudeSaveDir) {
         New-Item -Path $sClaudeSaveDir -ItemType Directory
     }
 }
-$sClaudeSaveDir=(Resolve-Path $sClaudeSaveDir)
+$sClaudeSaveDir=(Resolve-Path $sClaudeSaveDir).Path
 
 # Ensure required paths exist
 if (-not (Test-Path -Path $sWorkDirToMount -PathType Container -EA Silent)) {
@@ -201,7 +201,7 @@ $gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Selec
 
 
 if($buildImage){
-    docker build $sImageDir -t "$($image):latest"
+    docker build $sImageDir -t "$image`:latest"
 }
 
 if($portsMap.Count -gt 2){
