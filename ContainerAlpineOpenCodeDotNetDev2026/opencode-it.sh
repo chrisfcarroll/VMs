@@ -66,13 +66,13 @@ set -euo pipefail
 
 # Defaults
 work_dir_to_mount="."
-opencode_save_dir="~/.config/opencode-it"
+opencode_save_dir="$HOME/.config/opencode-it"
 image="alpine-opencode-dotnet-dev"
 build_image=false
 image_dir=""
 image_dockerfile=""
 runtime=""
-ports=("0:3000" "0:3001")
+ports=("3000:3000" "3001:3001")
 agent_name="Agent1"
 dry_run=false
 
@@ -137,11 +137,11 @@ done
 # Detect / validate the container runtime
 case "$runtime" in
     "")
-        # Auto-detect: prefer docker, then Apple container
-        if command -v docker &>/dev/null; then
-            runtime="docker"
-        elif command -v container &>/dev/null; then
+        # Auto-detect: prefer Apple container, then docker container
+        if command -v container &>/dev/null; then
             runtime="container"
+        elif command -v docker &>/dev/null; then
+            runtime="docker"
         else
             echo "Warning: No container runtime found. Please install Docker or the Apple container CLI." >&2
             echo "Apple container install guide: https://github.com/apple/container/blob/main/docs/tutorials/start-here.md" >&2
