@@ -138,8 +138,8 @@ $sWorkDirToMount =  (Resolve-Path $sWorkDirToMount).Path
 
 if ($buildImage -and -not $sImageDir) {
     $sImageDir = Read-Host "Enter path to Dockerfiles directory"
-    if(-not $sImageDir -or -not (Test-Path -Path $sImageDir/$image -EA Silent)) {
-        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $sImageDir/$image"
+    if(-not $sImageDir -or -not (Test-Path -Path $sImageDir/Dockerfile -EA Silent)) {
+        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $sImageDir/Dockerfile"
         exit 1
     }
     $sImageDir = (Resolve-Path $sImageDir).Path
