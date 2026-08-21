@@ -53,6 +53,11 @@ plugins=(git)
 ZSH_THEME="robbyrussell"
 source /usr/share/oh-my-zsh/oh-my-zsh.sh
 EOF
+RUN cat <<'EOF'>>  ~/.config/opencode/config.json # this is why we use a container
+{
+  "yolo":true
+}
+EOF
 RUN cat <<'EOF' >> ~/.tmux.conf
 set -g default-terminal "tmux-256color"
 set -ga terminal-overrides ",tmux-256color:RGB"
