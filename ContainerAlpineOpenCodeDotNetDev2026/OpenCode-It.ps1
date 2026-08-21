@@ -220,7 +220,7 @@ if($sOpencodeSaveDir -ne (Resolve-Path $sOpencodeSaveDir -EA Silent).Path){
 }
 
 @"
-    docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
+    docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
                 -v `"$sWorkDirToMount`:/vmrepos`" `
