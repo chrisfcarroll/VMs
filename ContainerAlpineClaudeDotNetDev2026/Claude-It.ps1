@@ -21,8 +21,9 @@
     Default: $false
 
 .PARAMETER portsMap
-    Array of port mappings in "host:container" format. Default: @("3000:3000","3001:3001")
-    Maximum of 2 port mappings supported; additional mappings are ignored.
+    Array of port mappings in "host:container" format. 
+    Default: @("0:3000","0:3001"), which lets Docker choose the next free host ports to map to ports 3000,3001 in the container
+    A maximum of 2 port mappings supported; additional mappings are ignored.
 
 .PARAMETER agentName
     Name of the agent running in the container. Used for Git author attribution and .claude directory naming.
@@ -30,19 +31,20 @@
     Default: "Agent1"
 
 .PARAMETER WorkDirToMount
-    Host directory path to mount as /vmrepos in the container. Resolved from ~/WorkDirToMount by default.
+    Host directory path to mount as /vmrepos in the container.
+    Default: "."
 
 .PARAMETER imageDir
     Directory containing Dockerfiles. Used with -buildImage to locate the Dockerfile.
-    Default: ~/Repos/Dockerfiles
 
 .PARAMETER claudeSaveDir
     Host directory for storing Claude configuration and state volumes.
-    Default: ~/WorkDirToMount/claude-home
+    Default: "~/.claude-it-sessions"
 
 .EXAMPLE
     .\Claude-It.ps1
-    Runs the default Alpine Claude .NET dev container with default settings.
+    Runs the default Alpine Claude .NET dev container with default settings, mapping the current 
+    directory to /vmrepos
 
 .EXAMPLE
     .\Claude-It.ps1 -buildImage -image my-custom-image -agentName "MyAgent"
