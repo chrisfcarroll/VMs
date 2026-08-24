@@ -78,6 +78,11 @@ plugins=(git)
 ZSH_THEME="robbyrussell"
 source /usr/share/oh-my-zsh/oh-my-zsh.sh
 EOF
+RUN cat <<'EOF'>>  ~/.config/opencode/config.json # this is why we use a container
+{
+  "yolo":true
+}
+EOF
 RUN cat <<'EOF' >> ~/.tmux.conf
 set -g default-terminal "tmux-256color"
 set -ga terminal-overrides ",tmux-256color:RGB"
@@ -85,10 +90,11 @@ set -ga terminal-overrides ",xterm-256color:RGB"
 EOF
 RUN cat <<'EOF' >> ~/go.sh
 for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
-case "${CODE_AGENT:-claude}" in
-    opencode) agent_bin=/home/agent1/.local/bin/opencode ;;
+for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
+case "${CODE_AGENT:-opencode}" in
+    opencode) agent_bin=/home/agent1/.opencode/bin/opencode ;;
     claude)   agent_bin=/home/agent1/.local/bin/claude ;;
-    *)        echo "Unknown CODE_AGENT '${CODE_AGENT}', defaulting to claude" ; agent_bin=/home/agent1/.local/bin/claude ;;
+    *)        echo "Defaulting to opencode" ; agent_bin=/home/agent1/.opencode/bin/opencode ;;
 esac
 tmux -u new-session -d ; tmux -u new-session "$agent_bin"
 EOF
@@ -121,4 +127,4 @@ ENV GIT_AUTHOR_EMAIL=$GIT_AUTHOR_EMAIL
 #
 RUN if [ -n "$GIT_AUTHOR_NAME"  ] ; then git config --global user.name "Agent1 for $GIT_AUTHOR_NAME" ; fi
 RUN if [ -n "$GIT_AUTHOR_EMAIL" ] ; then git config --global user.email "$GIT_AUTHOR_EMAIL" ; fi
-ENTRYPOINT ["zsh", "-c", "/home/agent1/go.sh ; exec zsh -i"]
+ENTRYPOINT ["zsh", "-c", "/home/agent1/go.sh"]

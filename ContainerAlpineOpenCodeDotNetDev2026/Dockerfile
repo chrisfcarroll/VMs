@@ -93,4 +93,4 @@ ENV GIT_AUTHOR_EMAIL=$GIT_AUTHOR_EMAIL
 #
 RUN if [ -n "$GIT_AUTHOR_NAME"  ] ; then git config --global user.name "AgentO for $GIT_AUTHOR_NAME" ; fi
 RUN if [ -n "$GIT_AUTHOR_EMAIL" ] ; then git config --global user.email "$GIT_AUTHOR_EMAIL" ; fi
-ENTRYPOINT ["zsh", "-c", "/home/agent1/go.sh ; exec zsh -i"]
+ENTRYPOINT ["zsh", "-c", "/home/agent1/go.sh"]
