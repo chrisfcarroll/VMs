@@ -25,7 +25,7 @@
 #                            Defaults to "."
 #   --save-dir DIR           Host directory for storing agent configuration and state volumes.
 #                            Created if missing. Defaults to ~/.config/code-it
-#   --image NAME             Image name to run. Default: "alpine-code-dotnet-dev"
+#   --image NAME             Image name to run. Default: "code-it-alpine-dotnet"
 #   --build-image            If specified, builds the image from the Dockerfile before running.
 #   --dockerfile-dir DIR     Directory containing the Dockerfile. Used with --build-image.
 #                            Defaults to this script's own directory.
@@ -80,10 +80,10 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 abs_dir() { (CDPATH= cd -- "$1" && pwd); }
 
 # Defaults
-code_agent="claude"
+code_agent="opencode"
 work_dir_to_mount="."
 save_dir="$HOME/.config/code-it"
-image="alpine-code-dotnet-dev"
+image="code-it-alpine-dotnet"
 build_image=false
 dockerfile_dir="$script_dir"
 runtime=""

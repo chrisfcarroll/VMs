@@ -48,11 +48,12 @@ RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd pwsh" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
+# ---------------------------------------------------------------------
 USER agent1
-# Both agents: Claude Code and OpenCode. Choose at runtime with -e CODE_AGENT=claude|opencode
-RUN curl -fsSL https://claude.ai/install.sh | bash
-RUN curl -fsSL https://opencode.ai/install | bash
+RUN mkdir -p ~/.local/bin
 RUN echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.zshrc
+RUN curl -fsSL https://opencode.ai/install | bash
+RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN git config --global rerere.enabled true
 RUN git config --global alias.root 'rev-parse --show-toplevel'
 RUN git config --global alias.lg  "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --graph"
@@ -78,11 +79,6 @@ plugins=(git)
 ZSH_THEME="robbyrussell"
 source /usr/share/oh-my-zsh/oh-my-zsh.sh
 EOF
-RUN cat <<'EOF'>>  ~/.config/opencode/config.json # this is why we use a container
-{
-  "yolo":true
-}
-EOF
 RUN cat <<'EOF' >> ~/.tmux.conf
 set -g default-terminal "tmux-256color"
 set -ga terminal-overrides ",tmux-256color:RGB"
@@ -99,6 +95,12 @@ esac
 tmux -u new-session -d ; tmux -u new-session "$agent_bin"
 EOF
 RUN chmod a+x ~/go.sh
+RUN mkdir -p ~/.config/opencode
+RUN cat <<'EOF' >> ~/.config/opencode/config.json
+{
+  "yolo":true
+}
+EOF
 WORKDIR /vmrepos
 # --------------------------------
 # Repos to work on can be mounted at runtime under /vmrepos.
