@@ -51,11 +51,11 @@ On startup, the container launches a **tmux** session with OpenCode ready to go.
 ```bash
 docker build . -t alpine-opencode-dotnet-dev:latest
 
-docker run -it \
+docker run -it --rm \
     -p 3000:3000 -p 3001:3001 \
     -e GIT_AUTHOR_NAME="Agent1 for $(git config --get user.name)" \
     -e GIT_AUTHOR_EMAIL="$(git config --get user.email)" \
-    -v ~/WorkDirToMount:/vmrepos \
+    -v ~/WorkDirToMount:/repos \
     -v ~/opencode-home/.local/share/opencode:/home/agent1/.local/share/opencode \
     alpine-opencode-dotnet-dev:latest
 ```
@@ -66,7 +66,7 @@ The container expects up to three mounts:
 
 | Mount point | Purpose |
 |---|---|
-| `/vmrepos` | Host directory containing git repos for OpenCode to work on |
+| `/repos` | Host directory containing git repos for OpenCode to work on |
 | `/home/agent1/.local/share/opencode` | Persists OpenCode data and auth (auth.json, etc.) |
 
 Alternatively, pass provider-specific API key environment variables (e.g. `-e OPENAI_API_KEY=sk-...`) instead of mounting the config directory.
@@ -81,7 +81,7 @@ Both `OpenCode-It.ps1` and `opencode-it.sh` accept the same logical parameters:
 | `--build-image` / `-buildImage` | off | Build the image before running |
 | `--ports-map` / `-portsMap` | `3000:3000`, `3001:3001` | Port mappings (max 2) |
 | `--agent-name` / `-agentName` | `Agent1` | Agent name, used for git attribution |
-| `--workdir-to-mount` / `-WorkDirToMount` | `~/WorkDirToMount` | Host path mounted at `/vmrepos` |
+| `--workdir-to-mount` / `-WorkDirToMount` | `~/WorkDirToMount` | Host path mounted at `/repos` |
 | `--image-dir` / `-imageDir` | `~/Repos/Dockerfiles` | Directory containing Dockerfiles |
 | `--opencode-save-dir` / `-opencodeSaveDir` | `~/WorkDirToMount/opencode-home` | Host path for OpenCode state persistence |
 

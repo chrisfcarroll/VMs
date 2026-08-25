@@ -85,8 +85,7 @@ set -ga terminal-overrides ",tmux-256color:RGB"
 set -ga terminal-overrides ",xterm-256color:RGB"
 EOF
 RUN cat <<'EOF' >> ~/go.sh
-for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
-for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
+for d in /repos/*/ ; do git config --global --add safe.directory "$d" ; done
 case "${CODE_AGENT:-opencode}" in
     opencode) agent_bin=/home/agent1/.opencode/bin/opencode ;;
     claude)   agent_bin=/home/agent1/.local/bin/claude ;;
@@ -101,9 +100,9 @@ RUN cat <<'EOF' >> ~/.config/opencode/config.json
   "yolo":true
 }
 EOF
-WORKDIR /vmrepos
+WORKDIR /repos
 # --------------------------------
-# Repos to work on can be mounted at runtime under /vmrepos.
+# Repos to work on can be mounted at runtime under /repos.
 # Also mount the state directories for whichever agent(s) you use, for up to 4 mounts:
 # 1. Repos directory
 # 2. ~/.claude directory (claude credentials, settings & memory)
@@ -111,11 +110,11 @@ WORKDIR /vmrepos
 # 4. ~/.local/share/opencode directory (opencode data & auth)
 # Choose the agent with -e CODE_AGENT=claude (default) or -e CODE_AGENT=opencode
 # Example :
-#     docker run -it \
+#     docker run -it --rm \
 #                -e CODE_AGENT=claude \
 #                -e GIT_AUTHOR_NAME="Agent1 for $(git config --get user.name)" \
 #                -e GIT_AUTHOR_EMAIL="$(git config --get user.email)" \
-#                -v ~/vmrepos:/vmrepos \
+#                -v ~/repos:/repos \
 #                -v ~/.config/code-it/.claude:/home/agent1/.claude \
 #                -v ~/.config/code-it/.claude.json:/home/agent1/.claude.json \
 #                -v ~/.config/code-it/.local/share/opencode:/home/agent1/.local/share/opencode \

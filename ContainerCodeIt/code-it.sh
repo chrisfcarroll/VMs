@@ -21,7 +21,7 @@
 # Options:
 #   --claude, -c             Run Claude Code in the container (default).
 #   --opencode, -o           Run OpenCode in the container.
-#   --work-dir DIR           Host directory path to mount as /vmrepos in the container.
+#   --work-dir DIR           Host directory path to mount as /repos in the container.
 #                            Defaults to "."
 #   --save-dir DIR           Host directory for storing agent configuration and state volumes.
 #                            Created if missing. Defaults to ~/.config/code-it
@@ -289,7 +289,7 @@ cat <<EOF
                 -e CODE_AGENT="$code_agent" \\
                 -e GIT_AUTHOR_NAME="$git_author_name" \\
                 -e GIT_AUTHOR_EMAIL="$git_author_email" \\
-                -v "$work_dir_to_mount:/vmrepos" \\
+                -v "$work_dir_to_mount:/repos" \\
                 -v "$save_dir/.claude:/home/$agent_name_lower/.claude" \\
                 -v "$save_dir/.claude.json:/home/$agent_name_lower/.claude.json" \\
                 -v "$save_dir/.local/share/opencode:/home/$agent_name_lower/.local/share/opencode" \\
@@ -304,7 +304,7 @@ fi
             -e CODE_AGENT="$code_agent" \
             -e GIT_AUTHOR_NAME="$git_author_name" \
             -e GIT_AUTHOR_EMAIL="$git_author_email" \
-            -v "$work_dir_to_mount:/vmrepos" \
+            -v "$work_dir_to_mount:/repos" \
             -v "$save_dir/.claude:/home/$agent_name_lower/.claude" \
             -v "$save_dir/.claude.json:/home/$agent_name_lower/.claude.json" \
             -v "$save_dir/.local/share/opencode:/home/$agent_name_lower/.local/share/opencode" \

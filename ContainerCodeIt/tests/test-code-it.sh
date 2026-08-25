@@ -111,7 +111,7 @@ assert_contains "uses docker runtime" "$out" "Using container runtime: docker"
 assert_contains "defaults to claude" "$out" 'CODE_AGENT="claude"'
 assert_contains "docker run command" "$out" "docker run -it"
 assert_contains "image name" "$out" "alpine-code-dotnet-dev:latest"
-assert_contains "work dir mount" "$out" "$script_dir:/vmrepos"
+assert_contains "work dir mount" "$out" "$script_dir:/repos"
 assert_contains "claude dir mount" "$out" "/.claude:/home/agent1/.claude"
 assert_contains "claude.json mount" "$out" "/.claude.json:/home/agent1/.claude.json"
 assert_contains "opencode mount" "$out" "/.local/share/opencode:/home/agent1/.local/share/opencode"

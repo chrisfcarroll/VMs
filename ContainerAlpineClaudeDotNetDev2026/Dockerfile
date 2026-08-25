@@ -61,22 +61,22 @@ set -ga terminal-overrides ",tmux-256color:RGB"
 set -ga terminal-overrides ",xterm-256color:RGB"
 EOF
 RUN cat <<'EOF' >> ~/go.sh
-for d in /vmrepos/*/ ; do git config --global --add safe.directory "$d" ; done
+for d in /repos/*/ ; do git config --global --add safe.directory "$d" ; done
 tmux -u new-session -d ; tmux -u new-session /home/agent1/.local/bin/claude
 EOF
 RUN chmod a+x ~/go.sh
-WORKDIR /vmrepos
+WORKDIR /repos
 # --------------------------------
-# Repos to work on can be mounted at runtime under /vmrepos.
+# Repos to work on can be mounted at runtime under /repos.
 # Also mount the file and directory for claude settings & memory, for a total of 3 mounts:
 # 1. Repos directory
 # 2. ~/.claude directory
 # 3. ~/.claude.json file
 # Example : 
-#     docker run -it 
+#     docker run -it --rm
 #                -e GIT_AUTHOR_NAME=`"Agent1 for $(git config --get user.name)`" `
 #                -e GIT_AUTHOR_NAME=`"$(git config --get user.email)`" `
-#                -v ~\vmrepos:/vmrepos `
+#                -v ~/repos:/repos `
 #                -v ~\claude-home\.claude:/home/agent1/.claude `
 #                -v ~\claude-home\.claude.json:/home/agent1/.claude.json `
 #        alpineclaude:latest

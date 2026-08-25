@@ -31,7 +31,7 @@
     Default: "Agent1"
 
 .PARAMETER WorkDirToMount
-    Host directory path to mount as /vmrepos in the container.
+    Host directory path to mount as /repos in the container.
     Default: "."
 
 .PARAMETER imageDir
@@ -44,7 +44,7 @@
 .EXAMPLE
     .\Claude-It.ps1
     Runs the default Alpine Claude .NET dev container with default settings, mapping the current 
-    directory to /vmrepos
+    directory to /repos
 
 .EXAMPLE
     .\Claude-It.ps1 -buildImage -image my-custom-image -agentName "MyAgent"
@@ -66,10 +66,10 @@
 
 # Mount these two directories/files as volumes:
 #
-#   docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
+#   docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
 #               -e GIT_AUTHOR_NAME=`"$agentName for $(git config --get user.name)`" `
 #               -e GIT_AUTHOR_EMAIL=`"$(git config --get user.email)`" `
-#               -v $VMMounts`:/vmrepos `
+#               -v $VMMounts`:/repos `
 #               -v "$claudeSaveDir\claude-home\.claude:/home/$agentName/.claude" `
 #               -v "$claudeSaveDir\claude-home\.claude.json:/home/$agentName/.claude.json" `
 #           $image`:latest
@@ -226,7 +226,7 @@ if($sClaudeSaveDir -ne (Resolve-Path $sClaudeSaveDir -EA Silent).Path){
     docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
-                -v `"$sWorkDirToMount`:/vmrepos`" `
+                -v `"$sWorkDirToMount`:/repos`" `
                 -v `"$sClaudeSaveDir/.claude`:/home/$agentNameLower`/.claude`" `
                 -v `"$sClaudeSaveDir/.claude.json`:/home/$agentNameLower`/.claude.json`" `
             $image`:latest
@@ -239,7 +239,7 @@ if($dryRun){
 docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
-            -v "$sWorkDirToMount`:/vmrepos" `
+            -v "$sWorkDirToMount`:/repos" `
             -v "$sClaudeSaveDir/.claude:/home/$agentNameLower/.claude" `
             -v "$sClaudeSaveDir/.claude.json:/home/$agentNameLower/.claude.json" `
     $image`:latest

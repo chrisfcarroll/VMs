@@ -29,7 +29,7 @@
     Default: "Agent1"
 
 .PARAMETER WorkDirToMount
-    Host directory path to mount as /vmrepos in the container. Resolved from ~/WorkDirToMount by default.
+    Host directory path to mount as /repos in the container. Resolved from ~/WorkDirToMount by default.
 
 .PARAMETER imageDir
     Directory containing Dockerfiles. Used with -buildImage to locate the Dockerfile.
@@ -64,10 +64,10 @@
 
 # Mount the config directory as a volume:
 #
-#   docker run -it -p $($portsMap[0]) -p $($portsMap[1]) `
+#   docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
 #               -e GIT_AUTHOR_NAME=`"$agentName for $(git config --get user.name)`" `
 #               -e GIT_AUTHOR_EMAIL=`"$(git config --get user.email)`" `
-#               -v $VMMounts`:/vmrepos `
+#               -v $VMMounts`:/repos `
 #               -v "$opencodeSaveDir/.local/share/opencode:/home/$agentName/.local/share/opencode" `
 #           $image`:latest
 #
@@ -223,7 +223,7 @@ if($sOpencodeSaveDir -ne (Resolve-Path $sOpencodeSaveDir -EA Silent).Path){
     docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
-                -v `"$sWorkDirToMount`:/vmrepos`" `
+                -v `"$sWorkDirToMount`:/repos`" `
                 -v `"$sOpencodeSaveDir/.local/share/opencode`:/home/$agentNameLower`/.local/share/opencode`" `
             $image`:latest
 "@
@@ -235,6 +235,6 @@ if($dryRun){
 docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
-            -v "$sWorkDirToMount`:/vmrepos" `
+            -v "$sWorkDirToMount`:/repos" `
             -v "$sOpencodeSaveDir/.local/share/opencode:/home/$agentNameLower/.local/share/opencode" `
     $image`:latest

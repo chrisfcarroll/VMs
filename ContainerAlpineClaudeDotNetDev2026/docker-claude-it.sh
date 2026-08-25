@@ -16,7 +16,7 @@
 #   ./claude-it.sh [OPTIONS]
 #
 # Options:
-#   --work-dir DIR        Host directory path to mount as /vmrepos in the container.
+#   --work-dir DIR        Host directory path to mount as /repos in the container.
 #   --claude-save-dir DIR Host directory for storing Claude configuration and state volumes.
 #   --image NAME          Docker image name to run. Default: "alpine-claude-dotnet-dev"
 #   --build-image         If specified, builds the Docker image from Dockerfile before running.
@@ -228,10 +228,10 @@ done
 
 # Print the command
 cat <<EOF
-    docker run -it -p ${ports[0]} -p ${ports[1]} \\
+    docker run -it --rm -p ${ports[0]} -p ${ports[1]} \\
                 -e GIT_AUTHOR_NAME="$git_author_name" \\
                 -e GIT_AUTHOR_EMAIL="$git_author_email" \\
-                -v "$work_dir_to_mount:/vmrepos" \\
+                -v "$work_dir_to_mount:/repos" \\
                 -v "$claude_save_dir/.claude:/home/$agent_name_lower/.claude" \\
                 -v "$claude_save_dir/.claude.json:/home/$agent_name_lower/.claude.json" \\
             ${image}:latest
@@ -241,10 +241,10 @@ if [[ "$dry_run" == true ]]; then
     exit 0
 fi
 
-docker run -it -p "${ports[0]}" -p "${ports[1]}" \
+docker run -it --rm -p "${ports[0]}" -p "${ports[1]}" \
             -e GIT_AUTHOR_NAME="$git_author_name" \
             -e GIT_AUTHOR_EMAIL="$git_author_email" \
-            -v "$work_dir_to_mount:/vmrepos" \
+            -v "$work_dir_to_mount:/repos" \
             -v "$claude_save_dir/.claude:/home/$agent_name_lower/.claude" \
             -v "$claude_save_dir/.claude.json:/home/$agent_name_lower/.claude.json" \
     "${image}:latest"

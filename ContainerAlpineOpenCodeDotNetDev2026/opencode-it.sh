@@ -18,7 +18,7 @@
 #   ./opencode-it.sh [OPTIONS]
 #
 # Options:
-#   --work-dir DIR           Host directory path to mount as /vmrepos in the container.
+#   --work-dir DIR           Host directory path to mount as /repos in the container.
 #   --opencode-save-dir DIR  Host directory for storing OpenCode configuration and state volumes.
 #   --image NAME             Image name to run. Default: "alpine-opencode-dotnet-dev"
 #   --build-image            If specified, builds the image from a Dockerfile before running.
@@ -302,7 +302,7 @@ cat <<EOF
     $runtime run -it -p ${ports[0]} -p ${ports[1]} \\
                 -e GIT_AUTHOR_NAME="$git_author_name" \\
                 -e GIT_AUTHOR_EMAIL="$git_author_email" \\
-                -v "$work_dir_to_mount:/vmrepos" \\
+                -v "$work_dir_to_mount:/repos" \\
                 -v "$opencode_save_dir/.local/share/opencode:/home/$agent_name_lower/.local/share/opencode" \\
             ${image}:latest
 EOF
@@ -314,6 +314,6 @@ fi
 "$runtime" run -it -p "${ports[0]}" -p "${ports[1]}" \
             -e GIT_AUTHOR_NAME="$git_author_name" \
             -e GIT_AUTHOR_EMAIL="$git_author_email" \
-            -v "$work_dir_to_mount:/vmrepos" \
+            -v "$work_dir_to_mount:/repos" \
             -v "$opencode_save_dir/.local/share/opencode:/home/$agent_name_lower/.local/share/opencode" \
     "${image}:latest"

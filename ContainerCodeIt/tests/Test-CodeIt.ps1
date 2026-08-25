@@ -124,7 +124,7 @@ Assert "dry-run exit code 0" ($r.code -eq 0)
 Assert-Contains "defaults to claude" $r.out 'CODE_AGENT="claude"'
 Assert-Contains "docker run command" $r.out 'docker run -it'
 Assert-Contains "image name" $r.out 'alpine-code-dotnet-dev:latest'
-Assert-Contains "work dir mount" $r.out "$scriptDir`:/vmrepos"
+Assert-Contains "work dir mount" $r.out "$scriptDir`:/repos"
 Assert-Contains "claude dir mount" $r.out '/.claude:/home/agent1/.claude'
 Assert-Contains "claude.json mount" $r.out '/.claude.json:/home/agent1/.claude.json'
 Assert-Contains "opencode mount" $r.out '/.local/share/opencode:/home/agent1/.local/share/opencode'

@@ -51,11 +51,11 @@ On startup, the container launches a **tmux** session with Claude Code ready to 
 ```bash
 docker build . -t alpine-claude-dotnet-dev:latest
 
-docker run -it \
+docker run -it --rm \
     -p 3000:3000 -p 3001:3001 \
     -e GIT_AUTHOR_NAME="AgentC for $(git config --get user.name)" \
     -e GIT_AUTHOR_EMAIL="$(git config --get user.email)" \
-    -v ~/WorkDirToMount:/vmrepos \
+    -v ~/WorkDirToMount:/repos \
     -v ~/claude-home/.claude:/home/agent1/.claude \
     -v ~/claude-home/.claude.json:/home/agent1/.claude.json \
     alpine-claude-dotnet-dev:latest
@@ -67,7 +67,7 @@ The container expects up to three mounts:
 
 | Mount point | Purpose |
 |---|---|
-| `/vmrepos` | Host directory containing git repos for Claude to work on |
+| `/repos` | Host directory containing git repos for Claude to work on |
 | `/home/agent1/.claude` | Persists Claude credentials, settings, permissions, and memory across runs |
 | `/home/agent1/.claude.json` | Persists OAuth session data, MCP configs, and preferences |
 
@@ -83,7 +83,7 @@ Both `Claude-It.ps1` and `claude-it.sh` accept the same logical parameters:
 | `--build-image` / `-buildImage` | off | Build the image before running |
 | `--ports-map` / `-portsMap` | `3000:3000`, `3001:3001` | Port mappings (max 2) |
 | `--agent-name` / `-agentName` | `AgentC` | Agent name, used for git attribution |
-| `--workdir-to-mount` / `-WorkDirToMount` | `~/WorkDirToMount` | Host path mounted at `/vmrepos` |
+| `--workdir-to-mount` / `-WorkDirToMount` | `~/WorkDirToMount` | Host path mounted at `/repos` |
 | `--image-dir` / `-imageDir` | `~/Repos/Dockerfiles` | Directory containing Dockerfiles |
 | `--claude-save-dir` / `-claudeSaveDir` | `~/WorkDirToMount/claude-home` | Host path for Claude state persistence |
 

@@ -14,25 +14,25 @@
     - Port mappings
 
     The script supports optional image building and port mappings. Container mounts preserve:
+    - ~/.local/share/opencode/ : OpenCode data and auth (auth.json, etc.)
     - ~/.claude/               : Claude credentials, settings, permissions, memory
     - ~/.claude.json           : Claude OAuth session data, MCP configs, preferences
-    - ~/.local/share/opencode/ : OpenCode data and auth (auth.json, etc.)
-
-.PARAMETER claude
-    Run Claude Code in the container (default). Alias: -c
-
-.PARAMETER opencode
-    Run OpenCode in the container. Alias: -o
 
 .PARAMETER WorkDirToMount
-    Host directory path to mount as /vmrepos in the container. Defaults to the current directory.
+    Host directory path to mount as /repos in the container. Defaults to the current directory.
+
+.PARAMETER opencode
+    Run OpenCode in the container (default). Alias: -o
+
+.PARAMETER claude
+    Run Claude Code in the container. Alias: -c
 
 .PARAMETER saveDir
     Host directory for storing agent configuration and state volumes. Created if missing.
     Default: ~/.config/code-it
 
 .PARAMETER image
-    Docker image name to run. Default: "alpine-code-dotnet-dev"
+    Docker image name to run. Default: "code-it-alpine-dotnet"
 
 .PARAMETER buildImage
     If specified, builds the Docker image from the Dockerfile before running the container.
@@ -97,13 +97,13 @@
 
 [CmdletBinding()]
 param (
+    [string]$WorkDirToMount = (Resolve-Path '.').Path,
     [Alias('c')]
     [switch]$claude         = $false,
     [Alias('o')]
     [switch]$opencode       = $false,
-    [string]$WorkDirToMount = (Resolve-Path '.').Path,
     [string]$saveDir        = "$HOME/.config/code-it",
-    [string]$image          = "alpine-code-dotnet-dev",
+    [string]$image          = "code-it-alpine-dotnet",
     [switch]$buildImage     = $false,
     [string]$dockerfileDir  = $PSScriptRoot,
     [string[]]$portsMap     = @("0:3000","0:3001"),
@@ -119,11 +119,7 @@ if ($help) {
 }
 
 # Resolve which agent to run
-if ($claude -and $opencode) {
-    Write-Warning "Choose one of -claude or -opencode, not both."
-    exit 1
-}
-$codeAgent = if ($opencode) { "opencode" } else { "claude" }
+$codeAgent = if ($claude) { "claude" } else { "opencode" }
 
 # Ensure required commands
 if (-not (Get-Command docker -EA Silent)) {
@@ -151,8 +147,8 @@ $WorkDirToMount = (Resolve-Path $WorkDirToMount).Path
 # Create the save dir structure so mounts always work, even on first run.
 # The .claude.json mount is a single file: pre-create it so Docker does not
 # create a directory in its place.
-$null = New-Item -ItemType Directory -Force -Path "$saveDir/.claude"
-$null = New-Item -ItemType Directory -Force -Path "$saveDir/.local/share/opencode"
+New-Item -ItemType Directory -Force -Path "$saveDir/.local/share/opencode"
+New-Item -ItemType Directory -Force -Path "$saveDir/.claude"
 if (-not (Test-Path -Path "$saveDir/.claude.json")) {
     Set-Content -Path "$saveDir/.claude.json" -Value '{}'
 }
@@ -161,7 +157,7 @@ $saveDir = (Resolve-Path $saveDir).Path
 "    Checking $image ..."
 
 if ($buildImage -and -not (Test-Path -Path "$dockerfileDir/Dockerfile")) {
-    Write-Warning "You asked for buildImage, but Dockerfile not found at: $dockerfileDir/Dockerfile"
+    Write-Warning "You asked for buildImage, but Dockerfile not found in directory: $dockerfileDir"
     exit 1
 }
 elseif (-not $buildImage -and -not ($validImages | Where-Object { $_ -and $_.StartsWith($image) } | Select-Object -First 1)) {
@@ -194,7 +190,7 @@ if ($portsMap.Count -lt 2) {
                 -e CODE_AGENT=`"$codeAgent`" `
                 -e GIT_AUTHOR_NAME=`"$gitAuthorName`" `
                 -e GIT_AUTHOR_EMAIL=`"$gitAuthorEmail`" `
-                -v `"$WorkDirToMount`:/vmrepos`" `
+                -v `"$WorkDirToMount`:/repos`" `
                 -v `"$saveDir/.claude`:/home/$agentNameLower/.claude`" `
                 -v `"$saveDir/.claude.json`:/home/$agentNameLower/.claude.json`" `
                 -v `"$saveDir/.local/share/opencode`:/home/$agentNameLower/.local/share/opencode`" `
@@ -209,7 +205,7 @@ docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
             -e CODE_AGENT="$codeAgent" `
             -e GIT_AUTHOR_NAME="$gitAuthorName" `
             -e GIT_AUTHOR_EMAIL="$gitAuthorEmail" `
-            -v "$WorkDirToMount`:/vmrepos" `
+            -v "$WorkDirToMount`:/repos" `
             -v "$saveDir/.claude:/home/$agentNameLower/.claude" `
             -v "$saveDir/.claude.json:/home/$agentNameLower/.claude.json" `
             -v "$saveDir/.local/share/opencode:/home/$agentNameLower/.local/share/opencode" `
