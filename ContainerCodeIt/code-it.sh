@@ -285,7 +285,7 @@ done
 
 # Print the command
 cat <<EOF
-    $runtime run -it -p ${ports[0]} -p ${ports[1]} \\
+    $runtime run -it --rm -p ${ports[0]} -p ${ports[1]} \\
                 -e CODE_AGENT="$code_agent" \\
                 -e GIT_AUTHOR_NAME="$git_author_name" \\
                 -e GIT_AUTHOR_EMAIL="$git_author_email" \\
@@ -300,7 +300,7 @@ if [[ "$dry_run" == true ]]; then
     exit 0
 fi
 
-"$runtime" run -it -p "${ports[0]}" -p "${ports[1]}" \
+"$runtime" run -it --rm -p "${ports[0]}" -p "${ports[1]}" \
             -e CODE_AGENT="$code_agent" \
             -e GIT_AUTHOR_NAME="$git_author_name" \
             -e GIT_AUTHOR_EMAIL="$git_author_email" \
