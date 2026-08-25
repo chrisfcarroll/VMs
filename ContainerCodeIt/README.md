@@ -3,16 +3,16 @@
 A sandbox for agentic AI to safely work, free of permissions interruption. One image, two agents: **Claude Code** and **OpenCode**. Choose per run:
 
 ```bash
-./code-it.sh --claude    # or -c (this is the default)
-./code-it.sh --opencode  # or -o
+./code-it.sh --opencode  # or -o (this is the default)
+./code-it.sh --claude    # or -c 
 # or use the aliases:
 ./claude-it.sh
 ./opencode-it.sh
 ```
 
 ```powershell
-.\Code-It.ps1 -claude    # or -c (this is the default)
-.\Code-It.ps1 -opencode  # or -o
+.\Code-It.ps1 -opencode  # or -o (this is the default)
+.\Code-It.ps1 -claude    # or -c 
 # or use the aliases:
 .\Claude-It.ps1
 .\OpenCode-It.ps1
