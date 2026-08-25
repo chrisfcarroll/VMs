@@ -45,7 +45,7 @@ $null = New-Item -ItemType Directory -Force -Path $stubDocker
 if ($onWindows) {
     Set-Content -Path (Join-Path $stubDocker 'docker.cmd') -Value @'
 @echo off
-if "%~1"=="images" echo alpine-code-dotnet-dev:latest& goto :eof
+if "%~1"=="images" echo code-it-alpine-dotnet:latest& goto :eof
 if "%~1"=="build" echo STUB-DOCKER-BUILD %*& goto :eof
 if "%~1"=="run" echo STUB-DOCKER-RUN %*& goto :eof
 echo stub docker: %*
@@ -54,13 +54,37 @@ echo stub docker: %*
     Set-Content -Path (Join-Path $stubDocker 'docker') -Value @'
 #!/bin/sh
 case "$1" in
-    images) echo "alpine-code-dotnet-dev:latest" ;;
+    images) echo "code-it-alpine-dotnet:latest" ;;
     build)  echo "STUB-DOCKER-BUILD $*" ;;
     run)    echo "STUB-DOCKER-RUN $*" ;;
     *)      echo "stub docker: $*" ;;
 esac
 '@
     chmod +x (Join-Path $stubDocker 'docker')
+}
+
+# Stub Apple container CLI on the PATH, for the forced-runtime scenarios
+$stubContainer = Join-Path $tmp 'stub-container'
+$null = New-Item -ItemType Directory -Force -Path $stubContainer
+if ($onWindows) {
+    Set-Content -Path (Join-Path $stubContainer 'container.cmd') -Value @'
+@echo off
+if "%~1"=="image" echo code-it-alpine-dotnet  latest& goto :eof
+if "%~1"=="build" echo STUB-CONTAINER-BUILD %*& goto :eof
+if "%~1"=="run" echo STUB-CONTAINER-RUN %*& goto :eof
+echo stub container: %*
+'@
+} else {
+    Set-Content -Path (Join-Path $stubContainer 'container') -Value @'
+#!/bin/sh
+case "$1" in
+    image)  echo "code-it-alpine-dotnet  latest" ;;
+    build)  echo "STUB-CONTAINER-BUILD $*" ;;
+    run)    echo "STUB-CONTAINER-RUN $*" ;;
+    *)      echo "stub container: $*" ;;
+esac
+'@
+    chmod +x (Join-Path $stubContainer 'container')
 }
 
 # A minimal PATH with git but no docker, to test the missing-docker branch
@@ -121,9 +145,10 @@ foreach ($f in @('Code-It.ps1','Claude-It.ps1','OpenCode-It.ps1','tests/Test-Cod
 "2. Default dry-run: claude agent, all state mounts"
 $r = Invoke-Scenario $codeIt $commonArgs $stubPath
 Assert "dry-run exit code 0" ($r.code -eq 0)
+Assert-Contains "uses docker runtime" $r.out 'Using container runtime: docker'
 Assert-Contains "defaults to claude" $r.out 'CODE_AGENT="claude"'
 Assert-Contains "docker run command" $r.out 'docker run -it'
-Assert-Contains "image name" $r.out 'alpine-code-dotnet-dev:latest'
+Assert-Contains "image name" $r.out 'code-it-alpine-dotnet:latest'
 Assert-Contains "work dir mount" $r.out "$scriptDir`:/repos"
 Assert-Contains "claude dir mount" $r.out '/.claude:/home/agent1/.claude'
 Assert-Contains "claude.json mount" $r.out '/.claude.json:/home/agent1/.claude.json'
@@ -159,28 +184,40 @@ Assert "OpenCode-It.ps1 exit code 0" ($r.code -eq 0)
 Assert-Contains "OpenCode-It.ps1 selects opencode" $r.out 'CODE_AGENT="opencode"'
 
 # ---------------------------------------------------------------------------
-"6. Missing docker: fails with advice"
+"6. No runtime found: fails with advice"
 $r = Invoke-Scenario $codeIt $commonArgs $cleanBin
-Assert "no docker exits non-zero" ($r.code -ne 0)
-Assert-Contains "no docker warns" $r.out 'Docker command not found'
+Assert "no runtime exits non-zero" ($r.code -ne 0)
+Assert-Contains "no runtime warns" $r.out 'No container runtime found'
+Assert-Contains "suggests an install link" $r.out 'docs.docker.com'
 
 # ---------------------------------------------------------------------------
-"7. Error handling"
+"7. Runtime selection"
+$r = Invoke-Scenario $codeIt (@('-runtime', 'container') + $commonArgs) "$stubContainer$sep$stubPath"
+Assert "-runtime container exit code 0" ($r.code -eq 0)
+Assert-Contains "-runtime container forces apple container" $r.out 'Using container runtime: container'
+Assert-Contains "container run command" $r.out 'container run -it'
+Assert-Contains "container default fixed ports" $r.out '-p 3000:3000 -p 3001:3001'
+$r = Invoke-Scenario $codeIt (@('-runtime', 'bogus') + $commonArgs) $stubPath
+Assert "-runtime bogus fails" ($r.code -ne 0)
+
+# ---------------------------------------------------------------------------
+"8. Error handling"
 $r = Invoke-Scenario $codeIt @('-dryRun', '-WorkDirToMount', (Join-Path $tmp 'does-not-exist'), '-saveDir', $save) $stubPath
 Assert "missing work dir fails" ($r.code -ne 0)
 $r = Invoke-Scenario $codeIt (@('-image', 'no-such-image') + $commonArgs) $stubPath
 Assert "unknown image without -buildImage fails" ($r.code -ne 0)
 
 # ---------------------------------------------------------------------------
-"8. Build image"
+"9. Build image"
 $r = Invoke-Scenario $codeIt (@('-buildImage') + $commonArgs) $stubPath
 Assert "-buildImage exit code 0" ($r.code -eq 0)
 Assert-Contains "docker build invoked" $r.out 'STUB-DOCKER-BUILD'
+Assert-Contains "build tags the image" $r.out '-t code-it-alpine-dotnet:latest'
 $r = Invoke-Scenario $codeIt (@('-buildImage', '-dockerfileDir', $tmp) + $commonArgs) $stubPath
 Assert "-buildImage with no Dockerfile fails" ($r.code -ne 0)
 
 # ---------------------------------------------------------------------------
-"9. Custom options"
+"10. Custom options"
 $r = Invoke-ScenarioCommand "& '$codeIt' -portsMap '8000:3000','8001:3001' -dryRun -WorkDirToMount '$scriptDir' -saveDir '$save'" $stubPath
 Assert-Contains "custom ports" $r.out '-p 8000:3000 -p 8001:3001'
 $r = Invoke-Scenario $codeIt (@('-agentName', 'MyAgent') + $commonArgs) $stubPath

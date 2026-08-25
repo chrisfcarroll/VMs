@@ -19,8 +19,8 @@
 #   ./code-it.sh [OPTIONS]
 #
 # Options:
-#   --claude, -c             Run Claude Code in the container (default).
-#   --opencode, -o           Run OpenCode in the container.
+#   --opencode, -o           Run OpenCode in the container (default).
+#   --claude, -c             Run Claude Code in the container.
 #   --work-dir DIR           Host directory path to mount as /repos in the container.
 #                            Defaults to "."
 #   --save-dir DIR           Host directory for storing agent configuration and state volumes.
@@ -42,11 +42,11 @@
 #   --help                   Show this help message.
 #
 # Examples:
+#   ./code-it.sh [-o]
+#       Runs OpenCode in the default container mounting the current directory.
+#
 #   ./code-it.sh --claude --work-dir ~/my-repos
 #       Runs Claude Code in the default container with a custom work directory.
-#
-#   ./code-it.sh -o
-#       Runs OpenCode in the default container mounting the current directory.
 #
 #   ./code-it.sh --build-image
 #       Builds the image from the Dockerfile next to this script, then runs it.

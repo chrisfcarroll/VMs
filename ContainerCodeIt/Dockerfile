@@ -118,7 +118,7 @@ WORKDIR /repos
 #                -v ~/.config/code-it/.claude:/home/agent1/.claude \
 #                -v ~/.config/code-it/.claude.json:/home/agent1/.claude.json \
 #                -v ~/.config/code-it/.local/share/opencode:/home/agent1/.local/share/opencode \
-#        alpine-code-dotnet-dev:latest
+#        code-it-alpine-dotnet:latest
 # --------------------------------
 ARG GIT_AUTHOR_NAME
 ARG GIT_AUTHOR_EMAIL
