@@ -1,4 +1,5 @@
-FROM alpine:latest
+FROM alpine:3.23
+# alpine 3.24 dotnet not yet working? https://github.com/dotnet/dotnet-docker/issues/7334
 RUN apk add --no-cache zsh
 RUN apk add dotnet10-sdk dotnet-sdk-8.0 mono
 RUN apk add vim chromium ttf-freefont freetype-dev
