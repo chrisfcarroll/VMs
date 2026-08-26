@@ -45,10 +45,10 @@ RUN adduser -S agent1 -G wheel
 RUN sed -i 's#^\(agent1:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:\)/sbin/nologin$#\1/bin/zsh#' /etc/passwd
 RUN mkdir -p /etc/doas.d
 RUN echo "permit nopass agent1 as root cmd apk" > /etc/doas.d/doas.conf
-RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
-RUN echo "permit nopass agent1 as root cmd pwsh" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
+RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
+RUN echo "permit nopass agent1 as root cmd node" >> /etc/doas.d/doas.conf
 # ---------------------------------------------------------------------
 USER agent1
 RUN mkdir -p ~/.local/bin
@@ -86,6 +86,7 @@ set -ga terminal-overrides ",tmux-256color:RGB"
 set -ga terminal-overrides ",xterm-256color:RGB"
 EOF
 RUN cat <<'EOF' >> ~/go.sh
+git config --global --add safe.directory /repos
 for d in /repos/*/ ; do git config --global --add safe.directory "$d" ; done
 case "${CODE_AGENT:-opencode}" in
     opencode) agent_bin=/home/agent1/.opencode/bin/opencode ;;
@@ -98,7 +99,8 @@ RUN chmod a+x ~/go.sh
 RUN mkdir -p ~/.config/opencode
 RUN cat <<'EOF' >> ~/.config/opencode/config.json
 {
-  "yolo":true
+  "$schema": "https://opencode.ai/config.json",
+  "permission": "allow"
 }
 EOF
 WORKDIR /repos

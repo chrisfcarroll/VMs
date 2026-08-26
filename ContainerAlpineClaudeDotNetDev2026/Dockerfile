@@ -24,10 +24,10 @@ RUN adduser -S agent1 -G wheel
 RUN sed -i 's#^\(agent1:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:\)/sbin/nologin$#\1/bin/zsh#' /etc/passwd
 RUN mkdir -p /etc/doas.d
 RUN echo "permit nopass agent1 as root cmd apk" > /etc/doas.d/doas.conf
-RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
-RUN echo "permit nopass agent1 as root cmd pwsh" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
+RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
+RUN echo "permit nopass agent1 as root cmd node" >> /etc/doas.d/doas.conf
 USER agent1
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.zshrc
@@ -62,6 +62,7 @@ set -ga terminal-overrides ",tmux-256color:RGB"
 set -ga terminal-overrides ",xterm-256color:RGB"
 EOF
 RUN cat <<'EOF' >> ~/go.sh
+git config --global --add safe.directory /repos
 for d in /repos/*/ ; do git config --global --add safe.directory "$d" ; done
 tmux -u new-session -d ; tmux -u new-session /home/agent1/.local/bin/claude
 EOF
