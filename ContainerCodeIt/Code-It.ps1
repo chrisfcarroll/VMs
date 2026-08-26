@@ -1,3 +1,4 @@
+#! /usr/bin/env pwsh
 <#
 .SYNOPSIS
     Launches a container with Alpine Linux, Claude Code AND OpenCode, and .NET development tools.
