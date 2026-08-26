@@ -1,3 +1,4 @@
+#! /usr/bin/env pwsh
 <#
 .SYNOPSIS
     Launches a Docker container with Alpine Linux, Claude code, and .NET development tools.
@@ -35,7 +36,8 @@
     Default: "."
 
 .PARAMETER imageDir
-    Directory containing Dockerfiles. Used with -buildImage to locate the Dockerfile.
+    Directory containing the Dockerfile. Used with -buildImage to locate the Dockerfile.
+    Defaults to the script's own directory.
 
 .PARAMETER claudeSaveDir
     Host directory for storing Claude configuration and state volumes.
@@ -69,9 +71,9 @@
 #   docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
 #               -e GIT_AUTHOR_NAME=`"$agentName for $(git config --get user.name)`" `
 #               -e GIT_AUTHOR_EMAIL=`"$(git config --get user.email)`" `
-#               -v $VMMounts`:/repos `
-#               -v "$claudeSaveDir\claude-home\.claude:/home/$agentName/.claude" `
-#               -v "$claudeSaveDir\claude-home\.claude.json:/home/$agentName/.claude.json" `
+#               -v "$WorkDirToMount`:/repos" `
+#               -v "$claudeSaveDir/.claude:/home/$($agentName.ToLower())/.claude" `
+#               -v "$claudeSaveDir/.claude.json:/home/$($agentName.ToLower())/.claude.json" `
 #           $image`:latest
 #
 #   $agentName must be the actual home directory (i.e. the actual user name) inside your container.
@@ -92,10 +94,10 @@
 [CmdletBinding()]
 param (
     [string]$WorkDirToMount = (Resolve-Path '.').Path,
-    [string]$claudeSaveDir  = (Resolve-Path "~/.claude-it-sessions" -EA Silent).Path,
+    [string]$claudeSaveDir  = "$HOME/.claude-it-sessions",
     [string]$image          = "alpine-claude-dotnet-dev",
     [switch]$buildImage     = $false,
-    [string]$imageDir       ,
+    [string]$imageDir       = $PSScriptRoot,
     [string[]]$portsMap     = @("0:3000","0:3001"),
     [string]$agentName      = "Agent1",
     [switch]$help           = $false,
@@ -139,12 +141,7 @@ if ([string]::IsNullOrWhiteSpace($sWorkDirToMount)) {
 }
 $sWorkDirToMount =  (Resolve-Path $sWorkDirToMount).Path
 
-if ($buildImage -and -not $sImageDir) {
-    $sImageDir = Read-Host "Enter path to Dockerfiles directory"
-    if(-not $sImageDir -or -not (Test-Path -Path $sImageDir/Dockerfile -EA Silent)) {
-        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $sImageDir/Dockerfile"
-        exit 1
-    }
+if ($buildImage) {
     $sImageDir = (Resolve-Path $sImageDir).Path
 }
 if (-not $sImage) {
@@ -155,12 +152,12 @@ if (-not $sImage) {
     }
 }
 
-if (-not $sClaudeSaveDir) {
-    $sClaudeSaveDir = Read-Host "Enter path to save Claude data. Otherwise we will default to ~/.claude-it-sessions"
-    $sClaudeSaveDir = $sClaudeSaveDir,"~/.claude-it-sessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
-    if(-not (Test-Path -Path $sClaudeSaveDir)) {
-        New-Item -Path $sClaudeSaveDir -ItemType Directory
-    }
+# Create the save dir structure so mounts always work, even on first run.
+# The .claude.json mount is a single file: pre-create it so the runtime does not
+# create a directory in its place.
+New-Item -ItemType Directory -Force -Path "$sClaudeSaveDir/.claude" | Out-Null
+if (-not (Test-Path -Path "$sClaudeSaveDir/.claude.json")) {
+    Set-Content -Path "$sClaudeSaveDir/.claude.json" -Value '{}'
 }
 $sClaudeSaveDir=(Resolve-Path $sClaudeSaveDir).Path
 
@@ -181,7 +178,7 @@ elseif ($buildImage -and -not (Test-Path -Path "$sImageDir/Dockerfile")) {
     Write-Warning "You asked for buildImage, but no Dockerfile found in $sImageDir"
     exit 1
 
-}elseif (-not $buildImage -and -not ($validImages | where { $_ -and $_.StartsWith($image) } | Select -First 1)) {
+}elseif (-not $buildImage -and -not ($validImages | where { $_ -and ($_ -eq $image -or $_.StartsWith("${image}:")) } | Select -First 1)) {
     Write-Warning "Docker image '$image' does not exist and -buildImage was not specified.
     Either build the image with -buildImage flag or ensure the image is available locally."
     exit 1
@@ -197,13 +194,13 @@ if (-not (Test-Path -Path $sClaudeSaveDir -PathType Container -EA Silent)) {
 
 #
 $agentNameLower= $agentName.ToLower()
-$onBehalfOf= $env:GIT_AUTHOR_NAME,$env:GIT_COMMITTER_NAME,"$(git config --get user.name)" | Select -First 1
+$onBehalfOf= $env:GIT_AUTHOR_NAME,$env:GIT_COMMITTER_NAME,"$(git config --get user.name)" | Where-Object { $_ } | Select -First 1
 $gitAuthorName= "$agentName for $onBehalfOf"
-$gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Select -First 1
+$gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Where-Object { $_ } | Select -First 1
 
 
 if($buildImage){
-    docker build $sImageDir -t "$image`:latest"
+    docker build "$sImageDir" -t "$image`:latest"
 }
 
 if($portsMap.Count -gt 2){

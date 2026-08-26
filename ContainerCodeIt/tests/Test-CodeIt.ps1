@@ -142,11 +142,11 @@ foreach ($f in @('Code-It.ps1','Claude-It.ps1','OpenCode-It.ps1','tests/Test-Cod
 }
 
 # ---------------------------------------------------------------------------
-"2. Default dry-run: claude agent, all state mounts"
+"2. Default dry-run: opencode agent, all state mounts"
 $r = Invoke-Scenario $codeIt $commonArgs $stubPath
 Assert "dry-run exit code 0" ($r.code -eq 0)
 Assert-Contains "uses docker runtime" $r.out 'Using container runtime: docker'
-Assert-Contains "defaults to claude" $r.out 'CODE_AGENT="claude"'
+Assert-Contains "defaults to opencode" $r.out 'CODE_AGENT="opencode"'
 Assert-Contains "docker run command" $r.out 'docker run -it'
 Assert-Contains "image name" $r.out 'code-it-alpine-dotnet:latest'
 Assert-Contains "work dir mount" $r.out "$scriptDir`:/repos"

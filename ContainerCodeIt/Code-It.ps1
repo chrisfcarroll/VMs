@@ -127,6 +127,10 @@ if ($help) {
 }
 
 # Resolve which agent to run
+if ($claude -and $opencode) {
+    Write-Warning "Specify only one of -claude or -opencode."
+    exit 1
+}
 $codeAgent = if ($claude) { "claude" } else { "opencode" }
 
 # $IsMacOS/$IsLinux are not defined in Windows PowerShell 5.1, so treat unset as false
@@ -222,7 +226,7 @@ if ($buildImage -and -not (Test-Path -Path "$dockerfileDir/Dockerfile")) {
     Write-Warning "You asked for buildImage, but Dockerfile not found in directory: $dockerfileDir"
     exit 1
 }
-elseif (-not $buildImage -and -not ($validImages | Where-Object { $_ -and $_.StartsWith($image) } | Select-Object -First 1)) {
+elseif (-not $buildImage -and -not ($validImages | Where-Object { $_ -and ($_ -eq $image -or $_ -match "^$([regex]::Escape($image))[: ]") } | Select-Object -First 1)) {
     Write-Warning "$runtime image '$image' does not exist and -buildImage was not specified.
     Either build the image with -buildImage flag or ensure the image is available locally."
     exit 1
@@ -244,8 +248,11 @@ if ($buildImage) {
 if ($portsMap.Count -gt 2) {
     Write-Warning "This script only handles two port mappings. Extra mappings will be ignored."
 }
+# Pad to 2 port mappings (docker: 0 auto-assigns a free host port;
+# the Apple container runtime needs fixed ports)
 if ($portsMap.Count -lt 2) {
-    $portsMap = ($portsMap + "0:3000" + "0:3001") | Select-Object -First 2
+    $pad = if ($runtime -eq "docker") { @("0:3000", "0:3001") } else { @("3000:3000", "3001:3001") }
+    $portsMap = ($portsMap + $pad) | Select-Object -First 2
 }
 
 @"

@@ -36,9 +36,9 @@ Force one with `--runtime docker` or `--runtime container` (`-runtime` in PowerS
 
 Edit the Dockerfile to taste. It's currently set up with:
 
-- **Alpine Linux** (latest) with zsh, oh-my-zsh, tmux, vim, ripgrep, **.NET SDK 8.0 and 10, and Mono**, **Node.js** and npm, **PowerShell 7**
+- **Alpine Linux 3.23** with zsh, oh-my-zsh, tmux, vim, ripgrep, **.NET SDK 8.0 and 10, and Mono**, **Node.js** and npm, **PowerShell 7**
 - **Claude Code CLI** and **OpenCode CLI** — pick one per run with `CODE_AGENT` (the launcher scripts set it from `--claude`/`--opencode`)
-- A **non-root user `agent1`** with passwordless `doas` for installations: `apk`, `npm`, `dotnet`, `pwsh`, and `uv`
+- A **non-root user `agent1`** with passwordless `doas` for installations: `apk`, `dotnet`, `npm`, and `node`
 - PowerShell installs from the musl-x64 tarball on x86_64; on other architectures (e.g. arm64) it installs as a dotnet tool with a small compatibility shim, so the image builds on Apple Silicon too
 
 On startup, the container launches a **tmux** session with the chosen agent ready to go. Tmux makes it easier for you to reach a terminal whilst the agent chugs away.
@@ -98,8 +98,8 @@ Alternatively, pass `-e ANTHROPIC_API_KEY=sk-...` (claude) or a provider API key
 
 | bash | PowerShell | Default | Description |
 |---|---|---|---|
-| `--claude`, `-c` | `-claude`, `-c` | on | Run Claude Code |
-| `--opencode`, `-o` | `-opencode`, `-o` | off | Run OpenCode |
+| `--claude`, `-c` | `-claude`, `-c` | off | Run Claude Code |
+| `--opencode`, `-o` | `-opencode`, `-o` | on (default) | Run OpenCode |
 | `--work-dir` | `-WorkDirToMount` | `.` | Host path mounted at `/repos` |
 | `--save-dir` | `-saveDir` | `~/.config/code-it` | Host path for agent state persistence |
 | `--image` | `-image` | `code-it-alpine-dotnet` | Image name |

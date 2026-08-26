@@ -92,59 +92,6 @@ agent_name="Agent1"
 dry_run=false
 container_args=""
 
-# Detect / validate the container runtime.
-# On macOS prefer the Apple container CLI if present; otherwise use docker if present;
-# otherwise suggest what is best for the current platform.
-platform=$(uname -s)
-case "$runtime" in
-    "")
-        if [[ "$platform" == "Darwin" ]] && command -v container &>/dev/null; then
-            runtime="container"
-            container_args="--memory 2g"
-        elif command -v docker &>/dev/null; then
-            runtime="docker"
-        elif command -v container &>/dev/null; then
-            runtime="container"
-        else
-            echo "Warning: No container runtime found." >&2
-            case "$platform" in
-                Darwin)
-                    echo "On macOS, the best options are:" >&2
-                    echo "  - Apple container CLI (native, lightweight):" >&2
-                    echo "      https://github.com/apple/container/blob/main/docs/tutorials/start-here.md" >&2
-                    echo "  - Docker Desktop: https://docs.docker.com/desktop/setup/install/mac-install/" >&2
-                    ;;
-                Linux)
-                    echo "On Linux, the best option is Docker Engine:" >&2
-                    echo "      https://docs.docker.com/engine/install/" >&2
-                    echo "  e.g. Debian/Ubuntu: sudo apt-get install docker.io" >&2
-                    echo "       Alpine:        doas apk add docker" >&2
-                    echo "       Fedora:        sudo dnf install docker" >&2
-                    ;;
-                MINGW*|MSYS*|CYGWIN*)
-                    echo "On Windows, the best option is Docker Desktop with WSL2:" >&2
-                    echo "      https://docs.docker.com/desktop/setup/install/windows-install/" >&2
-                    ;;
-                *)
-                    echo "On $platform, try Docker: https://docs.docker.com/engine/install/" >&2
-                    ;;
-            esac
-            exit 1
-        fi
-        ;;
-    docker|container)
-        if ! command -v "$runtime" &>/dev/null; then
-            echo "Warning: Requested runtime '$runtime' not found. Please install it and ensure it is in your PATH." >&2
-            exit 1
-        fi
-        ;;
-    *)
-        echo "Warning: Unknown runtime '$runtime'. Valid values are 'docker' or 'container'." >&2
-        exit 1
-        ;;
-esac
-echo "    Using container runtime: $runtime"
-
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -207,6 +154,62 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Detect / validate the container runtime (after parsing, so --runtime is honoured).
+# On macOS prefer the Apple container CLI if present; otherwise use docker if present;
+# otherwise suggest what is best for the current platform.
+platform=$(uname -s)
+case "$runtime" in
+    "")
+        if [[ "$platform" == "Darwin" ]] && command -v container &>/dev/null; then
+            runtime="container"
+        elif command -v docker &>/dev/null; then
+            runtime="docker"
+        elif command -v container &>/dev/null; then
+            runtime="container"
+        else
+            echo "Warning: No container runtime found." >&2
+            case "$platform" in
+                Darwin)
+                    echo "On macOS, the best options are:" >&2
+                    echo "  - Apple container CLI (native, lightweight):" >&2
+                    echo "      https://github.com/apple/container/blob/main/docs/tutorials/start-here.md" >&2
+                    echo "  - Docker Desktop: https://docs.docker.com/desktop/setup/install/mac-install/" >&2
+                    ;;
+                Linux)
+                    echo "On Linux, the best option is Docker Engine:" >&2
+                    echo "      https://docs.docker.com/engine/install/" >&2
+                    echo "  e.g. Debian/Ubuntu: sudo apt-get install docker.io" >&2
+                    echo "       Alpine:        doas apk add docker" >&2
+                    echo "       Fedora:        sudo dnf install docker" >&2
+                    ;;
+                MINGW*|MSYS*|CYGWIN*)
+                    echo "On Windows, the best option is Docker Desktop with WSL2:" >&2
+                    echo "      https://docs.docker.com/desktop/setup/install/windows-install/" >&2
+                    ;;
+                *)
+                    echo "On $platform, try Docker: https://docs.docker.com/engine/install/" >&2
+                    ;;
+            esac
+            exit 1
+        fi
+        ;;
+    docker|container)
+        if ! command -v "$runtime" &>/dev/null; then
+            echo "Warning: Requested runtime '$runtime' not found. Please install it and ensure it is in your PATH." >&2
+            exit 1
+        fi
+        ;;
+    *)
+        echo "Warning: Unknown runtime '$runtime'. Valid values are 'docker' or 'container'." >&2
+        exit 1
+        ;;
+esac
+# Give the Apple container runtime enough memory for the agent to work with
+if [[ "$runtime" == "container" ]]; then
+    container_args="--memory 2g"
+fi
+echo "    Using container runtime: $runtime"
 echo "    Using code agent: $code_agent"
 
 # Ensure required commands
@@ -254,7 +257,7 @@ if [[ "$build_image" == true ]]; then
         exit 1
     fi
     dockerfile_dir=$(abs_dir "$dockerfile_dir")
-elif ! echo "$valid_images" | grep -q "^${image}"; then
+elif ! echo "$valid_images" | grep -qE "^${image}([: ]|$)"; then
     echo "Warning: $runtime image '$image' does not exist and --build-image was not specified." >&2
     echo "Either build the image with the --build-image flag or ensure the image is available locally." >&2
     exit 1
@@ -276,13 +279,15 @@ if [[ ${#ports[@]} -gt 2 ]]; then
     echo "Warning: This script only handles two port mappings. Extra mappings will be ignored." >&2
 fi
 
-# Ensure at least 2 port mappings
+# Ensure at least 2 port mappings (docker: 0 auto-assigns a free host port;
+# the Apple container runtime needs fixed ports)
+if [[ "$runtime" == "docker" ]]; then
+    pad_ports=("0:3000" "0:3001")
+else
+    pad_ports=("3000:3000" "3001:3001")
+fi
 while [[ ${#ports[@]} -lt 2 ]]; do
-    if [[ ${#ports[@]} -eq 0 ]]; then
-        ports+=("0:3000")
-    else
-        ports+=("0:3001")
-    fi
+    ports+=("${pad_ports[${#ports[@]}]}")
 done
 
 # Print the command

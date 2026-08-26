@@ -13,14 +13,17 @@
 # - ~/.claude.json: OAuth session data and MCP configurations
 #
 # Usage:
-#   ./claude-it.sh [OPTIONS]
+#   ./docker-claude-it.sh [OPTIONS]
 #
 # Options:
 #   --work-dir DIR        Host directory path to mount as /repos in the container.
+#                         Defaults to "."
 #   --claude-save-dir DIR Host directory for storing Claude configuration and state volumes.
+#                         Created if missing. Defaults to ~/.config/claude-it
 #   --image NAME          Docker image name to run. Default: "alpine-claude-dotnet-dev"
 #   --build-image         If specified, builds the Docker image from Dockerfile before running.
-#   --image-dir DIR       Directory containing Dockerfiles. Used with --build-image.
+#   --image-dir DIR       Directory containing the Dockerfile. Used with --build-image.
+#                         Defaults to this script's own directory.
 #   --ports PORT1 PORT2   Port mappings in "host:container" format. Default: "0:3000" "0:3001"
 #                         A host port of 0 lets the runtime auto-assign a free host port, so
 #                         multiple containers can run at once without port collisions.
@@ -32,13 +35,13 @@
 #   --help                Show this help message.
 #
 # Examples:
-#   ./claude-it.sh --work-dir ~/my-repos
+#   ./docker-claude-it.sh --work-dir ~/my-repos
 #       Runs the default container with a custom work directory.
 #
-#   ./claude-it.sh --build-image --image my-custom-image --agent-name "MyAgent" --image-dir ~/Dockerfiles
+#   ./docker-claude-it.sh --build-image --image my-custom-image --agent-name "MyAgent" --image-dir ~/Dockerfiles
 #       Builds the image first, then runs it with custom agent name.
 #
-#   ./claude-it.sh --ports "8000:3000" "8001:3001"
+#   ./docker-claude-it.sh --ports "8000:3000" "8001:3001"
 #       Runs the container with custom port mappings.
 #
 # Notes:
@@ -58,12 +61,17 @@
 
 set -euo pipefail
 
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+# Absolute path of an existing directory, without realpath (absent on older macOS)
+abs_dir() { (CDPATH= cd -- "$1" && pwd); }
+
 # Defaults
 work_dir_to_mount="."
-claude_save_dir="~/.config/claude-it"
+claude_save_dir="$HOME/.config/claude-it"
 image="alpine-claude-dotnet-dev"
 build_image=false
-image_dir=""
+image_dir="$script_dir"
 ports=("0:3000" "0:3001")
 agent_name="Agent1"
 dry_run=false
@@ -130,27 +138,13 @@ fi
 
 valid_images=$(docker images --format "{{.Repository}}:{{.Tag}}")
 
-# Prompt for paths that couldn't be resolved
-if [[ -z "$work_dir_to_mount" ]]; then
-    echo "Enter path to the working directory you want to mount in the container."
-    echo "This is the working directory you are asking Claude to work in, so it should contain the git repos you want to work on."
-    read -r work_dir_to_mount
-    if [[ -z "$work_dir_to_mount" || ! -d "$work_dir_to_mount" ]]; then
-        echo "Warning: The specified WorkDirToMount does not exist: $work_dir_to_mount" >&2
-        exit 1
-    fi
+# Ensure required paths exist
+if [[ ! -d "$work_dir_to_mount" ]]; then
+    echo "Warning: work-dir directory does not exist: $work_dir_to_mount." >&2
+    echo "Please specify a directory where you have a git repo, or repos, you want Claude to work on." >&2
+    exit 1
 fi
-work_dir_to_mount=$(realpath "$work_dir_to_mount")
-
-if [[ "$build_image" == true && -z "$image_dir" ]]; then
-    echo "Enter path to Dockerfiles directory:"
-    read -r image_dir
-    if [[ -z "$image_dir" || ! -d "$image_dir/$image" ]]; then
-        echo "Warning: You asked to build the image, but the Dockerfile does not exist: $image_dir/$image" >&2
-        exit 1
-    fi
-    image_dir=$(realpath "$image_dir")
-fi
+work_dir_to_mount=$(abs_dir "$work_dir_to_mount")
 
 if [[ -z "$image" ]]; then
     echo "Specify an image to run:"
@@ -161,43 +155,24 @@ if [[ -z "$image" ]]; then
     fi
 fi
 
-if [[ -z "$claude_save_dir" ]]; then
-    echo "Enter path to save Claude data. Otherwise we will default to ~/.claude-it-sessions"
-    read -r claude_save_dir
-    if [[ -z "$claude_save_dir" ]]; then
-        claude_save_dir="$HOME/.claude-it-sessions"
-    fi
-    if [[ ! -d "$claude_save_dir" ]]; then
-        mkdir -p "$claude_save_dir"
-    fi
-fi
-claude_save_dir=$(realpath "$claude_save_dir")
-
-# Ensure required paths exist
-if [[ ! -d "$work_dir_to_mount" ]]; then
-    echo "Warning: WorkDirToMount directory does not exist: $work_dir_to_mount." >&2
-    echo "Please specify a directory where you have a git repo, or repos, you want Claude to work on." >&2
-    exit 1
-fi
+# Create the save dir structure so mounts always work, even on first run.
+# The .claude.json mount is a single file: pre-create it so the runtime does not
+# create a directory in its place.
+mkdir -p "$claude_save_dir/.claude"
+[[ -f "$claude_save_dir/.claude.json" ]] || echo '{}' > "$claude_save_dir/.claude.json"
+claude_save_dir=$(abs_dir "$claude_save_dir")
 
 echo "    Checking $image ..."
 
 if [[ "$build_image" == true && ! -d "$image_dir" ]]; then
     echo "Warning: You asked for buildImage, but ImageDir directory does not exist: $image_dir" >&2
     exit 1
-elif [[ "$build_image" == true && ! -f "$image_dir/$image/Dockerfile" ]]; then
-    echo "Warning: You asked for buildImage, but Dockerfile not found at: $image_dir/$image/Dockerfile" >&2
+elif [[ "$build_image" == true && ! -f "$image_dir/Dockerfile" ]]; then
+    echo "Warning: You asked for buildImage, but Dockerfile not found at: $image_dir/Dockerfile" >&2
     exit 1
-elif [[ "$build_image" != true ]] && ! echo "$valid_images" | grep -q "^${image}"; then
+elif [[ "$build_image" != true ]] && ! echo "$valid_images" | grep -qE "^${image}([: ]|$)"; then
     echo "Warning: Docker image '$image' does not exist and --build-image was not specified." >&2
     echo "Either build the image with --build-image flag or ensure the image is available locally." >&2
-    exit 1
-fi
-
-if [[ ! -d "$claude_save_dir" ]]; then
-    echo "Warning: ClaudeSaveDir directory does not exist: $claude_save_dir." >&2
-    echo "Choose somewhere to save your Claude credentials and session data, for instance ~/claude-home." >&2
-    echo "This directory will be mounted into the container to preserve your Claude state across runs." >&2
     exit 1
 fi
 
@@ -209,7 +184,8 @@ git_author_email="${GIT_AUTHOR_EMAIL:-$(git config --get user.email 2>/dev/null 
 
 # Build image if requested
 if [[ "$build_image" == true ]]; then
-    docker build "$image_dir/$image" -t "${image}:latest"
+    image_dir=$(abs_dir "$image_dir")
+    docker build -t "${image}:latest" "$image_dir"
 fi
 
 # Handle port mappings

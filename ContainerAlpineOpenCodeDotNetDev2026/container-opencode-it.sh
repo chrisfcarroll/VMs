@@ -22,9 +22,9 @@
 #   --image NAME              image name to run. Default: "alpine-opencode-dotnet-dev"
 #   --build-image            If specified, builds the container image from Dockerfile before running.
 #   --image-dockerfile FILE  path to Dockerfile, required for --build-image.
-#   --ports PORT1 PORT2      Port mappings in "host:container" format. Default: "0:3000" "0:3001"
-#                            A host port of 0 lets the runtime auto-assign a free host port, so
-#                            multiple containers can run at once without port collisions.
+#   --ports PORT1 PORT2      Port mappings in "host:container" format. Default: "3000:3000" "3001:3001"
+#                            The Apple container runtime does not auto-assign host ports, so
+#                            running several containers at once requires distinct mappings.
 #                            Maximum of 2 port mappings supported; additional mappings are ignored.
 #   --agent-name NAME        Name of the agent running in the container. Used for Git author attribution.
 #                            NOTE: You must match the USER set in the Dockerfile.
@@ -57,13 +57,17 @@
 
 set -euo pipefail
 
+# Absolute path of an existing directory, without realpath (absent on older macOS)
+abs_dir() { (CDPATH= cd -- "$1" && pwd); }
+abs_file() { echo "$(abs_dir "$(dirname "$1")")/$(basename "$1")"; }
+
 # Defaults
 work_dir_to_mount="."
 opencode_save_dir="$HOME/.config/opencode-it"
 image="alpine-opencode-dotnet-dev"
 build_image=false
 image_dockerfile=""
-ports=("0:3000" "0:3001")
+ports=("3000:3000" "3001:3001")
 agent_name="Agent1"
 dry_run=false
 
@@ -130,71 +134,36 @@ fi
 
 valid_images=$(container image ls)
 
-# Prompt for paths that couldn't be resolved
-if [[ -z "$work_dir_to_mount" ]]; then
-    echo "Enter path to the working directory you want to mount in the container."
-    echo "This is the working directory you are asking OpenCode to work in, so it should contain the git repos you want to work on."
-    read -r work_dir_to_mount
-    if [[ -z "$work_dir_to_mount" || ! -d "$work_dir_to_mount" ]]; then
-        echo "Warning: The specified WorkDirToMount does not exist: $work_dir_to_mount" >&2
-        exit 1
-    fi
+# Ensure required paths exist
+if [[ ! -d "$work_dir_to_mount" ]]; then
+    echo "Warning: work-dir directory does not exist: $work_dir_to_mount." >&2
+    echo "Please specify a directory where you have a git repo, or repos, you want OpenCode to work on." >&2
+    exit 1
 fi
-work_dir_to_mount=$(realpath "$work_dir_to_mount")
+work_dir_to_mount=$(abs_dir "$work_dir_to_mount")
 
 if [[ "$build_image" == true && -z "$image_dockerfile" ]]; then
     echo "Enter path to your $image Dockerfile:"
     read -r image_dockerfile
-    if [[ -z "$image_dockerfile" || ! -f "$image_dockerfile" ]]; then
+    if [[ -z "$image_dockerfile" || ! -f "$image_dockerfile/Dockerfile" ]]; then
         echo "Warning: You asked to build the image, but there is no Dockerfile in: $image_dockerfile" >&2
         exit 1
     fi
-    image_dockerfile=$(realpath "$image_dockerfile")
+    image_dockerfile=$(abs_file "$image_dockerfile/Dockerfile")
 fi
 
-if [[ -z "$image" ]]; then
-    echo "Specify an image to run:"
-    read -r image
-    if [[ -z "$image" ]]; then
-        echo "Warning: No image specified. Please specify an image to run from the list above." >&2
-        exit 1
-    fi
-fi
-
-if [[ -z "$opencode_save_dir" ]]; then
-    echo "Enter path to save OpenCode data. Otherwise we will default to ~/.opencode-it-sessions"
-    read -r opencode_save_dir
-    if [[ -z "$opencode_save_dir" ]]; then
-        opencode_save_dir="$HOME/.config/opencode-it"
-    fi
-    if [[ ! -d "$opencode_save_dir" ]]; then
-        mkdir -p "$opencode_save_dir"
-    fi
-fi
-opencode_save_dir=$(realpath "$opencode_save_dir")
-
-# Ensure required paths exist
-if [[ ! -d "$work_dir_to_mount" ]]; then
-    echo "Warning: WorkDirToMount directory does not exist: $work_dir_to_mount." >&2
-    echo "Please specify a directory where you have a git repo, or repos, you want OpenCode to work on." >&2
-    exit 1
-fi
+# Create the save dir structure so mounts always work, even on first run.
+mkdir -p "$opencode_save_dir/.local/share/opencode"
+opencode_save_dir=$(abs_dir "$opencode_save_dir")
 
 echo "    Checking $image ..."
 
 if [[ "$build_image" == true && ! -f "$image_dockerfile" ]]; then
     echo "Warning: You asked for buildImage, but file doesn't exist: $image_dockerfile" >&2
     exit 1
-elif [[ "$build_image" != true ]] && ! echo "$valid_images" | grep -q "^${image}"; then
+elif [[ "$build_image" != true ]] && ! echo "$valid_images" | grep -qE "^${image}([: ]|$)"; then
     echo "Warning: container image '$image' does not exist and --build-image was not specified." >&2
     echo "Either build the image with the --build-image flag or ensure the image is available locally." >&2
-    exit 1
-fi
-
-if [[ ! -d "$opencode_save_dir" ]]; then
-    echo "Warning: opencode-save-dir directory does not exist: $opencode_save_dir." >&2
-    echo "Choose somewhere to save your OpenCode configuration and state, for instance ~/.config/opencode-it" >&2
-    echo "This directory will be mounted into the container to preserve your OpenCode state across runs." >&2
     exit 1
 fi
 
@@ -206,7 +175,7 @@ git_author_email="${GIT_AUTHOR_EMAIL:-$(git config --get user.email 2>/dev/null 
 
 # Build image if requested
 if [[ "$build_image" == true ]]; then
-    container build "$image_dockerfile" -t "${image}:latest"
+    container build -f "$image_dockerfile" -t "${image}:latest" "$(dirname "$image_dockerfile")"
 fi
 
 # Handle port mappings
@@ -215,12 +184,9 @@ if [[ ${#ports[@]} -gt 2 ]]; then
 fi
 
 # Ensure at least 2 port mappings
+pad_ports=("3000:3000" "3001:3001")
 while [[ ${#ports[@]} -lt 2 ]]; do
-    if [[ ${#ports[@]} -eq 0 ]]; then
-        ports+=("0:3000")
-    else
-        ports+=("0:3001")
-    fi
+    ports+=("${pad_ports[${#ports[@]}]}")
 done
 
 # Print the command

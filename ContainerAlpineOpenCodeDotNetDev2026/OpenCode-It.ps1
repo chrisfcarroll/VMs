@@ -20,8 +20,9 @@
     Default: $false
 
 .PARAMETER portsMap
-    Array of port mappings in "host:container" format. Default: @("3000:3000","3001:3001")
-    Maximum of 2 port mappings supported; additional mappings are ignored.
+    Array of port mappings in "host:container" format. Default: @("0:3000","0:3001")
+    (0 lets Docker auto-assign a free host port). Maximum of 2 port mappings supported;
+    additional mappings are ignored.
 
 .PARAMETER agentName
     Name of the agent running in the container. Used for Git author attribution.
@@ -29,16 +30,16 @@
     Default: "Agent1"
 
 .PARAMETER WorkDirToMount
-    Host directory path to mount as /repos in the container. Resolved from ~/WorkDirToMount by default.
+    Host directory path to mount as /repos in the container. Defaults to the current directory.
 
 .PARAMETER imageDir
-    Directory containing Dockerfiles. Used with -buildImage to locate the Dockerfile.
-    Default: ~/Repos/Dockerfiles
+    Directory containing the Dockerfile. Used with -buildImage to locate the Dockerfile.
+    Defaults to the script's own directory.
 
 .PARAMETER opencodeSaveDir
-    Host directory to look for ./.local/share/opencode directory, for storing OpenCode 
-    configuration and state volumes.
-    Default: ~
+    Host directory under which ./.local/share/opencode stores OpenCode configuration
+    and state volumes. Created if missing.
+    Default: ~/.opencode-it-sessions
 
 .EXAMPLE
     .\OpenCode-It.ps1
@@ -67,7 +68,7 @@
 #   docker run -it --rm -p $($portsMap[0]) -p $($portsMap[1]) `
 #               -e GIT_AUTHOR_NAME=`"$agentName for $(git config --get user.name)`" `
 #               -e GIT_AUTHOR_EMAIL=`"$(git config --get user.email)`" `
-#               -v $VMMounts`:/repos `
+#               -v "$WorkDirToMount`:/repos" `
 #               -v "$opencodeSaveDir/.local/share/opencode:/home/$agentName/.local/share/opencode" `
 #           $image`:latest
 #
@@ -76,8 +77,6 @@
 #   What the OpenCode mount preserves:
 #   ┌──────────────────────────┬──────────────────────────────────────────────┐
 #   │          Mount           │                   Contains                   │
-#   ├──────────────────────────┼──────────────────────────────────────────────┤
-#   │ ~/.config/opencode/      │ Configuration (opencode.json, agents, etc.)  │
 #   ├──────────────────────────┼──────────────────────────────────────────────┤
 #   │ ~/.local/share/opencode/ │ Data and auth (auth.json, etc.)              │
 #   └──────────────────────────┴──────────────────────────────────────────────┘
@@ -89,10 +88,10 @@
 [CmdletBinding()]
 param (
     [string]$WorkDirToMount = (Resolve-Path '.').Path,
-    [string]$opencodeSaveDir= (Resolve-Path "~/.opencode-it-sessions" -EA Silent).Path  ,
+    [string]$opencodeSaveDir= "$HOME/.opencode-it-sessions",
     [string]$image          = "alpine-opencode-dotnet-dev",
     [switch]$buildImage     = $false,
-    [string]$imageDir       ,
+    [string]$imageDir       = $PSScriptRoot,
     [string[]]$portsMap     = @("0:3000","0:3001"),
     [string]$agentName      = "Agent1",
     [switch]$help           = $false,
@@ -136,12 +135,7 @@ if ([string]::IsNullOrWhiteSpace($sWorkDirToMount)) {
 }
 $sWorkDirToMount =  (Resolve-Path $sWorkDirToMount).Path
 
-if ($buildImage -and -not $sImageDir) {
-    $sImageDir = Read-Host "Enter path to Dockerfiles directory"
-    if(-not $sImageDir -or -not (Test-Path -Path $sImageDir/Dockerfile -EA Silent)) {
-        Write-Warning "You asked to build the image, but the Dockerfile does not exist: $sImageDir/Dockerfile"
-        exit 1
-    }
+if ($buildImage) {
     $sImageDir = (Resolve-Path $sImageDir).Path
 }
 if (-not $sImage) {
@@ -152,13 +146,8 @@ if (-not $sImage) {
     }
 }
 
-if (-not $sOpencodeSaveDir) {
-    $sOpencodeSaveDir = Read-Host "Enter path to save OpenCode data. Otherwise we will default to ~/.opencode-it-sessions"
-    $sOpencodeSaveDir = $sOpencodeSaveDir,"~/.opencode-it-sessions" | Where { -not [string]::IsNullOrWhiteSpace($_) } | Select -First 1
-    if(-not (Test-Path -Path $sOpencodeSaveDir)) {
-        New-Item -Path $sOpencodeSaveDir -ItemType Directory
-    }
-}
+# Create the save dir structure so mounts always work, even on first run.
+New-Item -ItemType Directory -Force -Path "$sOpencodeSaveDir/.local/share/opencode" | Out-Null
 $sOpencodeSaveDir=(Resolve-Path $sOpencodeSaveDir).Path
 
 # Ensure required paths exist
@@ -178,7 +167,7 @@ elseif ($buildImage -and -not (Test-Path -Path "$sImageDir/Dockerfile")) {
     Write-Warning "You asked for buildImage, but no Dockerfile not found in $sImageDir"
     exit 1
 
-}elseif (-not $buildImage -and -not ($validImages | where { $_ -and $_.StartsWith($image) } | Select -First 1)) {
+}elseif (-not $buildImage -and -not ($validImages | where { $_ -and ($_ -eq $image -or $_.StartsWith("${image}:")) } | Select -First 1)) {
     Write-Warning "Docker image '$image' does not exist and -buildImage was not specified.
     Either build the image with -buildImage flag or ensure the image is available locally."
     exit 1
@@ -194,13 +183,13 @@ if (-not (Test-Path -Path $sOpencodeSaveDir -PathType Container -EA Silent)) {
 
 #
 $agentNameLower= $agentName.ToLower()
-$onBehalfOf= $env:GIT_AUTHOR_NAME,$env:GIT_COMMITTER_NAME,"$(git config --get user.name)" | Select -First 1
+$onBehalfOf= $env:GIT_AUTHOR_NAME,$env:GIT_COMMITTER_NAME,"$(git config --get user.name)" | Where-Object { $_ } | Select -First 1
 $gitAuthorName= "$agentName for $onBehalfOf"
-$gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Select -First 1
+$gitAuthorEmail = $env:GIT_AUTHOR_EMAIL,"$(git config --get user.email)" | Where-Object { $_ } | Select -First 1
 
 
 if($buildImage){
-    docker build $sImageDir -t "$image`:latest" ;
+    docker build "$sImageDir" -t "$image`:latest" ;
 }
 
 if($portsMap.Count -gt 2){

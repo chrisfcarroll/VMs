@@ -104,11 +104,11 @@ assert_contains "--help documents -c" "$out" "--claude, -c"
 assert_contains "--help documents -o" "$out" "--opencode, -o"
 
 # ---------------------------------------------------------------------------
-echo "3. Default dry-run with docker: claude agent, all state mounts"
+echo "3. Default dry-run with docker: opencode agent, all state mounts"
 out=$(PATH="$stub_docker:$PATH" "$code_it" "${common_args[@]}")
 assert "dry-run exit code" "$?"
 assert_contains "uses docker runtime" "$out" "Using container runtime: docker"
-assert_contains "defaults to claude" "$out" 'CODE_AGENT="claude"'
+assert_contains "defaults to opencode" "$out" 'CODE_AGENT="opencode"'
 assert_contains "docker run command" "$out" "docker run -it"
 assert_contains "image name" "$out" "code-it-alpine-dotnet:latest"
 assert_contains "work dir mount" "$out" "$script_dir:/repos"

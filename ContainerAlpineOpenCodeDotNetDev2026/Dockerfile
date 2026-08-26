@@ -1,9 +1,9 @@
 FROM alpine:3.23
 # alpine 3.24 dotnet not yet working? https://github.com/dotnet/dotnet-docker/issues/7334
 RUN apk add --no-cache zsh
-RUN apk add dotnet10-sdk dotnet-sdk-8.0 mono
-RUN apk add vim chromium ttf-freefont freetype-dev
-RUN apk add nodejs npm git
+RUN apk add --no-cache dotnet10-sdk dotnet8-sdk mono
+RUN apk add --no-cache vim chromium ttf-freefont freetype-dev
+RUN apk add --no-cache nodejs npm git
 RUN apk add --no-cache curl doas
 RUN apk add --no-cache ca-certificates less ncurses-terminfo-base krb5-libs libgcc libintl libssl3 libstdc++
 RUN apk add --no-cache tzdata userspace-rcu zlib icu-libs
@@ -35,10 +35,10 @@ RUN set -e; \
         printf '#!/bin/sh\nLD_PRELOAD=/usr/lib/libpsl-chk-shim.so exec /opt/microsoft/powershell/pwsh "$@"\n' > /usr/bin/pwsh && \
         chmod +x /usr/bin/pwsh; \
     fi
-RUN apk add docs oh-my-zsh tmux
-RUN apk add libgcc libstdc++ ripgrep bash # maybe opencode dependencies
-RUN apk add musl-locales ncurses-terminfo
-RUN apk add krb5
+RUN apk add --no-cache docs oh-my-zsh tmux
+RUN apk add --no-cache libgcc libstdc++ ripgrep bash # maybe opencode dependencies
+RUN apk add --no-cache musl-locales ncurses-terminfo
+RUN apk add --no-cache krb5
 RUN touch /etc/rc.conf
 RUN sed -i 's/#unicode="NO"/#unicode="NO"\nunicode="YES"/' /etc/rc.conf
 RUN adduser -S agent1 -G wheel
@@ -46,7 +46,6 @@ RUN sed -i 's#^\(agent1:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:\)/sbin/nologin$#\1/bin/zs
 RUN mkdir -p /etc/doas.d
 RUN echo "permit nopass agent1 as root cmd apk" > /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd dotnet" >> /etc/doas.d/doas.conf
-RUN echo "permit nopass agent1 as root cmd uv" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd npm" >> /etc/doas.d/doas.conf
 RUN echo "permit nopass agent1 as root cmd node" >> /etc/doas.d/doas.conf
 # ---------------------------------------------------------------------
@@ -58,7 +57,7 @@ RUN git config --global rerere.enabled true
 RUN git config --global alias.root 'rev-parse --show-toplevel'
 RUN git config --global alias.lg  "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --graph"
 RUN git config --global alias.glog "log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-RUN git config --global core.autocrlf true
+RUN git config --global core.autocrlf input
 RUN cat <<'EOF' >> ~/.zshrc
 export PS1='%2~]'
 alias glogg='git log --color --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --graph'
@@ -100,22 +99,16 @@ EOF
 WORKDIR /repos
 # --------------------------------
 # Repos to work on can be mounted at runtime under /repos.
-# Also mount the state directories for whichever agent(s) you use, for up to 4 mounts:
+# Also mount the opencode state directory, for a total of 2 mounts:
 # 1. Repos directory
-# 2. ~/.claude directory (claude credentials, settings & memory)
-# 3. ~/.claude.json file (claude OAuth session data & MCP configs)
-# 4. ~/.local/share/opencode directory (opencode data & auth)
-# Choose the agent with -e CODE_AGENT=claude (default) or -e CODE_AGENT=opencode
+# 2. ~/.local/share/opencode directory (opencode data & auth)
 # Example :
 #     docker run -it --rm \
-#                -e CODE_AGENT=claude \
 #                -e GIT_AUTHOR_NAME="Agent1 for $(git config --get user.name)" \
 #                -e GIT_AUTHOR_EMAIL="$(git config --get user.email)" \
 #                -v ~/repos:/repos \
-#                -v ~/.config/code-it/.claude:/home/agent1/.claude \
-#                -v ~/.config/code-it/.claude.json:/home/agent1/.claude.json \
-#                -v ~/.config/code-it/.local/share/opencode:/home/agent1/.local/share/opencode \
-#        alpine-code-dotnet-dev:latest
+#                -v ~/.config/opencode-it/.local/share/opencode:/home/agent1/.local/share/opencode \
+#        alpine-opencode-dotnet-dev:latest
 # --------------------------------
 ARG GIT_AUTHOR_NAME
 ARG GIT_AUTHOR_EMAIL
