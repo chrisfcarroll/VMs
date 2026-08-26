@@ -47,7 +47,7 @@ mkdir -p "$stub_docker"
 cat > "$stub_docker/docker" <<'EOF'
 #!/bin/sh
 case "$1" in
-    images) echo "alpine-code-dotnet-dev:latest" ;;
+    images) echo "code-it-alpine-dotnet:latest" ;;
     build)  echo "STUB-DOCKER-BUILD $*" ;;
     run)    echo "STUB-DOCKER-RUN $*" ;;
     *)      echo "stub docker: $*" ;;
@@ -60,7 +60,7 @@ mkdir -p "$stub_container"
 cat > "$stub_container/container" <<'EOF'
 #!/bin/sh
 case "$1" in
-    image)  echo "alpine-code-dotnet-dev  latest" ;;
+    image)  echo "code-it-alpine-dotnet  latest" ;;
     build)  echo "STUB-CONTAINER-BUILD $*" ;;
     run)    echo "STUB-CONTAINER-RUN $*" ;;
     *)      echo "stub container: $*" ;;
@@ -110,7 +110,7 @@ assert "dry-run exit code" "$?"
 assert_contains "uses docker runtime" "$out" "Using container runtime: docker"
 assert_contains "defaults to claude" "$out" 'CODE_AGENT="claude"'
 assert_contains "docker run command" "$out" "docker run -it"
-assert_contains "image name" "$out" "alpine-code-dotnet-dev:latest"
+assert_contains "image name" "$out" "code-it-alpine-dotnet:latest"
 assert_contains "work dir mount" "$out" "$script_dir:/repos"
 assert_contains "claude dir mount" "$out" "/.claude:/home/agent1/.claude"
 assert_contains "claude.json mount" "$out" "/.claude.json:/home/agent1/.claude.json"
@@ -195,7 +195,7 @@ echo "10. Build image"
 out=$(PATH="$stub_docker:$PATH" "$code_it" --build-image "${common_args[@]}")
 assert "--build-image exit code" "$?"
 assert_contains "docker build invoked" "$out" "STUB-DOCKER-BUILD"
-assert_contains "build tags the image" "$out" "-t alpine-code-dotnet-dev:latest"
+assert_contains "build tags the image" "$out" "-t code-it-alpine-dotnet:latest"
 PATH="$stub_docker:$PATH" "$code_it" --build-image --dockerfile-dir "$tmp" "${common_args[@]}" >/dev/null 2>&1
 [[ "$?" != "0" ]]; assert "--build-image with no Dockerfile fails" "$?"
 

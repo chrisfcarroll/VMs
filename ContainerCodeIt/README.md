@@ -3,16 +3,16 @@
 A sandbox for agentic AI to safely work, free of permissions interruption. One image, two agents: **Claude Code** and **OpenCode**. Choose per run:
 
 ```bash
-./code-it.sh --claude    # or -c (this is the default)
-./code-it.sh --opencode  # or -o
+./code-it.sh --opencode  # or -o (this is the default)
+./code-it.sh --claude    # or -c 
 # or use the aliases:
 ./claude-it.sh
 ./opencode-it.sh
 ```
 
 ```powershell
-.\Code-It.ps1 -claude    # or -c (this is the default)
-.\Code-It.ps1 -opencode  # or -o
+.\Code-It.ps1 -opencode  # or -o (this is the default)
+.\Code-It.ps1 -claude    # or -c 
 # or use the aliases:
 .\Claude-It.ps1
 .\OpenCode-It.ps1
@@ -22,15 +22,15 @@ The agent gets work done by having access to the git repos mounted in the contai
 
 This directory unifies the earlier `ContainerAlpineClaudeDotNetDev2026` and `ContainerAlpineOpenCodeDotNetDev2026` variants (bash vs powershell, claude vs opencode, Apple containers vs Docker) into one Dockerfile and one launcher per shell.
 
-## Runtime detection (bash)
+## Runtime detection
 
-`code-it.sh` picks a container runtime automatically:
+`code-it.sh` and `Code-It.ps1` pick a container runtime automatically:
 
 1. On **macOS**, uses the **Apple container CLI** (`container`) if installed
 2. Otherwise uses **Docker** if installed
 3. Otherwise it exits with a suggestion for the best runtime to install on your platform
 
-Force one with `--runtime docker` or `--runtime container`. The PowerShell version assumes Docker.
+Force one with `--runtime docker` or `--runtime container` (`-runtime` in PowerShell).
 
 ## What's in the image
 
@@ -65,7 +65,7 @@ On startup, the container launches a **tmux** session with the chosen agent read
 ### Using Docker directly
 
 ```bash
-docker build . -t alpine-code-dotnet-dev:latest
+docker build . -t code-it-alpine-dotnet:latest
 
 docker run -it --rm \
     -p 3000:3000 -p 3001:3001 \
@@ -76,7 +76,7 @@ docker run -it --rm \
     -v ~/.config/code-it/.claude:/home/agent1/.claude \
     -v ~/.config/code-it/.claude.json:/home/agent1/.claude.json \
     -v ~/.config/code-it/.local/share/opencode:/home/agent1/.local/share/opencode \
-    alpine-code-dotnet-dev:latest
+    code-it-alpine-dotnet:latest
 ```
 
 ## Volume mounts
@@ -102,11 +102,11 @@ Alternatively, pass `-e ANTHROPIC_API_KEY=sk-...` (claude) or a provider API key
 | `--opencode`, `-o` | `-opencode`, `-o` | off | Run OpenCode |
 | `--work-dir` | `-WorkDirToMount` | `.` | Host path mounted at `/repos` |
 | `--save-dir` | `-saveDir` | `~/.config/code-it` | Host path for agent state persistence |
-| `--image` | `-image` | `alpine-code-dotnet-dev` | Image name |
+| `--image` | `-image` | `code-it-alpine-dotnet` | Image name |
 | `--build-image` | `-buildImage` | off | Build the image before running |
 | `--dockerfile-dir` | `-dockerfileDir` | script's directory | Directory containing the Dockerfile |
-| `--runtime` | (docker only) | auto-detect | `docker` or `container` |
-| `--ports` | `-portsMap` | `0:3000` `0:3001` | Port mappings (max 2); host port 0 auto-assigns |
+| `--runtime` | `-runtime` | auto-detect | `docker` or `container` |
+| `--ports` | `-portsMap` | `0:3000` `0:3001` (docker); `3000:3000` `3001:3001` (container) | Port mappings (max 2); host port 0 auto-assigns |
 | `--agent-name` | `-agentName` | `Agent1` | Agent name, used for git attribution; must match the Dockerfile USER |
 | `--dry-run` | `-dryRun` | off | Print the run command without executing |
 

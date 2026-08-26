@@ -19,8 +19,8 @@
 #   ./code-it.sh [OPTIONS]
 #
 # Options:
-#   --claude, -c             Run Claude Code in the container (default).
-#   --opencode, -o           Run OpenCode in the container.
+#   --opencode, -o           Run OpenCode in the container (default).
+#   --claude, -c             Run Claude Code in the container.
 #   --work-dir DIR           Host directory path to mount as /repos in the container.
 #                            Defaults to "."
 #   --save-dir DIR           Host directory for storing agent configuration and state volumes.
@@ -42,11 +42,11 @@
 #   --help                   Show this help message.
 #
 # Examples:
+#   ./code-it.sh [-o]
+#       Runs OpenCode in the default container mounting the current directory.
+#
 #   ./code-it.sh --claude --work-dir ~/my-repos
 #       Runs Claude Code in the default container with a custom work directory.
-#
-#   ./code-it.sh -o
-#       Runs OpenCode in the default container mounting the current directory.
 #
 #   ./code-it.sh --build-image
 #       Builds the image from the Dockerfile next to this script, then runs it.
@@ -90,6 +90,60 @@ runtime=""
 ports=()
 agent_name="Agent1"
 dry_run=false
+container_args=""
+
+# Detect / validate the container runtime.
+# On macOS prefer the Apple container CLI if present; otherwise use docker if present;
+# otherwise suggest what is best for the current platform.
+platform=$(uname -s)
+case "$runtime" in
+    "")
+        if [[ "$platform" == "Darwin" ]] && command -v container &>/dev/null; then
+            runtime="container"
+            container_args="--memory 2g"
+        elif command -v docker &>/dev/null; then
+            runtime="docker"
+        elif command -v container &>/dev/null; then
+            runtime="container"
+        else
+            echo "Warning: No container runtime found." >&2
+            case "$platform" in
+                Darwin)
+                    echo "On macOS, the best options are:" >&2
+                    echo "  - Apple container CLI (native, lightweight):" >&2
+                    echo "      https://github.com/apple/container/blob/main/docs/tutorials/start-here.md" >&2
+                    echo "  - Docker Desktop: https://docs.docker.com/desktop/setup/install/mac-install/" >&2
+                    ;;
+                Linux)
+                    echo "On Linux, the best option is Docker Engine:" >&2
+                    echo "      https://docs.docker.com/engine/install/" >&2
+                    echo "  e.g. Debian/Ubuntu: sudo apt-get install docker.io" >&2
+                    echo "       Alpine:        doas apk add docker" >&2
+                    echo "       Fedora:        sudo dnf install docker" >&2
+                    ;;
+                MINGW*|MSYS*|CYGWIN*)
+                    echo "On Windows, the best option is Docker Desktop with WSL2:" >&2
+                    echo "      https://docs.docker.com/desktop/setup/install/windows-install/" >&2
+                    ;;
+                *)
+                    echo "On $platform, try Docker: https://docs.docker.com/engine/install/" >&2
+                    ;;
+            esac
+            exit 1
+        fi
+        ;;
+    docker|container)
+        if ! command -v "$runtime" &>/dev/null; then
+            echo "Warning: Requested runtime '$runtime' not found. Please install it and ensure it is in your PATH." >&2
+            exit 1
+        fi
+        ;;
+    *)
+        echo "Warning: Unknown runtime '$runtime'. Valid values are 'docker' or 'container'." >&2
+        exit 1
+        ;;
+esac
+echo "    Using container runtime: $runtime"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -153,58 +207,6 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-
-# Detect / validate the container runtime.
-# On macOS prefer the Apple container CLI if present; otherwise use docker if present;
-# otherwise suggest what is best for the current platform.
-platform=$(uname -s)
-case "$runtime" in
-    "")
-        if [[ "$platform" == "Darwin" ]] && command -v container &>/dev/null; then
-            runtime="container"
-        elif command -v docker &>/dev/null; then
-            runtime="docker"
-        elif command -v container &>/dev/null; then
-            runtime="container"
-        else
-            echo "Warning: No container runtime found." >&2
-            case "$platform" in
-                Darwin)
-                    echo "On macOS, the best options are:" >&2
-                    echo "  - Apple container CLI (native, lightweight):" >&2
-                    echo "      https://github.com/apple/container/blob/main/docs/tutorials/start-here.md" >&2
-                    echo "  - Docker Desktop: https://docs.docker.com/desktop/setup/install/mac-install/" >&2
-                    ;;
-                Linux)
-                    echo "On Linux, the best option is Docker Engine:" >&2
-                    echo "      https://docs.docker.com/engine/install/" >&2
-                    echo "  e.g. Debian/Ubuntu: sudo apt-get install docker.io" >&2
-                    echo "       Alpine:        doas apk add docker" >&2
-                    echo "       Fedora:        sudo dnf install docker" >&2
-                    ;;
-                MINGW*|MSYS*|CYGWIN*)
-                    echo "On Windows, the best option is Docker Desktop with WSL2:" >&2
-                    echo "      https://docs.docker.com/desktop/setup/install/windows-install/" >&2
-                    ;;
-                *)
-                    echo "On $platform, try Docker: https://docs.docker.com/engine/install/" >&2
-                    ;;
-            esac
-            exit 1
-        fi
-        ;;
-    docker|container)
-        if ! command -v "$runtime" &>/dev/null; then
-            echo "Warning: Requested runtime '$runtime' not found. Please install it and ensure it is in your PATH." >&2
-            exit 1
-        fi
-        ;;
-    *)
-        echo "Warning: Unknown runtime '$runtime'. Valid values are 'docker' or 'container'." >&2
-        exit 1
-        ;;
-esac
-echo "    Using container runtime: $runtime"
 echo "    Using code agent: $code_agent"
 
 # Ensure required commands
@@ -285,7 +287,8 @@ done
 
 # Print the command
 cat <<EOF
-    $runtime run -it -p ${ports[0]} -p ${ports[1]} \\
+    $runtime run -it --rm -p ${ports[0]} -p ${ports[1]} \\
+                $container_args \\
                 -e CODE_AGENT="$code_agent" \\
                 -e GIT_AUTHOR_NAME="$git_author_name" \\
                 -e GIT_AUTHOR_EMAIL="$git_author_email" \\
@@ -300,7 +303,8 @@ if [[ "$dry_run" == true ]]; then
     exit 0
 fi
 
-"$runtime" run -it -p "${ports[0]}" -p "${ports[1]}" \
+"$runtime" run -it --rm -p "${ports[0]}" -p "${ports[1]}" \
+            $container_args \
             -e CODE_AGENT="$code_agent" \
             -e GIT_AUTHOR_NAME="$git_author_name" \
             -e GIT_AUTHOR_EMAIL="$git_author_email" \
