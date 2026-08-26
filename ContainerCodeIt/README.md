@@ -1,26 +1,18 @@
 # ContainerCodeIt
 
-A sandbox for agentic AI to safely work, free of permissions interruption. One image, two agents: **Claude Code** and **OpenCode**. Choose per run:
+A sandbox to safely set your agentic AI to work on a single directory, free of permissions interruption. The default Dockerfile includes **OpenCode** and **Claude Code**.
 
 ```bash
-./code-it.sh --opencode  # or -o (this is the default)
-./code-it.sh --claude    # or -c 
-# or use the aliases:
-./claude-it.sh
-./opencode-it.sh
+code-it.sh     # or -o or --opencode (this is the default)
+code-it.sh -c  # or -claude
 ```
 
 ```powershell
-.\Code-It.ps1 -opencode  # or -o (this is the default)
-.\Code-It.ps1 -claude    # or -c 
-# or use the aliases:
-.\Claude-It.ps1
-.\OpenCode-It.ps1
+Code-It.ps1      # or -o or -opencode (this is the default)
+Code-It.ps1 -c   # or -claude 
 ```
 
-The agent gets work done by having access to the git repos mounted in the container, so it can get, commit and push.
-
-This directory unifies the earlier `ContainerAlpineClaudeDotNetDev2026` and `ContainerAlpineOpenCodeDotNetDev2026` variants (bash vs powershell, claude vs opencode, Apple containers vs Docker) into one Dockerfile and one launcher per shell.
+The agent gets work done by having a single mounted directory, typically one containing a git repo or repos, so it can get, commit and push.
 
 ## Runtime detection
 
@@ -30,46 +22,47 @@ This directory unifies the earlier `ContainerAlpineClaudeDotNetDev2026` and `Con
 2. Otherwise uses **Docker** if installed
 3. Otherwise it exits with a suggestion for the best runtime to install on your platform
 
-Force one with `--runtime docker` or `--runtime container` (`-runtime` in PowerShell).
+Or specify `--runtime docker` or `--runtime container` (`-runtime` in PowerShell).
 
 ## What's in the image
 
-Edit the Dockerfile to taste. It's currently set up with:
+Edit the **Dockerfile** to taste. The default version includes:
 
-- **Alpine Linux 3.23** with zsh, oh-my-zsh, tmux, vim, ripgrep, **.NET SDK 8.0 and 10, and Mono**, **Node.js** and npm, **PowerShell 7**
-- **Claude Code CLI** and **OpenCode CLI** — pick one per run with `CODE_AGENT` (the launcher scripts set it from `--claude`/`--opencode`)
+- **Alpine Linux 3.23** with **.NET SDK 8.0 and 10, and Mono**, **Node.js** and **npm**, **PowerShell 7**
+- **Claude Code CLI** and **OpenCode CLI**
 - A **non-root user `agent1`** with passwordless `doas` for installations: `apk`, `dotnet`, `npm`, and `node`
-- PowerShell installs from the musl-x64 tarball on x86_64; on other architectures (e.g. arm64) it installs as a dotnet tool with a small compatibility shim, so the image builds on Apple Silicon too
 
-On startup, the container launches a **tmux** session with the chosen agent ready to go. Tmux makes it easier for you to reach a terminal whilst the agent chugs away.
+On startup, the container launches a **tmux** session running the chosen agent, and a `zsh` terminal available via the tmux switch hotkey sequence, `Ctrl-B S`.
 
 ## Prerequisites
 
-- Docker (or the Apple container CLI on macOS), Git, and a subscription or API key for your chosen agent.
+- Docker or Apple Containers.
 
 ## Quick start
 
 ```bash
-# Build and run with defaults (Dockerfile is found next to the script)
+# Build and run with the included Dockerfile
 ./code-it.sh --build-image
 
-# Run an already-built image with OpenCode
-./code-it.sh -o
+# Thereafter, run the built image
+./code-it.sh [-o] [-c] [--work-dir path ]
 ```
 
 ```powershell
 .\Code-It.ps1 -buildImage
-.\Code-It.ps1 -o
+.\Code-It.ps1 -o [[-WorkDirToMount] <string>]
 ```
 
-### Using Docker directly
+### What does the shell script do?
+
+Something like this:
 
 ```bash
-docker build . -t code-it-alpine-dotnet:latest
+# docker build . -t code-it-alpine-dotnet:latest
 
 docker run -it --rm \
     -p 3000:3000 -p 3001:3001 \
-    -e CODE_AGENT=claude \
+    -e CODE_AGENT=opencode \
     -e GIT_AUTHOR_NAME="Agent1 for $(git config --get user.name)" \
     -e GIT_AUTHOR_EMAIL="$(git config --get user.email)" \
     -v ~/my-repos:/repos \
@@ -111,6 +104,27 @@ Alternatively, pass `-e ANTHROPIC_API_KEY=sk-...` (claude) or a provider API key
 | `--dry-run` | `-dryRun` | off | Print the run command without executing |
 
 The scripts automatically derive the git author name and email from your environment or git config, prefixed with the agent name (e.g. `Agent1 for Your Name`).
+
+## Isolating your agent from upstream origin repos.
+
+For complete isolation, git clone your working tree locally. It works easiest if you give the agent its own branch (to avoid git error, 'updating the current branch in a non-bare repository is denied').
+
+```bash
+mkdir ~/ReposForAgents
+cd ~/ReposForAgents
+git clone ~/MyRepos/Project1 # git can locally clone a working tree
+cd Project1
+git checkout -b agent1
+git push --set-upstream origin agent1 # 
+```
+
+Now the agent can only push to your own local working tree. You can only push upstream outside the container.
+
+```
+cd ~/MyRepos/Project1
+git merge agent1
+git push
+```
 
 ## Tests
 
