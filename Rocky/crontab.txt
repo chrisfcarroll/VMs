@@ -1,0 +1,9 @@
+#
+#
+#min  hour   dom  mon dow   command
+0      */2    *    *   *    systemctl restart php-fpm
+0      9      */2  *   *    systemctl restart mariadb.service
+0      5      */3  *   *    systemctl restart fail2ban
+2      6      */2  *   *    mariadb-dump --all-databases | gzip > /var/backup/mysql_`date --iso-8601=seconds|sed 's/[:+]/-/g'`.sql.gz
+3      6      */2  *   *    find /var/backup/ -name '*.gz'  -ctime +21  -delete
+20     6      *    *   *    dnf -y upgrade
