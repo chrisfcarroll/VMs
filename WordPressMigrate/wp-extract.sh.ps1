@@ -4,11 +4,12 @@
 param( [Parameter(Mandatory=$true)][string]$target,                                      #\
        [string]$webroot = "/usr/share/nginx/html",                                       #\
        [string]$outdir = "",                                                             #\
-       [int]$port = 0                                                                    #\
+       [int]$port = 0,                                                                   #\
+       [string]$identity = ""                                                            #\
      )                                                                                  <#\
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `
 
-# Usage: wp-extract.sh.ps1 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port <ssh port>]
+# Usage: wp-extract.sh.ps1 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port <ssh port>] [-i <identity>]
 #
 #  Connects to the OLD WordPress server (as set up by ../CentOs) and copies back, as one
 #  wordpress-migrate-<host>-<time>.tar.gz : the database, wp-content (themes, plugins, media),
@@ -16,6 +17,8 @@ param( [Parameter(Mandatory=$true)][string]$target,                             
 #  Then load it into the new server with wp-load.sh.ps1
 #
 #  -port: the old server's ssh port, if not 22. Default: $SSH_PORT if set, else ssh's own default (~/.ssh/config Port, or 22).
+#  -i: the private key, or its -cert.pub certificate, to log in to the old server with. Only that key is tried,
+#      so ~/.ssh/id_rsa etc. aren't offered and don't ask for their passphrases. Default: ssh's own (~/.ssh/config, agent).
 #  user must be root, or able to sudo. The archive contains secrets: keep it private.
 
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -23,12 +26,13 @@ param( [Parameter(Mandatory=$true)][string]$target,                             
 
 here=$(cd "$(dirname "$0")" && pwd)
 target=$1 ; shift
-webroot=/usr/share/nginx/html ; outdir="" ; port=""
+webroot=/usr/share/nginx/html ; outdir="" ; port="" ; identity=""
 while [[ $# -gt 0 ]] ; do
   case $1 in
     -webroot|--webroot) webroot=$2 ; shift ;;
     -outdir|--outdir)   outdir=$2 ; shift ;;
     -port|--port)       port=$2 ; shift ;;
+    -i|-identity|--identity) identity=$2 ; shift ;;
     *) target="" ;;
   esac
   shift
@@ -37,10 +41,11 @@ port=${port:-$SSH_PORT}
 if [[ ! "$target" =~ ^([A-Za-z0-9._-]+@)?[A-Za-z0-9.-]+$ || ! "$webroot" =~ ^/[A-Za-z0-9._/-]+$ \
       || ! ( -z "$port" || "$port" =~ ^[0-9]{1,5}$ ) ]] ; then
   echo "
-  Usage: $0 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port <ssh port>]
+  Usage: $0 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port <ssh port>] [-i <identity>]
   "
   exit 1
 fi
+[[ -z $identity || -f $identity ]] || { echo "No such identity file: $identity" ; exit 1 ; }
 host=${target#*@}
 [[ $target == *@* ]] && user=${target%%@*} || user=$USER
 [[ $user == root ]] && sudo="" || sudo="sudo"
@@ -48,8 +53,14 @@ outdir=${outdir:-./migrate}
 name=wordpress-migrate-$host-$(date -u +%Y%m%dT%H%M%SZ).tar.gz
 remote=/var/tmp/$name
 mkdir -p "$outdir" && chmod 700 "$outdir"
-sshp=() ; scpp=()
-[[ $port ]] && { sshp=(-p "$port") ; scpp=(-P "$port") ; }
+sshid=()
+if [[ $identity ]] ; then
+  key=${identity%.pub} ; key=${key%-cert}
+  sshid=(-i "$key" -o IdentitiesOnly=yes)
+  [[ $identity == *-cert.pub ]] && sshid+=(-o "CertificateFile=$identity")
+fi
+sshp=("${sshid[@]}") ; scpp=("${sshid[@]}")
+[[ $port ]] && { sshp+=(-p "$port") ; scpp+=(-P "$port") ; }
 
 scp "${scpp[@]}" "$here/wp-extract-on-server.sh" "$target:wp-extract-on-server.sh" || exit 1
 ssh "${sshp[@]}" -t $target "sed -i 's/\r$//' ~/wp-extract-on-server.sh ; $sudo bash ~/wp-extract-on-server.sh '$webroot' '$remote' ; rc=\$? ; rm -f ~/wp-extract-on-server.sh ; exit \$rc" \
@@ -79,6 +90,14 @@ if(-not $port -and $env:SSH_PORT){
   $port = [int]$env:SSH_PORT
 }
 if($port -lt 0 -or $port -gt 65535){ throw "-port should be 1-65535" }
+$sshid = @()
+if($identity){
+  if(-not (Test-Path -PathType Leaf $identity)){ throw "No such identity file: $identity" }
+  $identity = (Resolve-Path $identity).Path
+  $key = $identity -replace '\.pub$','' -replace '-cert$',''
+  $sshid = @("-i",$key,"-o","IdentitiesOnly=yes")
+  if($identity -match '-cert\.pub$'){ $sshid += @("-o","CertificateFile=$identity") }
+}
 $hostpart = $target -replace '^.*@',''
 $user = if($target -match '@'){ $target.Split('@')[0] } elseif($env:USER){ $env:USER } else { $env:USERNAME }
 $sudo = if($user -eq "root"){ "" } else { "sudo" }
@@ -86,8 +105,8 @@ if(-not $outdir){ $outdir = Join-Path "." "migrate" }
 $name = "wordpress-migrate-$hostpart-$((Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')).tar.gz"
 $remote = "/var/tmp/$name"
 New-Item -ItemType Directory -Force $outdir | Out-Null
-$sshp = if($port){ @("-p",$port) } else { @() }
-$scpp = if($port){ @("-P",$port) } else { @() }
+$sshp = $sshid + $(if($port){ @("-p",$port) } else { @() })
+$scpp = $sshid + $(if($port){ @("-P",$port) } else { @() })
 
 scp @scpp (Join-Path $PSScriptRoot "wp-extract-on-server.sh") "${target}:wp-extract-on-server.sh"
 if($LASTEXITCODE -ne 0){ throw "Couldn't copy wp-extract-on-server.sh to $hostpart" }

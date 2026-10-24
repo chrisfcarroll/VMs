@@ -20,12 +20,15 @@ ports, so per-host `~/.ssh/config` entries or `-port` are safer here than one `S
 | `wp-config.php` | DB credentials, salts, `$table_prefix`, custom constants | only `$table_prefix`. Custom constants are listed for you to review |
 | WordPress core | `wp-admin/`, `wp-includes/` | no. The new server's newer core is kept and the database schema is upgraded |
 
-## wp-extract.sh.ps1 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port 22]
+## wp-extract.sh.ps1 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port 22] [-i ~/.ssh/key]
 
 Runs `wp-extract-on-server.sh` on the old server. It doesn't change the old server and doesn't need the MariaDB root
 password: it dumps with the credentials in `wp-config.php`. You get one `wordpress-migrate-<host>-<time>.tar.gz` holding
 `database.sql`, `wp-content/`, `wp-config.php` and `site-info.txt` (urls, versions, theme, active plugins).
 **The archive contains passwords and hashes. Keep it private.**
+
+`-i` logs in with that private key, or with a certificate (`key-cert.pub`, whose private key `key` must sit beside it),
+and offers no other key, so a passphrase-protected `~/.ssh/id_rsa` isn't tried first.
 
 ## wp-load.sh.ps1 <[user@]newhost> <archive> [-url https://www.example.com] [-port 22]
 
