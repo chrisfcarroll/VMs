@@ -7,6 +7,7 @@ Bootstrap scripts for
 
 - A [complete secured Wordpress on Rocky Linux Server](/Rocky), with off-server backup & restore
     - successor to the [CentOs](/CentOs) version, which used to be the main point of this repo.
+    - [WordPressMigrate](/WordPressMigrate) moves a site from the old CentOS server to the new Rocky one.
 
 - Basic setup of various BSD dev machines and other Linux boxes
     - these are intended to navigate the varieties of package management for BSD flavours and get
