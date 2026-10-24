@@ -5,8 +5,8 @@ Bootstrap scripts for
   - Start it up with [Claude-It.ps1](/ContainerAlpineClaudeDotNetDev2026/Claude-It.ps1)
   - The bash equivalent isn't yet tested: [claude-it.sh](/ContainerAlpineClaudeDotNetDev2026/claude-it.sh)
 
-- A [complete secured Wordpress on Centos Server](/CentOs)
-    - this used to be the main point of this repo.
+- A [complete secured Wordpress on Rocky Linux Server](/Rocky), with off-server backup & restore
+    - successor to the [CentOs](/CentOs) version, which used to be the main point of this repo.
 
 - Basic setup of various BSD dev machines and other Linux boxes
     - these are intended to navigate the varieties of package management for BSD flavours and get
