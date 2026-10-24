@@ -7,6 +7,9 @@
 ```
 
 All scripts run in either bash or PowerShell. `user` must be root or able to sudo.
+If either server's ssh isn't on port 22, add `-port <n>` to each script that connects to it. Without `-port` the scripts use `$SSH_PORT`
+if set, and otherwise ssh's own default (`Port` for the host in `~/.ssh/config`, or 22). The old and new servers often use different
+ports, so per-host `~/.ssh/config` entries or `-port` are safer here than one `SSH_PORT` for both.
 
 ## What gets moved, and why the SQL alone isn't enough
 
@@ -17,14 +20,14 @@ All scripts run in either bash or PowerShell. `user` must be root or able to sud
 | `wp-config.php` | DB credentials, salts, `$table_prefix`, custom constants | only `$table_prefix`. Custom constants are listed for you to review |
 | WordPress core | `wp-admin/`, `wp-includes/` | no. The new server's newer core is kept and the database schema is upgraded |
 
-## wp-extract.sh.ps1 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate]
+## wp-extract.sh.ps1 <[user@]oldhost> [-webroot /usr/share/nginx/html] [-outdir ./migrate] [-port 22]
 
 Runs `wp-extract-on-server.sh` on the old server. It doesn't change the old server and doesn't need the MariaDB root
 password: it dumps with the credentials in `wp-config.php`. You get one `wordpress-migrate-<host>-<time>.tar.gz` holding
 `database.sql`, `wp-content/`, `wp-config.php` and `site-info.txt` (urls, versions, theme, active plugins).
 **The archive contains passwords and hashes. Keep it private.**
 
-## wp-load.sh.ps1 <[user@]newhost> <archive> [-url https://www.example.com]
+## wp-load.sh.ps1 <[user@]newhost> <archive> [-url https://www.example.com] [-port 22]
 
 Runs `wp-load-on-server.sh` on the new server, which must already be set up by `../Rocky`. It:
 

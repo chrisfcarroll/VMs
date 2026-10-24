@@ -4,11 +4,17 @@ A successor to [../CentOs](../CentOs), for Rocky Linux 9 or 10, from the same st
 provisioned server that you can ssh into.
 
 ```
-./bootstrap-ssh.sh.ps1 <[user@]host> [<public_key_path>] [-andinstall] [-domain www.example.com] [-email you@example.com]
+./bootstrap-ssh.sh.ps1 <[user@]host> [<public_key_path>] [-andinstall] [-domain www.example.com] [-email you@example.com] [-port 2222]
 ```
 
 runs in either of PowerShell or bash, on Windows, macOS and Linux. `user` can be `root`, or a sudo user such as the `rocky`
 user of Rocky cloud images. Without `-andinstall` you get just the secured base server.
+
+**ssh on a port other than 22:** every client script takes `-port <n>`. Without it they use `$SSH_PORT` if that is set,
+and otherwise ssh's own default: `Port` for the host in `~/.ssh/config`, or 22. On the server, the bootstrap reads the port(s) sshd actually listens on (`sshd -T`), so it also works
+when your port is a NAT forward to 22. It opens each port in firewalld, labels it `ssh_port_t` for SELinux, and puts it in
+the fail2ban sshd jail. The bootstrap doesn't change sshd's port. To move sshd to a new port, add `Port` to
+`/etc/ssh/sshd_config.d/`, then rerun `rocky-bootstrap-vm.sh` *before* restarting sshd.
 
 With `-andinstall`, and DNS for your domain already pointing at the server, a few minutes later you have WordPress on https,
 with nothing left to click through. The admin username is printed; its password is in `/root/wordpress-initial-admin.txt`.
@@ -18,7 +24,7 @@ with nothing left to click through. The admin username is printed; its password 
 | | |
 |---|---|
 | **Updates** | `dnf-automatic` applies all updates daily and reboots when a kernel update needs it |
-| **ssh** | key-only logins (once the bootstrap has confirmed your key works), fail2ban on sshd |
+| **ssh** | key-only logins (once the bootstrap has confirmed your key works), fail2ban on sshd, any sshd port |
 | **Firewall** | firewalld: only ssh, http, https. (Rocky's default open cockpit port is closed) |
 | **Web** | nginx → php-fpm (own pool & user) → MariaDB (localhost only). Newest php/nginx/mariadb streams on Rocky 9 |
 | **https** | Let's Encrypt via certbot, auto-renewing; http redirects to https; HSTS; TLS 1.2+ per system crypto-policy |
@@ -35,8 +41,8 @@ the whole WordPress directory, and the nginx & Let's Encrypt config.
 From your own machine (bash or PowerShell):
 
 ```
-./backup-pull.sh.ps1 <[user@]host> [<localdir>] [-now]          # copies new backups to ./backups/<host>/
-./backup-restore.sh.ps1 <[user@]host> <wordpress-...tar.gz>      # puts the site back as it was
+./backup-pull.sh.ps1 <[user@]host> [<localdir>] [-now] [-port 2222]          # copies new backups to ./backups/<host>/
+./backup-restore.sh.ps1 <[user@]host> <wordpress-...tar.gz> [-port 2222]      # puts the site back as it was
 ```
 
 - Schedule `backup-pull.sh.ps1` with cron, launchd or Task Scheduler. It **pulls**, so the server holds no credentials for

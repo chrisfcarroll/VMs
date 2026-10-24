@@ -75,17 +75,35 @@ echo "sshd: keepalive, and keys-only logins if KEYAUTH_VERIFIED=1 ..."
   fi
   [[ $KEYAUTH_VERIFIED == 1 ]] || echo "NB: ssh password logins are still ON. Rerun with KEYAUTH_VERIFIED=1 once ssh keys work."
 
+  # The port(s) sshd really listens on, from its own config. Not the port the client connected to,
+  # which may be a NAT/port-forward (e.g. 2222 -> 22). firewalld, SELinux and fail2ban must all agree.
+  sshports=$( sshd -T 2>/dev/null | awk '$1=="port"{print $2} $1=="listenaddress"{n=split($2,a,":"); print a[n]}' | sort -un | xargs )
+  sshports=${sshports:-22}
+  echo "sshd listens on port(s): $sshports"
+  for p in $sshports ; do
+    [[ $p == 22 ]] && continue
+    semanage port -l | grep -qE "^ssh_port_t +tcp +.*\b$p\b" \
+      || semanage port -a -t ssh_port_t -p tcp $p 2>/dev/null || semanage port -m -t ssh_port_t -p tcp $p
+  done
+
 echo "Firewall and fail2ban for sshd ..."
 	#firewall for just the ports we want. and because fail2ban on Rocky assumes you are using firewalld
 	dnf -y install firewalld
 	systemctl enable --now firewalld.service
+	# The default zone allows only port 22 for ssh. Open any other sshd port straight away, runtime and permanent,
+	# so new ssh logins aren't locked out
+	for p in $sshports ; do
+	  [[ $p == 22 ]] && continue
+	  firewall-cmd --zone=public --add-port=$p/tcp
+	  firewall-cmd --permanent --zone=public --add-port=$p/tcp
+	done
 	# Rocky opens the cockpit admin console port (9090) by default. Close it.
 	firewall-cmd --permanent --zone=public --remove-service=cockpit 2>/dev/null
 
 	# fail2ban comes from EPEL. fail2ban-systemd reads sshd failures from the journal
 	dnf -y install epel-release
 	dnf -y install fail2ban fail2ban-firewalld fail2ban-systemd
-	cat > /etc/fail2ban/jail.local <<"EOF"
+	cat > /etc/fail2ban/jail.local <<EOF
 #
 [DEFAULT]
 bantime = 2h
@@ -96,6 +114,8 @@ bantime.maxtime = 1w
 [sshd]
 enabled = true
 backend = systemd
+# bans only block the listed ports, so list whichever ports sshd really uses
+port = ${sshports// /,}
 
 EOF
   restorecon /etc/fail2ban/jail.local
